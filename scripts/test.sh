@@ -12,6 +12,7 @@ nc=${nc:-32}
 dim_feedforward=${dim_feedforward:-2048}
 cr=${cr:-4}
 encoder=${encoder:-transnet}
+decoder=${decoder:-transnet}
 code_adapter=${code_adapter:-false}
 
 batch_size=${batch_size:-32}
@@ -36,6 +37,7 @@ python ./main.py \
   --workers "${workers}" \
   --cr "${cr}" \
   --encoder "${encoder}" \
+  --decoder "${decoder}" \
   --scheduler "${scheduler}" \
   --lr_init "${lr_init}" \
   --weight_decay "${weight_decay}" \

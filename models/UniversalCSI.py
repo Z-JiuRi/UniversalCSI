@@ -17,6 +17,8 @@ __all__ = [
     "CLNetEncoder",
     "TransNetEncoder",
     "TransNetDecoder",
+    "CNNResidualDecoder",
+    "HybridDecoder",
 ]
 
 
@@ -220,6 +222,36 @@ class CodeAdapter(nn.Module):
         return self.net(code)
 
 
+class ConvResidualBlock(nn.Module):
+    def __init__(self, channels):
+        super().__init__()
+        self.block = nn.Sequential(OrderedDict([
+            ("conv1", ConvBN(channels, channels, 3)),
+            ("relu1", nn.LeakyReLU(negative_slope=0.3, inplace=True)),
+            ("conv2", ConvBN(channels, channels, 3)),
+        ]))
+        self.relu = nn.LeakyReLU(negative_slope=0.3, inplace=True)
+
+    def forward(self, x):
+        return self.relu(x + self.block(x))
+
+
+class CNNRefinementHead(nn.Module):
+    def __init__(self, channel=2, hidden=16, num_blocks=2):
+        super().__init__()
+        layers = [
+            ("conv_in", nn.Conv2d(channel, hidden, 3, padding=1, bias=False)),
+            ("relu_in", nn.LeakyReLU(negative_slope=0.3, inplace=True)),
+        ]
+        for idx in range(num_blocks):
+            layers.append((f"res{idx + 1}", ConvResidualBlock(hidden)))
+        layers.append(("conv_out", nn.Conv2d(hidden, channel, 3, padding=1)))
+        self.net = nn.Sequential(OrderedDict(layers))
+
+    def forward(self, x):
+        return self.net(x)
+
+
 class TransNetDecoder(nn.Module):
     def __init__(self, reduction=4, d_model=64, channel=2, nt=32, nc=32,
                  dim_feedforward=None):
@@ -244,6 +276,57 @@ class TransNetDecoder(nn.Module):
         out = self.decoder(memory, memory)
         out = out.view(batch_size, self.channel, self.nt, self.nc)
         return out
+
+
+class CNNResidualDecoder(nn.Module):
+    def __init__(self, reduction=4, d_model=64, channel=2, nt=32, nc=32,
+                 dim_feedforward=None, hidden=16, num_blocks=2):
+        super().__init__()
+        input_dim = channel * nt * nc
+        assert input_dim % reduction == 0
+        self.channel = channel
+        self.nt = nt
+        self.nc = nc
+        code_dim = input_dim // reduction
+        self.code_norm = nn.LayerNorm(code_dim)
+        self.fc_decoder = nn.Linear(code_dim, input_dim)
+        self.refine = CNNRefinementHead(channel, hidden, num_blocks)
+
+    def forward(self, code):
+        batch_size = code.size(0)
+        coarse = self.fc_decoder(self.code_norm(code))
+        coarse = coarse.view(batch_size, self.channel, self.nt, self.nc)
+        return coarse + self.refine(coarse)
+
+
+class HybridDecoder(nn.Module):
+    def __init__(self, reduction=4, d_model=64, channel=2, nt=32, nc=32,
+                 dim_feedforward=None, hidden=16, num_blocks=2):
+        super().__init__()
+        input_dim = channel * nt * nc
+        assert input_dim % d_model == 0
+        assert input_dim % reduction == 0
+        self.channel = channel
+        self.nt = nt
+        self.nc = nc
+        self.feature_shape = (input_dim // d_model, d_model)
+        code_dim = input_dim // reduction
+        self.code_norm = nn.LayerNorm(code_dim)
+        self.fc_decoder = nn.Linear(code_dim, input_dim)
+        decoder_layer = TransformerDecoderLayer(
+            d_model, 2, dim_feedforward, dropout=0., batch_first=True)
+        self.decoder = TransformerDecoder(decoder_layer, num_layers=2,
+                                          norm=nn.LayerNorm(d_model))
+        self.refine = CNNRefinementHead(channel, hidden, num_blocks)
+
+    def forward(self, code):
+        batch_size = code.size(0)
+        memory = self.fc_decoder(self.code_norm(code))
+        memory = memory.view(batch_size, self.feature_shape[0],
+                             self.feature_shape[1])
+        out = self.decoder(memory, memory)
+        coarse = out.view(batch_size, self.channel, self.nt, self.nc)
+        return coarse + self.refine(coarse)
 
 
 class UniversalCSIModel(nn.Module):
@@ -287,14 +370,29 @@ def build_encoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
     raise ValueError(f"Unknown encoder: {name}")
 
 
+def build_decoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
+                  dim_feedforward=None):
+    name = name.lower()
+    if name == "transnet":
+        return TransNetDecoder(reduction, d_model, channel, nt, nc,
+                               dim_feedforward)
+    if name == "cnn_residual":
+        return CNNResidualDecoder(reduction, d_model, channel, nt, nc,
+                                  dim_feedforward)
+    if name == "hybrid":
+        return HybridDecoder(reduction, d_model, channel, nt, nc,
+                             dim_feedforward)
+    raise ValueError(f"Unknown decoder: {name}")
+
+
 def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
                   channel=2, nt=32, nc=32, dim_feedforward=None,
-                  code_adapter=False):
+                  code_adapter=False, decoder_name="transnet"):
     input_dim = channel * nt * nc
     code_dim = input_dim // reduction
     encoder = build_encoder(encoder_name, reduction, d_model, channel, nt, nc,
                             dim_feedforward)
-    decoder = TransNetDecoder(reduction, d_model, channel, nt, nc,
-                              dim_feedforward)
+    decoder = build_decoder(decoder_name, reduction, d_model, channel, nt, nc,
+                            dim_feedforward)
     adapter = CodeAdapter(code_dim, enabled=code_adapter)
     return UniversalCSIModel(encoder, decoder, adapter)

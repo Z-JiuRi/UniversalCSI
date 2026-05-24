@@ -23,16 +23,36 @@ def freeze_component(model, components):
     if not components:
         return
 
+    def transformer_layers(decoder):
+        transformer = getattr(decoder, "decoder", None)
+        return list(getattr(transformer, "layers", []))
+
+    def require_modules(name, modules):
+        modules = [module for module in modules if module is not None]
+        if not modules:
+            raise ValueError(
+                f"Freeze component '{name}' is not available for "
+                f"{type(model.decoder).__name__}."
+            )
+        return modules
+
+    decoder_layers = transformer_layers(model.decoder)
     component_map = {
-        "encoder": [model.encoder],
-        "code_adapter": [model.code_adapter],
-        "fc_decoder": [model.decoder.fc_decoder],
-        "decoder_self_attn": [model.decoder.decoder.layer.self_attn],
-        "decoder_cross_attn": [model.decoder.decoder.layer.multihead_attn],
-        "decoder_ffn": [
-            model.decoder.decoder.layer.linear1,
-            model.decoder.decoder.layer.linear2,
-        ],
+        "encoder": lambda: [model.encoder],
+        "code_adapter": lambda: [model.code_adapter],
+        "fc_decoder": lambda: require_modules(
+            "fc_decoder", [getattr(model.decoder, "fc_decoder", None)]),
+        "decoder_self_attn": lambda: require_modules(
+            "decoder_self_attn",
+            [getattr(layer, "self_attn", None) for layer in decoder_layers]),
+        "decoder_cross_attn": lambda: require_modules(
+            "decoder_cross_attn",
+            [getattr(layer, "multihead_attn", None) for layer in decoder_layers]),
+        "decoder_ffn": lambda: require_modules(
+            "decoder_ffn",
+            [module for layer in decoder_layers
+             for module in (getattr(layer, "linear1", None),
+                            getattr(layer, "linear2", None))]),
     }
 
     for component in components:
@@ -41,7 +61,7 @@ def freeze_component(model, components):
                 f"Unknown freeze component '{component}'. "
                 f"Valid choices: {list(component_map.keys())}"
             )
-        for module in component_map[component]:
+        for module in component_map[component]():
             for param in module.parameters():
                 param.requires_grad = False
 
@@ -148,6 +168,7 @@ def init_device(seed=None, cpu=None, gpu=None, affinity=None):
 def init_model(args):
     # Model loading
     model = universal_csi(encoder_name=args.encoder,
+                          decoder_name=args.decoder,
                           reduction=args.cr,
                           d_model=args.d_model,
                           channel=args.channel,
@@ -171,7 +192,7 @@ def init_model(args):
     logger.info(f'=> Model Name: UniversalCSI [pretrained: {args.pretrained}]')
     logger.info(f'=> Model Config: compression ratio=1/{args.cr}; '
                 f'encoder={args.encoder}; '
-                f'decoder=transnet; '
+                f'decoder={args.decoder}; '
                 f'code_adapter={args.code_adapter}; '
                 f'input shape=({args.channel}, {args.nt}, {args.nc}); '
                 f'input dim={args.channel * args.nt * args.nc}')

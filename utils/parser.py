@@ -42,7 +42,10 @@ parser.add_argument('--cr', metavar='N', type=int, default=4,
                     help='compression ratio')
 parser.add_argument('--encoder', type=str, default='transnet',
                     choices=['csinet', 'crnet', 'clnet', 'transnet'],
-                    help='encoder backbone to use with the shared TransNet decoder')
+                    help='encoder backbone to use')
+parser.add_argument('--decoder', type=str, default='transnet',
+                    choices=['transnet', 'cnn_residual', 'hybrid'],
+                    help='decoder backbone to use')
 parser.add_argument('--code_adapter', action='store_true',
                     help='insert LayerNorm + Linear between encoder code and decoder')
 parser.add_argument('--exp_name', metavar='NAME', type=str, default='exp_1',

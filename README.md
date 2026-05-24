@@ -8,7 +8,7 @@ changes the model into:
 CSI input
   -> selectable encoder
   -> optional code adapter
-  -> shared TransNet decoder
+  -> selectable decoder
   -> reconstructed CSI
 ```
 
@@ -21,7 +21,15 @@ clnet     CLNet-style attention/lightweight CNN encoder
 transnet  Original TransNet Transformer encoder
 ```
 
-The shared decoder is copied from TransNet's decoder side:
+Supported decoders:
+
+```text
+transnet      TransNet-style Transformer decoder baseline
+cnn_residual  Linear expansion + lightweight CNN residual refinement
+hybrid        Transformer decoder + lightweight CNN residual refinement
+```
+
+The default `transnet` decoder is copied from TransNet's decoder side:
 
 ```text
 code: (B, 2048 / cr)
@@ -35,9 +43,9 @@ code: (B, 2048 / cr)
 Main additions:
 
 ```text
-models/UniversalCSI.py   selectable encoders + shared TransNet decoder
+models/UniversalCSI.py   selectable encoders + selectable decoders
 models/__init__.py       exports universal_csi
-utils/parser.py          adds --encoder and --code_adapter
+utils/parser.py          adds --encoder, --decoder and --code_adapter
 utils/init.py            builds UniversalCSI instead of plain TransNet
 ```
 
@@ -58,6 +66,7 @@ python main.py \
   --batch_size 200 \
   --workers 0 \
   --cr 4 \
+  --decoder hybrid \
   --nt 32 \
   --nc 32 \
   --d_model 64 \
@@ -71,6 +80,14 @@ Other encoder choices:
 --encoder csinet
 --encoder clnet
 --encoder transnet
+```
+
+Other decoder choices:
+
+```bash
+--decoder transnet
+--decoder cnn_residual
+--decoder hybrid
 ```
 
 Useful optional switches:
@@ -88,7 +105,7 @@ input:  (B, 2, 32, 32)
 code:   (B, 2048 / cr)
 ```
 
-The decoder follows:
+All decoders follow:
 
 ```text
 code:   (B, 2048 / cr)
@@ -102,7 +119,8 @@ input_dim = channel * nt * nc
 code_dim = input_dim / cr
 ```
 
-`input_dim` must be divisible by both `cr` and `d_model`.
+`input_dim` must be divisible by `cr`. Transformer-based decoders
+(`transnet`, `hybrid`) also require divisibility by `d_model`.
 
 ## Notes
 
