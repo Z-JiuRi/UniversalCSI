@@ -1,0 +1,141 @@
+I 05.24/17:34:05 main.py:23  ] => Experiment directory: /home/z-jiuri/workspace/Huawei/UniversalCSI/exps/smoke/eval_clnet
+I 05.24/17:34:05 main.py:24  ] => PyTorch Version: 2.5.1
+I 05.24/17:34:05 init.py:14  ] Random seed set to 7
+I 05.24/17:34:05 init.py:143 ] Running on CPU
+I 05.24/17:34:05 init.py:172 ] => Model Name: UniversalCSI [pretrained: None]
+I 05.24/17:34:05 init.py:173 ] => Model Config: compression ratio=1/4; encoder=clnet; decoder=transnet; code_adapter=False; output_activation=none; input shape=(2, 32, 32); input dim=2048
+I 05.24/17:34:05 init.py:180 ] => Model Flops: 3.6681e+00M
+I 05.24/17:34:05 init.py:181 ] => Model Params Num: 2.1173e+00M
+
+I 05.24/17:34:05 init.py:182 ] 
+**********
+UniversalCSIModel(
+  (encoder): CLNetEncoder(
+    (encoder1): Sequential(
+      (conv3x3_bn): ConvBN(
+        (conv): Conv2d(2, 2, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): BatchNorm2d(2, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (relu1): LeakyReLU(negative_slope=0.3, inplace=True)
+      (conv1x9_bn): ConvBN(
+        (conv): Conv2d(2, 2, kernel_size=(1, 9), stride=(1, 1), padding=(0, 4), bias=False)
+        (bn): BatchNorm2d(2, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (relu2): LeakyReLU(negative_slope=0.3, inplace=True)
+      (conv9x1_bn): ConvBN(
+        (conv): Conv2d(2, 2, kernel_size=(9, 1), stride=(1, 1), padding=(4, 0), bias=False)
+        (bn): BatchNorm2d(2, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+    (encoder2): ConvBN(
+      (conv): Conv2d(2, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (encoder_conv): Sequential(
+      (relu1): LeakyReLU(negative_slope=0.3, inplace=True)
+      (conv1x1_bn): ConvBN(
+        (conv): Conv2d(34, 2, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (bn): BatchNorm2d(2, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+      (relu2): LeakyReLU(negative_slope=0.3, inplace=True)
+    )
+    (sa): SpatialGate(
+      (compress): ChannelPool()
+      (spatial): BasicConv(
+        (conv): Conv2d(2, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (bn): BatchNorm2d(1, eps=1e-05, momentum=0.01, affine=True, track_running_stats=True)
+      )
+    )
+    (se): SELayer(
+      (avg_pool): AdaptiveAvgPool2d(output_size=1)
+      (fc): Sequential(
+        (0): Linear(in_features=32, out_features=2, bias=False)
+        (1): ReLU(inplace=True)
+        (2): Linear(in_features=2, out_features=32, bias=False)
+        (3): Sigmoid()
+      )
+    )
+    (compress): Conv1d(2048, 512, kernel_size=(1,), stride=(1,))
+  )
+  (code_adapter): CodeAdapter(
+    (net): Identity()
+  )
+  (decoder): TransNetDecoder(
+    (fc_decoder): Linear(in_features=512, out_features=2048, bias=True)
+    (decoder): TransformerDecoder(
+      (layer): TransformerDecoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): Linear(in_features=64, out_features=64, bias=True)
+        )
+        (multihead_attn): MultiheadAttention(
+          (out_proj): Linear(in_features=64, out_features=64, bias=True)
+        )
+        (linear1): Linear(in_features=64, out_features=128, bias=True)
+        (dropout): Dropout(p=0.0, inplace=False)
+        (linear2): Linear(in_features=128, out_features=64, bias=True)
+        (norm1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (norm3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (dropout1): Dropout(p=0.0, inplace=False)
+        (dropout2): Dropout(p=0.0, inplace=False)
+        (dropout3): Dropout(p=0.0, inplace=False)
+      )
+      (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+    (output_activation): Identity()
+  )
+)
+**********
+
+I 05.24/17:34:05 init.py:119 ] 
+encoder.encoder1.conv3x3_bn.conv.weight                           True     (2, 2, 3, 3)
+encoder.encoder1.conv3x3_bn.bn.weight                             True     (2,)
+encoder.encoder1.conv3x3_bn.bn.bias                               True     (2,)
+encoder.encoder1.conv1x9_bn.conv.weight                           True     (2, 2, 1, 9)
+encoder.encoder1.conv1x9_bn.bn.weight                             True     (2,)
+encoder.encoder1.conv1x9_bn.bn.bias                               True     (2,)
+encoder.encoder1.conv9x1_bn.conv.weight                           True     (2, 2, 9, 1)
+encoder.encoder1.conv9x1_bn.bn.weight                             True     (2,)
+encoder.encoder1.conv9x1_bn.bn.bias                               True     (2,)
+encoder.encoder2.conv.weight                                      True     (32, 2, 1, 1)
+encoder.encoder2.bn.weight                                        True     (32,)
+encoder.encoder2.bn.bias                                          True     (32,)
+encoder.encoder_conv.conv1x1_bn.conv.weight                       True     (2, 34, 1, 1)
+encoder.encoder_conv.conv1x1_bn.bn.weight                         True     (2,)
+encoder.encoder_conv.conv1x1_bn.bn.bias                           True     (2,)
+encoder.sa.spatial.conv.weight                                    True     (1, 2, 3, 3)
+encoder.sa.spatial.bn.weight                                      True     (1,)
+encoder.sa.spatial.bn.bias                                        True     (1,)
+encoder.se.fc.0.weight                                            True     (2, 32)
+encoder.se.fc.2.weight                                            True     (32, 2)
+encoder.compress.weight                                           True     (512, 2048, 1)
+encoder.compress.bias                                             True     (512,)
+decoder.fc_decoder.weight                                         True     (2048, 512)
+decoder.fc_decoder.bias                                           True     (2048,)
+decoder.decoder.layer.self_attn.in_proj_weight                    True     (192, 64)
+decoder.decoder.layer.self_attn.in_proj_bias                      True     (192,)
+decoder.decoder.layer.self_attn.out_proj.weight                   True     (64, 64)
+decoder.decoder.layer.self_attn.out_proj.bias                     True     (64,)
+decoder.decoder.layer.multihead_attn.in_proj_weight               True     (192, 64)
+decoder.decoder.layer.multihead_attn.in_proj_bias                 True     (192,)
+decoder.decoder.layer.multihead_attn.out_proj.weight              True     (64, 64)
+decoder.decoder.layer.multihead_attn.out_proj.bias                True     (64,)
+decoder.decoder.layer.linear1.weight                              True     (128, 64)
+decoder.decoder.layer.linear1.bias                                True     (128,)
+decoder.decoder.layer.linear2.weight                              True     (64, 128)
+decoder.decoder.layer.linear2.bias                                True     (64,)
+decoder.decoder.layer.norm1.weight                                True     (64,)
+decoder.decoder.layer.norm1.bias                                  True     (64,)
+decoder.decoder.layer.norm2.weight                                True     (64,)
+decoder.decoder.layer.norm2.bias                                  True     (64,)
+decoder.decoder.layer.norm3.weight                                True     (64,)
+decoder.decoder.layer.norm3.bias                                  True     (64,)
+decoder.decoder.norm.weight                                       True     (64,)
+decoder.decoder.norm.bias                                         True     (64,)
+**********
+I 05.24/17:34:05 solver.py:285 ] => Test NMSE: 6.0196e+00
+
+I 05.24/17:34:05 solver.py:254 ] 
+=> Test result: 
+loss: 1.3328e+00    NMSE: 6.0196e+00
+

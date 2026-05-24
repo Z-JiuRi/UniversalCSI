@@ -1,0 +1,22 @@
+python ./main.py \
+  --exp_name COST2100/in/seed0/lora_fc_decoder\
+  --train_path /storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
+  --val_path /storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
+  --test_path /storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
+  --epochs 200 \
+  --d_model 64 \
+  --nt 32 \
+  --nc 32 \
+  --dim_feedforward 2048 \
+  --batch_size 32 \
+  --workers 4 \
+  --cr 4 \
+  --scheduler cosine \
+  --lr_init 2e-4 \
+  --weight_decay 1e-3 \
+  --gpu 3 \
+  --seed 0 \
+  --pretrained /storage/hujiacong/zxd/Huawei/TransNet/exps/COST2100/in/seed42/base/checkpoints/best_nmse.pth \
+  --lora_component fc_decoder \
+  --lora_rank 4 \
+  --lora_alpha 8 \

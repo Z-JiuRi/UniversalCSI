@@ -1,0 +1,112 @@
+# UniversalCSI
+
+UniversalCSI is a TransNet-based CSI feedback experiment project. It keeps the
+training, logging, checkpointing, and `.pt` dataloader flow from `TransNet`, but
+changes the model into:
+
+```text
+CSI input
+  -> selectable encoder
+  -> optional code adapter
+  -> shared TransNet decoder
+  -> reconstructed CSI
+```
+
+Supported encoders:
+
+```text
+csinet    PyTorch rewrite of the CsiNet encoder
+crnet     CRNet-style multi-resolution CNN encoder
+clnet     CLNet-style attention/lightweight CNN encoder
+transnet  Original TransNet Transformer encoder
+```
+
+The shared decoder is copied from TransNet's decoder side:
+
+```text
+code: (B, 2048 / cr)
+  -> fc_decoder
+  -> TransformerDecoder
+  -> output: (B, 2, nt, nc)
+```
+
+## Files
+
+Main additions:
+
+```text
+models/UniversalCSI.py   selectable encoders + shared TransNet decoder
+models/__init__.py       exports universal_csi
+utils/parser.py          adds --encoder and --code_adapter
+utils/init.py            builds UniversalCSI instead of plain TransNet
+```
+
+Most other files are inherited from `TransNet`.
+
+## Quick Usage
+
+Example:
+
+```bash
+python main.py \
+  --exp_name crnet_encoder_trans_decoder \
+  --encoder crnet \
+  --train_path /path/to/in_train.pt \
+  --val_path /path/to/in_val.pt \
+  --test_path /path/to/in_test.pt \
+  --epochs 400 \
+  --batch_size 200 \
+  --workers 0 \
+  --cr 4 \
+  --nt 32 \
+  --nc 32 \
+  --d_model 64 \
+  --scheduler const \
+  --gpu 0
+```
+
+Other encoder choices:
+
+```bash
+--encoder csinet
+--encoder clnet
+--encoder transnet
+```
+
+Useful optional switches:
+
+```bash
+--code_adapter
+```
+
+## Shape Contract
+
+All encoders follow the same interface:
+
+```text
+input:  (B, 2, 32, 32)
+code:   (B, 2048 / cr)
+```
+
+The decoder follows:
+
+```text
+code:   (B, 2048 / cr)
+output: (B, 2, 32, 32)
+```
+
+For non-default `nt`/`nc`, the input dimension is:
+
+```text
+input_dim = channel * nt * nc
+code_dim = input_dim / cr
+```
+
+`input_dim` must be divisible by both `cr` and `d_model`.
+
+## Notes
+
+- This project currently uses the TransNet `.pt` dataloader.
+- CsiNet here is a PyTorch encoder rewrite, not a TensorFlow/Keras weight import.
+- LoRA flags are still present from TransNet but are not wired for UniversalCSI.
+- Use `--freeze_components encoder` if you want to train only the shared decoder.

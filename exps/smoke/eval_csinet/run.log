@@ -1,0 +1,85 @@
+I 05.24/17:34:04 main.py:23  ] => Experiment directory: /home/z-jiuri/workspace/Huawei/UniversalCSI/exps/smoke/eval_csinet
+I 05.24/17:34:04 main.py:24  ] => PyTorch Version: 2.5.1
+I 05.24/17:34:04 init.py:14  ] Random seed set to 7
+I 05.24/17:34:04 init.py:143 ] Running on CPU
+I 05.24/17:34:04 init.py:172 ] => Model Name: UniversalCSI [pretrained: None]
+I 05.24/17:34:04 init.py:173 ] => Model Config: compression ratio=1/4; encoder=csinet; decoder=transnet; code_adapter=False; output_activation=none; input shape=(2, 32, 32); input dim=2048
+I 05.24/17:34:04 init.py:180 ] => Model Flops: 3.2481e+00M
+I 05.24/17:34:04 init.py:181 ] => Model Params Num: 2.1168e+00M
+
+I 05.24/17:34:04 init.py:182 ] 
+**********
+UniversalCSIModel(
+  (encoder): CsiNetEncoder(
+    (features): Sequential(
+      (conv3x3): Conv2d(2, 2, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+      (bn): BatchNorm2d(2, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (relu): LeakyReLU(negative_slope=0.3, inplace=True)
+    )
+    (fc): Linear(in_features=2048, out_features=512, bias=True)
+  )
+  (code_adapter): CodeAdapter(
+    (net): Identity()
+  )
+  (decoder): TransNetDecoder(
+    (fc_decoder): Linear(in_features=512, out_features=2048, bias=True)
+    (decoder): TransformerDecoder(
+      (layer): TransformerDecoderLayer(
+        (self_attn): MultiheadAttention(
+          (out_proj): Linear(in_features=64, out_features=64, bias=True)
+        )
+        (multihead_attn): MultiheadAttention(
+          (out_proj): Linear(in_features=64, out_features=64, bias=True)
+        )
+        (linear1): Linear(in_features=64, out_features=128, bias=True)
+        (dropout): Dropout(p=0.0, inplace=False)
+        (linear2): Linear(in_features=128, out_features=64, bias=True)
+        (norm1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (norm2): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (norm3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+        (dropout1): Dropout(p=0.0, inplace=False)
+        (dropout2): Dropout(p=0.0, inplace=False)
+        (dropout3): Dropout(p=0.0, inplace=False)
+      )
+      (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+    (output_activation): Identity()
+  )
+)
+**********
+
+I 05.24/17:34:04 init.py:119 ] 
+encoder.features.conv3x3.weight                                   True     (2, 2, 3, 3)
+encoder.features.bn.weight                                        True     (2,)
+encoder.features.bn.bias                                          True     (2,)
+encoder.fc.weight                                                 True     (512, 2048)
+encoder.fc.bias                                                   True     (512,)
+decoder.fc_decoder.weight                                         True     (2048, 512)
+decoder.fc_decoder.bias                                           True     (2048,)
+decoder.decoder.layer.self_attn.in_proj_weight                    True     (192, 64)
+decoder.decoder.layer.self_attn.in_proj_bias                      True     (192,)
+decoder.decoder.layer.self_attn.out_proj.weight                   True     (64, 64)
+decoder.decoder.layer.self_attn.out_proj.bias                     True     (64,)
+decoder.decoder.layer.multihead_attn.in_proj_weight               True     (192, 64)
+decoder.decoder.layer.multihead_attn.in_proj_bias                 True     (192,)
+decoder.decoder.layer.multihead_attn.out_proj.weight              True     (64, 64)
+decoder.decoder.layer.multihead_attn.out_proj.bias                True     (64,)
+decoder.decoder.layer.linear1.weight                              True     (128, 64)
+decoder.decoder.layer.linear1.bias                                True     (128,)
+decoder.decoder.layer.linear2.weight                              True     (64, 128)
+decoder.decoder.layer.linear2.bias                                True     (64,)
+decoder.decoder.layer.norm1.weight                                True     (64,)
+decoder.decoder.layer.norm1.bias                                  True     (64,)
+decoder.decoder.layer.norm2.weight                                True     (64,)
+decoder.decoder.layer.norm2.bias                                  True     (64,)
+decoder.decoder.layer.norm3.weight                                True     (64,)
+decoder.decoder.layer.norm3.bias                                  True     (64,)
+decoder.decoder.norm.weight                                       True     (64,)
+decoder.decoder.norm.bias                                         True     (64,)
+**********
+I 05.24/17:34:04 solver.py:285 ] => Test NMSE: 6.0062e+00
+
+I 05.24/17:34:04 solver.py:254 ] 
+=> Test result: 
+loss: 1.3286e+00    NMSE: 6.0062e+00
+
