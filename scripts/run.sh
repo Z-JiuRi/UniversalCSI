@@ -8,7 +8,7 @@ code_adapter=false \
 batch_size=512 \
 epochs=400 \
 lr_init=2e-4 \
-gpu=2 \
+gpu=0 \
 seed=42 \
 ./scripts/train.sh > in_transnet_transnet.log 2>&1 &
 
@@ -22,7 +22,7 @@ code_adapter=true \
 batch_size=512 \
 epochs=400 \
 lr_init=2e-4 \
-gpu=3 \
+gpu=1 \
 seed=42 \
 ./scripts/train.sh > in_clnet_transnet.log 2>&1 &
 
@@ -36,7 +36,7 @@ code_adapter=true \
 batch_size=512 \
 epochs=400 \
 lr_init=2e-4 \
-gpu=4 \
+gpu=2 \
 seed=42 \
 ./scripts/train.sh > in_csinet_transnet.log 2>&1 &
 
@@ -50,7 +50,7 @@ code_adapter=true \
 batch_size=512 \
 epochs=400 \
 lr_init=2e-4 \
-gpu=5 \
+gpu=3 \
 seed=42 \
 ./scripts/train.sh > in_crnet_transnet.log 2>&1 &
 
@@ -66,7 +66,7 @@ code_adapter=false \
 batch_size=512 \
 epochs=400 \
 lr_init=2e-4 \
-gpu=2 \
+gpu=4 \
 seed=42 \
 ./scripts/train.sh > in_transnet_cnn_residual.log 2>&1 &
 
@@ -80,7 +80,7 @@ code_adapter=true \
 batch_size=512 \
 epochs=400 \
 lr_init=2e-4 \
-gpu=3 \
+gpu=5 \
 seed=42 \
 ./scripts/train.sh > in_clnet_cnn_residual.log 2>&1 &
 
@@ -94,7 +94,7 @@ code_adapter=true \
 batch_size=512 \
 epochs=400 \
 lr_init=2e-4 \
-gpu=4 \
+gpu=0 \
 seed=42 \
 ./scripts/train.sh > in_csinet_cnn_residual.log 2>&1 &
 
@@ -108,7 +108,7 @@ code_adapter=true \
 batch_size=512 \
 epochs=400 \
 lr_init=2e-4 \
-gpu=5 \
+gpu=1 \
 seed=42 \
 ./scripts/train.sh > in_crnet_cnn_residual.log 2>&1 &
 
