@@ -16,6 +16,8 @@ Supported encoders:
 
 ```text
 csinet    PyTorch rewrite of the CsiNet encoder
+cnn       Plain CNN baseline without attention/residual/Transformer blocks
+cbam_cnn  CNN encoder with CBAM channel + spatial attention
 crnet     CRNet-style multi-resolution CNN encoder
 clnet     CLNet-style attention/lightweight CNN encoder
 transnet  Original TransNet Transformer encoder
@@ -78,6 +80,9 @@ Other encoder choices:
 
 ```bash
 --encoder csinet
+--encoder cnn
+--encoder cbam_cnn
+--encoder crnet
 --encoder clnet
 --encoder transnet
 ```
@@ -126,5 +131,3 @@ code_dim = input_dim / cr
 
 - This project currently uses the TransNet `.pt` dataloader.
 - CsiNet here is a PyTorch encoder rewrite, not a TensorFlow/Keras weight import.
-- LoRA flags are still present from TransNet but are not wired for UniversalCSI.
-- Use `--freeze_components encoder` if you want to train only the shared decoder.

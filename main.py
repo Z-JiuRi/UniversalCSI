@@ -58,7 +58,7 @@ def main():
                           save_path=checkpoint_dir,
                           tensorboard_dir=tensorboard_dir)
         trainer.save_all_encoder_outputs(
-            {"train": train_loader, "val": val_loader, "test": test_loader},
+            {"train": train_loader},
             os.path.join(exp_dir, "codewords"))
         return
 
@@ -106,7 +106,7 @@ def main():
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)
 
     trainer.save_all_encoder_outputs(
-        {"train": train_loader, "val": val_loader, "test": test_loader},
+        {"train": train_loader},
         os.path.join(exp_dir, "codewords"))
 
     # Final testing

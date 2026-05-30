@@ -16,6 +16,8 @@
   - 分阶段实验路线、关键消融矩阵、评价指标和成功标准。
 - [synthesis_06_matrix_condition_lora_route.md](synthesis_06_matrix_condition_lora_route.md)
   - 合并 Codex 与 Gemini 关于 `(N, compressed_dim)` 整体矩阵条件生成 domain-level LoRA 的分析，给出 CCPG 经验迁移和 UniversalCSI 推荐路线。
+- [synthesis_07_encoder_zoo_design.md](synthesis_07_encoder_zoo_design.md)
+  - 面向 `(N,2,32,32)` / `(N,2,64,64)` 到 `(N,code_dim)` 压缩反馈接口的 encoder zoo 设计、优先级和架构说明。
 
 ## 当前统一结论
 
