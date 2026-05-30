@@ -41,10 +41,14 @@ parser.add_argument('--epochs', type=int, metavar='N',
 parser.add_argument('--cr', metavar='N', type=int, default=4,
                     help='compression ratio')
 parser.add_argument('--encoder', type=str, default='transnet',
-                    choices=['csinet', 'crnet', 'clnet', 'transnet'],
+                    choices=['csinet', 'cnn', 'cbam_cnn',
+                             'crnet', 'clnet', 'transnet',
+                             'resnet', 'dscnn', 'convnext',
+                             'mlp_mixer', 'attention_cnn', 'swin',
+                             'mlp_ae', 'sparse_resnet'],
                     help='encoder backbone to use')
 parser.add_argument('--decoder', type=str, default='transnet',
-                    choices=['transnet', 'cnn_residual', 'hybrid'],
+                    choices=['transnet', 'cnn_residual', 'hybrid'], 
                     help='decoder backbone to use')
 parser.add_argument('--code_adapter', action='store_true',
                     help='insert LayerNorm + Linear between encoder code and decoder')
@@ -66,17 +70,4 @@ parser.add_argument('--lr_init', type=float, default=5e-4,
                     help='initial learning rate')
 parser.add_argument('--weight_decay', type=float, default=1e-3,
                     help='weight decay for AdamW')
-parser.add_argument('--freeze_components', type=str, nargs='+', default=[],
-                    choices=['encoder', 'code_adapter', 'fc_decoder',
-                             'decoder_self_attn', 'decoder_cross_attn',
-                             'decoder_ffn'],
-                    help='freeze components during training (space-separated list)')
-parser.add_argument('--lora_component', type=str, nargs='+', default=[],
-                    choices=['fc_encoder', 'fc_decoder'],
-                    help='apply LoRA to components (space-separated list); '
-                         'leave empty to disable LoRA')
-parser.add_argument('--lora_rank', type=int, default=8,
-                    help='LoRA rank for fc_encoder/fc_decoder')
-parser.add_argument('--lora_alpha', type=int, default=16,
-                    help='LoRA alpha for fc_encoder/fc_decoder')
 args = parser.parse_args()

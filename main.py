@@ -50,6 +50,16 @@ def main():
     # Inference mode
     if args.evaluate:
         Tester(model, device, criterion)(test_loader)
+        trainer = Trainer(model=model,
+                          device=device,
+                          optimizer=None,
+                          criterion=criterion,
+                          scheduler=None,
+                          save_path=checkpoint_dir,
+                          tensorboard_dir=tensorboard_dir)
+        trainer.save_all_encoder_outputs(
+            {"train": train_loader, "val": val_loader, "test": test_loader},
+            os.path.join(exp_dir, "codewords"))
         return
 
     # Define optimizer and scheduler
@@ -95,8 +105,9 @@ def main():
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)
 
-    encoder_output_path = os.path.join(exp_dir, "encoder_output.pth")
-    trainer.save_encoder_outputs(train_loader, encoder_output_path)
+    trainer.save_all_encoder_outputs(
+        {"train": train_loader, "val": val_loader, "test": test_loader},
+        os.path.join(exp_dir, "codewords"))
 
     # Final testing
     loss, nmse = Tester(model, device, criterion)(test_loader)

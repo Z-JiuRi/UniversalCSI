@@ -1,16 +1,11 @@
 import time
 import os
 import torch
-from collections import namedtuple
 from torch.utils.tensorboard.writer import SummaryWriter
 from utils import logger
 from utils.statics import AverageMeter, evaluator
 
 __all__ = ['Trainer', 'Tester']
-
-
-field = ('nmse', 'epoch')
-Result = namedtuple('Result', field, defaults=(None,) * len(field))
 
 class Trainer:
     r""" The training pipeline for encoder-decoder architecture
@@ -41,7 +36,7 @@ class Trainer:
         self.train_loss = None
         self.val_loss = None
         self.test_loss = None
-        self.best_nmse = Result()
+        self.best_nmse = {'nmse': None, 'epoch': None}
 
         self.tester = Tester(model, device, criterion, print_freq)
         self.test_loader = None
@@ -168,12 +163,14 @@ class Trainer:
             return None
         assert os.path.isfile(self.resume_file)
         logger.info(f'=> loading checkpoint {self.resume_file}')
-        checkpoint = torch.load(self.resume_file)
+        checkpoint = torch.load(self.resume_file, weights_only=True,
+                                map_location=self.device)
         self.cur_epoch = checkpoint['epoch']
         self.model.load_state_dict(checkpoint['state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer'])
         self.scheduler.load_state_dict(checkpoint['scheduler'])
-        self.best_nmse = checkpoint.get('best_nmse', Result())
+        self.best_nmse = checkpoint.get('best_nmse',
+                                        {'nmse': None, 'epoch': None})
         self.cur_epoch += 1  # start from the next epoch
 
         logger.info(f'=> successfully loaded checkpoint {self.resume_file} '
@@ -182,6 +179,8 @@ class Trainer:
     def _loop_postprocessing(self, nmse):
         r""" private function which makes loop() function neater.
         """
+        if isinstance(nmse, torch.Tensor):
+            nmse = float(nmse.detach().cpu())
 
         # save state generate
         state = {
@@ -194,19 +193,19 @@ class Trainer:
 
         # save model with best nmse
         if nmse is not None:
-            if self.best_nmse.nmse is None or self.best_nmse.nmse > nmse:
-                self.best_nmse = Result(nmse=nmse, epoch=self.cur_epoch)
+            if self.best_nmse['nmse'] is None or self.best_nmse['nmse'] > nmse:
+                self.best_nmse = {'nmse': nmse, 'epoch': self.cur_epoch}
                 state['best_nmse'] = self.best_nmse
                 self._save(state, name=f"best_nmse.pth")
 
         self._save(state, name='last.pth')
 
         # print current best results
-        if self.best_nmse.nmse is not None:
-            logger.info(f'\n=! Best NMSE: {self.best_nmse.nmse:.4e} ('
-                        f'epoch={self.best_nmse.epoch})\n')
-            self.vision.add_scalar("best/mse", self.best_nmse.nmse,
-                                   global_step=self.best_nmse.epoch)
+        if self.best_nmse['nmse'] is not None:
+            logger.info(f'\n=! Best NMSE: {self.best_nmse["nmse"]:.4e} ('
+                        f'epoch={self.best_nmse["epoch"]})\n')
+            self.vision.add_scalar("best/mse", self.best_nmse['nmse'],
+                                   global_step=self.best_nmse['epoch'])
 
     def save_encoder_outputs(self, data_loader, output_path):
         if output_path is None:
@@ -219,14 +218,21 @@ class Trainer:
         self.model.eval()
         encoder_outputs = []
         with torch.no_grad():
-            for batch_idx, (sparse_gt, ) in enumerate(data_loader):
+            for sparse_gt, in data_loader:
                 sparse_gt = sparse_gt.to(self.device)
                 encoder_output = self.model.encode(sparse_gt)
                 encoder_outputs.append(encoder_output.cpu())
 
         encoder_outputs_tensor = torch.cat(encoder_outputs, dim=0)
         torch.save(encoder_outputs_tensor, output_path)
-        logger.info(f'=> Saved encoder outputs to {output_path}')
+        logger.info(f'=> Saved encoder outputs {tuple(encoder_outputs_tensor.shape)} '
+                    f'to {output_path}')
+
+    def save_all_encoder_outputs(self, loaders, output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+        for split, data_loader in loaders.items():
+            output_path = os.path.join(output_dir, f"{split}_code.pt")
+            self.save_encoder_outputs(data_loader, output_path)
 
 
 

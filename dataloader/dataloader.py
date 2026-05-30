@@ -1,8 +1,5 @@
-import os
-
 import torch
 from torch.utils.data import DataLoader, TensorDataset
-from pathlib import Path
 
 __all__ = ['MyDataLoader', 'PreFetcher']
 
@@ -52,9 +49,6 @@ class MyDataLoader(object):
     """
 
     def __init__(self, train_path, val_path, test_path, batch_size, num_workers, pin_memory, channel=2, nt=32, nc=32):
-        assert os.path.exists(train_path)
-        assert os.path.exists(val_path)
-        assert os.path.exists(test_path)
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.pin_memory = pin_memory
@@ -62,37 +56,22 @@ class MyDataLoader(object):
         self.nt = nt
         self.nc = nc
         
-        # Training data loading
-        data_train = torch.load(train_path, weights_only=False, map_location=torch.device('cpu'))
-        self.train_dataset = TensorDataset(data_train)
+        self.train_dataset = TensorDataset(self._load_tensor(train_path))
+        self.val_dataset = TensorDataset(self._load_tensor(val_path))
+        self.test_dataset = TensorDataset(self._load_tensor(test_path))
 
-        # Validation data loading
-        data_val = torch.load(val_path, weights_only=False, map_location=torch.device('cpu'))
-        self.val_dataset = TensorDataset(data_val)
-
-        # Test data loading
-        data_test = torch.load(test_path, weights_only=False, map_location=torch.device('cpu'))
-        self.test_dataset = TensorDataset(data_test)
-        
-
-        # import scipy.io as sio
-        # # Training data loading
-        # data_train = sio.loadmat(train_path)['HT']
-        # data_train = torch.tensor(data_train, dtype=torch.float32).view(
-        #     data_train.shape[0], self.channel, self.nt, self.nc)
-        # self.train_dataset = TensorDataset(data_train)
-
-        # # Validation data loading
-        # data_val = sio.loadmat(val_path)['HT']
-        # data_val = torch.tensor(data_val, dtype=torch.float32).view(
-        #     data_val.shape[0], self.channel, self.nt, self.nc)
-        # self.val_dataset = TensorDataset(data_val)
-
-        # # Test data loading
-        # data_test = sio.loadmat(test_path)['HT']
-        # data_test = torch.tensor(data_test, dtype=torch.float32).view(
-        #     data_test.shape[0], self.channel, self.nt, self.nc)
-        # self.test_dataset = TensorDataset(data_test)
+    def _load_tensor(self, path):
+        data = torch.load(path, weights_only=True,
+                          map_location=torch.device('cpu'))
+        data = data.to(torch.float32)
+        expected_shape = (self.channel, self.nt, self.nc)
+        if data.ndim == 2:
+            data = data.view(-1, *expected_shape)
+        if data.ndim != 4 or tuple(data.shape[1:]) != expected_shape:
+            raise ValueError(
+                f"{path} should have shape (N, {self.channel}, "
+                f"{self.nt}, {self.nc}), got {tuple(data.shape)}")
+        return data
 
 
     def __call__(self):
