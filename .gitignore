@@ -42,8 +42,10 @@ __pycache__/
 data/*
 snapshots/
 checkpoints/
-*.pth
 
-exps/*.pth
+*.pth
+*.pt
+
+
 
 .vscode/

@@ -1,0 +1,10 @@
+metric,pearson_with_nmse
+std_global,nan
+abs_mean,nan
+l2_mean,nan
+near_zero_1e_3,nan
+dim_std_mean,nan
+pca_top1_ratio,nan
+pca_top5_ratio,nan
+effective_rank,nan
+cov_trace,nan

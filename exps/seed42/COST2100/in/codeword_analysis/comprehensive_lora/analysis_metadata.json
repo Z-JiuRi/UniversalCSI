@@ -1,0 +1,23 @@
+{
+  "exp_root": "exps/seed42/COST2100/in",
+  "n_architectures": 42,
+  "sample_sizes_analyzed": [
+    16,
+    32,
+    64,
+    128,
+    256,
+    512,
+    1024
+  ],
+  "sampling_models": [
+    "attention_cnn_hybrid",
+    "transnet_hybrid",
+    "dscnn_hybrid",
+    "attention_cnn_cnn_residual",
+    "transnet_cnn_residual",
+    "dscnn_cnn_residual"
+  ],
+  "separability_ratio": 0.9248828218830722,
+  "silhouette_score": -0.3676503598690033
+}

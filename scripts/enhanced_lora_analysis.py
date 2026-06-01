@@ -121,8 +121,9 @@ def setup_matplotlib():
 
 def discover_runs(exp_root):
     runs_by_split = defaultdict(list)
-    for code_path in sorted(Path(exp_root).glob("*/codewords/train_code.pt")):
-        name = code_path.parents[1].name
+    exp_root = Path(exp_root)
+    for code_path in sorted(exp_root.glob("**/codewords/train_code.pt")):
+        name = code_path.relative_to(exp_root).parts[0]
         encoder, decoder = parse_model_name(name)
         if decoder == "unknown":
             continue

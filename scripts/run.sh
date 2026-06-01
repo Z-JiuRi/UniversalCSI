@@ -1,174 +1,48 @@
-exp_name=COST2100/in/transnet_transnet/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=transnet \
-decoder=transnet \
-code_adapter=false \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=0 \
-seed=42 \
-./scripts/train.sh > in_transnet_transnet.log 2>&1 &
+#!/bin/bash
 
-exp_name=COST2100/in/clnet_transnet/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=clnet \
-decoder=transnet \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=1 \
-seed=42 \
-./scripts/train.sh > in_clnet_transnet.log 2>&1 &
+# 定义列表
+encoders=('csinet' 'cnn' 'cbam_cnn' 'crnet' 'clnet' 'transnet'
+          'resnet' 'dscnn' 'convnext' 'mlp_mixer' 'attention_cnn'
+          'swin' 'mlp_ae' 'sparse_resnet')
+decoders=('transnet' 'hybrid')
 
-exp_name=COST2100/in/csinet_transnet/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=csinet \
-decoder=transnet \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=2 \
-seed=42 \
-./scripts/train.sh > in_csinet_transnet.log 2>&1 &
+gpu_count=6
+index=0
 
-exp_name=COST2100/in/crnet_transnet/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=crnet \
-decoder=transnet \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=3 \
-seed=42 \
-./scripts/train.sh > in_crnet_transnet.log 2>&1 &
+# 嵌套循环
+for encoder in "${encoders[@]}"; do
+    for decoder in "${decoders[@]}"; do
+        # 计算 GPU 编号（循环 0~5）
+        gpu=$((index % gpu_count))
+        
+        # 日志文件名
+        logfile="in_${encoder}_${decoder}_seed42.log"
+        
+        echo "Launching: encoder=${encoder}, decoder=${decoder}, gpu=${gpu}, log=${logfile}"
+        
+        # 启动训练任务（后台运行）
+        exp_name="seed42/WAIRD/${encoder}_${decoder}/base" \
+        train_path="/storage/hujiacong/zxd/datasets/WAIRD/data/base/train.pt" \
+        val_path="/storage/hujiacong/zxd/datasets/WAIRD/data/base/val.pt" \
+        test_path="/storage/hujiacong/zxd/datasets/WAIRD/data/base/test.pt" \
+        encoder="$encoder" \
+        decoder="$decoder" \
+        code_adapter=false \
+        nt=64 \
+        nc=64 \
+        batch_size=200 \
+        epochs=400 \
+        lr_init=2e-4 \
+        gpu=$gpu \
+        seed=42 \
+        ./scripts/train.sh > "$logfile" 2>&1 &
+        
+        # 计数器递增
+        index=$((index + 1))
 
+        sleep 5
 
-############################################################
-exp_name=COST2100/in/transnet_cnn_residual/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=transnet \
-decoder=cnn_residual \
-code_adapter=false \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=4 \
-seed=42 \
-./scripts/train.sh > in_transnet_cnn_residual.log 2>&1 &
+    done
+done
 
-exp_name=COST2100/in/clnet_cnn_residual/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=clnet \
-decoder=cnn_residual \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=5 \
-seed=42 \
-./scripts/train.sh > in_clnet_cnn_residual.log 2>&1 &
-
-exp_name=COST2100/in/csinet_cnn_residual/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=csinet \
-decoder=cnn_residual \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=0 \
-seed=42 \
-./scripts/train.sh > in_csinet_cnn_residual.log 2>&1 &
-
-exp_name=COST2100/in/crnet_cnn_residual/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=crnet \
-decoder=cnn_residual \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=1 \
-seed=42 \
-./scripts/train.sh > in_crnet_cnn_residual.log 2>&1 &
-
-
-############################################################
-exp_name=COST2100/in/transnet_hybrid/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=transnet \
-decoder=hybrid \
-code_adapter=false \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=2 \
-seed=42 \
-./scripts/train.sh > in_transnet_hybrid.log 2>&1 &
-
-exp_name=COST2100/in/clnet_hybrid/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=clnet \
-decoder=hybrid \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=3 \
-seed=42 \
-./scripts/train.sh > in_clnet_hybrid.log 2>&1 &
-
-exp_name=COST2100/in/csinet_hybrid/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=csinet \
-decoder=hybrid \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=4 \
-seed=42 \
-./scripts/train.sh > in_csinet_hybrid.log 2>&1 &
-
-exp_name=COST2100/in/crnet_hybrid/base \
-train_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt \
-val_path=/storage/hujiacong/zxd/datasets/cost2100/in_val.pt \
-test_path=/storage/hujiacong/zxd/datasets/cost2100/in_test.pt \
-encoder=crnet \
-decoder=hybrid \
-code_adapter=true \
-batch_size=512 \
-epochs=400 \
-lr_init=2e-4 \
-gpu=5 \
-seed=42 \
-./scripts/train.sh > in_crnet_hybrid.log 2>&1 &
-
-
-############################################################
+echo "All jobs launched. Monitor with 'nvidia-smi' or 'ps'."

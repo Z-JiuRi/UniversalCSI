@@ -25,7 +25,7 @@ code_adapter=${code_adapter:-false}
 # ==============================================================================
 epochs=${epochs:-400}
 batch_size=${batch_size:-1024}
-workers=${workers:-4}
+workers=${workers:-0}
 scheduler=${scheduler:-cosine}
 lr_init=${lr_init:-2e-4}
 weight_decay=${weight_decay:-1e-3}

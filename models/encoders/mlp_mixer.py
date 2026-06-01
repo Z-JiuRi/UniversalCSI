@@ -33,8 +33,8 @@ patch embedding 将二维 CSI 网格转成 token；token MLP 混合空间位置�
 channel MLP 混合每个 token 的特征通道，不使用自注意力。
 
 保存模型权重时的参数维度：
-patch_embed.weight:                     (d_model, channel, patch, patch)
-patch_embed.bias:                                             (d_model,)
+patch_embed.weight:                       (d_model, channel, patch, patch)
+patch_embed.bias:                                               (d_model,)
 每个 MixerBlock.token_norm.weight/bias:                         (d_model,)
 每个 MixerBlock.token_mlp.0.weight:           (2 * num_tokens, num_tokens)
 每个 MixerBlock.token_mlp.0.bias:                        (2 * num_tokens,)
@@ -45,10 +45,10 @@ patch_embed.bias:                                             (d_model,)
 每个 MixerBlock.channel_mlp.0.bias:                         (4 * d_model,)
 每个 MixerBlock.channel_mlp.2.weight:               (d_model, 4 * d_model)
 每个 MixerBlock.channel_mlp.2.bias:                             (d_model,)
-norm.weight:                                                  (d_model,)
-norm.bias:                                                    (d_model,)
-fc.weight:                              (code_dim, num_tokens * d_model)
-fc.bias:                                                     (code_dim,)
+norm.weight:                                                    (d_model,)
+norm.bias:                                                      (d_model,)
+fc.weight:                                (code_dim, num_tokens * d_model)
+fc.bias:                                                       (code_dim,)
 '''
 
 

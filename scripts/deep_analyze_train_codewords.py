@@ -37,8 +37,9 @@ def load_training_results(path):
 
 def discover_codewords(exp_root):
     runs = []
-    for path in sorted(Path(exp_root).glob("*/codewords/train_code.pt")):
-        name = path.parents[1].name
+    exp_root = Path(exp_root)
+    for path in sorted(exp_root.glob("**/codewords/train_code.pt")):
+        name = path.relative_to(exp_root).parts[0]
         encoder, decoder = parse_model_name(name)
         if decoder == "unknown":
             continue
@@ -475,7 +476,7 @@ def render_report(out_dir, summary_rows, pairwise_rows, encoder_rows,
     lines = [
         "# train_code.pt 全量深层分析报告",
         "",
-        "本报告分析 `exps/real_matrix_2epoch/*/codewords/train_code.pt`，"
+        "本报告分析 `exps/real_matrix_2epoch/**/codewords/train_code.pt`，"
         "所有统计与图表均基于完整 train codewords，没有抽样。",
         "",
         "## 数据覆盖",

@@ -140,8 +140,8 @@ def main():
     means = {}
 
     print("Loading train codes...")
-    for code_path in sorted(exp_root.glob("*/codewords/train_code.pt")):
-        name = code_path.parents[1].name
+    for code_path in sorted(exp_root.glob("**/codewords/train_code.pt")):
+        name = code_path.relative_to(exp_root).parts[0]
         encoder, decoder = parse_model_name(name)
         if decoder == "unknown":
             continue

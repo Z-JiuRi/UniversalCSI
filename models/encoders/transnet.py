@@ -41,8 +41,8 @@ batch_first=True 明确使用 (N, seq_len, d_model) 维度约定。
 每个 encoder.layers.*.linear2.bias:                              (d_model,)
 每个 encoder.layers.*.norm1.weight/bias:                         (d_model,)
 每个 encoder.layers.*.norm2.weight/bias:                         (d_model,)
-fc.weight:                                          (code_dim, input_dim)
-fc.bias:                                                      (code_dim,)
+fc.weight:                                            (code_dim, input_dim)
+fc.bias:                                                        (code_dim,)
 '''
 
 

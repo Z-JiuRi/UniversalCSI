@@ -3,20 +3,20 @@
 # Usage: bash scripts/run_all_analysis.sh
 #
 # Pipeline:
-#   1) analyze_codewords.py          -- basic per-split summaries  (train, 5k-sample quick scan)
-#   2) deep_analyze_train_codewords.py -- full-data deep analysis (train, 100k samples per model)
+#   1) analyze_codewords.py             -- basic per-split summaries  (train, 5k-sample quick scan)
+#   2) deep_analyze_train_codewords.py  -- full-data deep analysis (train, 100k samples per model)
 #   3) summarize_codeword_analysis.py   -- cross-split markdown summary (fast)
 #   4) comprehensive_lora_analysis.py   -- first-pass LoRA-conditioning analysis (train)
 #   5) enhanced_lora_analysis.py        -- enhanced per-decoder analysis (train)
 #   6) consolidated_analysis.py         -- consolidated report + figures
 #
-# Output: exps/real_matrix_2epoch/codeword_analysis/
+# Output: exps/seed42/COST2100/in/codeword_analysis/
 
 set -euo pipefail
 
-PYTHON=/home/z-jiuri/.envs/miniconda3/envs/torch/bin/python
+PYTHON=/home/hujiacong/zxd/.envs/miniconda3/envs/torch/bin/python
 
-EXP_ROOT="exps/real_matrix_2epoch"
+EXP_ROOT="exps/seed42/COST2100/in"
 TRAINING_RESULTS="${EXP_ROOT}/training_results.csv"
 ANALYSIS_ROOT="${EXP_ROOT}/codeword_analysis"
 
@@ -46,8 +46,8 @@ if ! skip_if_done "$marker"; then
         --exp_root "$EXP_ROOT" \
         --split train \
         --out_dir "${ANALYSIS_ROOT}/train" \
-        --max_samples 5000 \
-        --plot_samples 400 || echo "  [WARN] step 1 failed, continuing..."
+        --max_samples 10000 \
+        --plot_samples 10000 || echo "  [WARN] step 1 failed, continuing..."
     echo ""
 fi
 

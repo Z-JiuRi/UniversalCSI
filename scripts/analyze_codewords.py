@@ -61,8 +61,9 @@ def summarize_code(code):
 
 def discover_runs(exp_root, split):
     runs = []
-    for code_path in sorted(Path(exp_root).glob(f"*/codewords/{split}_code.pt")):
-        name = code_path.parents[1].name
+    exp_root = Path(exp_root)
+    for code_path in sorted(exp_root.glob(f"**/codewords/{split}_code.pt")):
+        name = code_path.relative_to(exp_root).parts[0]
         if name.endswith("_cnn_residual"):
             encoder = name[:-len("_cnn_residual")]
             decoder = "cnn_residual"

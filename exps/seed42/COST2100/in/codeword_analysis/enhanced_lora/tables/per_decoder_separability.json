@@ -1,0 +1,77 @@
+{
+  "cnn_residual": {
+    "n_models": 14,
+    "n_encoders": 14,
+    "inter_encoder_dist_mean": 467.78031133295417,
+    "inter_encoder_dist_std": 148.97617879952242,
+    "inter_encoder_dist_min": 210.41986083984375,
+    "inter_encoder_dist_max": 873.7883911132812,
+    "silhouette_score": NaN,
+    "model_names": [
+      "attention_cnn_cnn_residual",
+      "cbam_cnn_cnn_residual",
+      "clnet_cnn_residual",
+      "cnn_cnn_residual",
+      "convnext_cnn_residual",
+      "crnet_cnn_residual",
+      "csinet_cnn_residual",
+      "dscnn_cnn_residual",
+      "mlp_ae_cnn_residual",
+      "mlp_mixer_cnn_residual",
+      "resnet_cnn_residual",
+      "sparse_resnet_cnn_residual",
+      "swin_cnn_residual",
+      "transnet_cnn_residual"
+    ]
+  },
+  "hybrid": {
+    "n_models": 14,
+    "n_encoders": 14,
+    "inter_encoder_dist_mean": 33.748281321682775,
+    "inter_encoder_dist_std": 10.81270641830632,
+    "inter_encoder_dist_min": 10.427342414855957,
+    "inter_encoder_dist_max": 58.21367645263672,
+    "silhouette_score": NaN,
+    "model_names": [
+      "attention_cnn_hybrid",
+      "cbam_cnn_hybrid",
+      "clnet_hybrid",
+      "cnn_hybrid",
+      "convnext_hybrid",
+      "crnet_hybrid",
+      "csinet_hybrid",
+      "dscnn_hybrid",
+      "mlp_ae_hybrid",
+      "mlp_mixer_hybrid",
+      "resnet_hybrid",
+      "sparse_resnet_hybrid",
+      "swin_hybrid",
+      "transnet_hybrid"
+    ]
+  },
+  "transnet": {
+    "n_models": 14,
+    "n_encoders": 14,
+    "inter_encoder_dist_mean": 7.326328738705143,
+    "inter_encoder_dist_std": 3.614038534842422,
+    "inter_encoder_dist_min": 2.3886146545410156,
+    "inter_encoder_dist_max": 16.384157180786133,
+    "silhouette_score": NaN,
+    "model_names": [
+      "attention_cnn_transnet",
+      "cbam_cnn_transnet",
+      "clnet_transnet",
+      "cnn_transnet",
+      "convnext_transnet",
+      "crnet_transnet",
+      "csinet_transnet",
+      "dscnn_transnet",
+      "mlp_ae_transnet",
+      "mlp_mixer_transnet",
+      "resnet_transnet",
+      "sparse_resnet_transnet",
+      "swin_transnet",
+      "transnet_transnet"
+    ]
+  }
+}

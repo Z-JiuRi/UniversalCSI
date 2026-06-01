@@ -68,10 +68,8 @@ class TransNetDecoder(nn.Module):
         self.nc = nc
         self.feature_shape = (input_dim // d_model, d_model)
         self.fc_decoder = nn.Linear(input_dim // reduction, input_dim)
-        decoder_layer = TransformerDecoderLayer(
-            d_model, 2, dim_feedforward, dropout=0., batch_first=True)
-        self.decoder = TransformerDecoder(decoder_layer, num_layers=2,
-                                          norm=nn.LayerNorm(d_model))
+        decoder_layer = TransformerDecoderLayer(d_model, 2, dim_feedforward, dropout=0., batch_first=True)
+        self.decoder = TransformerDecoder(decoder_layer, num_layers=2, norm=nn.LayerNorm(d_model))
 
     def forward(self, code):
         batch_size = code.size(0)
