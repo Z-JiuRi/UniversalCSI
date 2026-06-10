@@ -62,6 +62,11 @@ def main():
             os.path.join(exp_dir, "codewords"))
         return
 
+    if args.lora_component is not None:
+        loss, nmse = Tester(model, device, criterion)(test_loader)
+        logger.info(f'\n=> Before LoRA training: '
+                    f'loss: {loss:.4e}    NMSE: {nmse:.4e}\n')
+
     # Define optimizer and scheduler
 
     decay_params = []
@@ -73,6 +78,9 @@ def main():
             no_decay_params.append(param)
         else:
             decay_params.append(param)
+
+    if not decay_params and not no_decay_params:
+        raise ValueError("No trainable parameters found for optimizer")
 
     optimizer = torch.optim.AdamW(
         [
@@ -100,7 +108,8 @@ def main():
                       scheduler=scheduler,
                       resume=args.resume,
                       save_path=checkpoint_dir,
-                      tensorboard_dir=tensorboard_dir)
+                      tensorboard_dir=tensorboard_dir,
+                      lora_training=args.lora_component is not None)
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)

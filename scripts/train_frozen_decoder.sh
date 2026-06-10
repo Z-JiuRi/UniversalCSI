@@ -1,17 +1,15 @@
 #!/bin/bash
 
-# seed=3407 gpu=0 nt=32 nc=32 encoder=transnet decoder=transnet batch_size=200 bash scripts/train.sh
+# Train a freshly initialized encoder against a frozen pretrained decoder.
+#
+# Examples:
+#   seed=2026 decoder_seed=42 decoder=transnet gpu=0 bash scripts/train_frozen_decoder.sh
+#   encoder=transnet decoder=hybrid seed=3407 gpu=0 bash scripts/train_frozen_decoder.sh
 
-# ==============================================================================
-# 1. 基础路径与实验名称（环境变量传参，带默认值）
-# ==============================================================================
 train_path=${train_path:-/storage/hujiacong/zxd/datasets/cost2100/in_train.pt}
 val_path=${val_path:-/storage/hujiacong/zxd/datasets/cost2100/in_val.pt}
 test_path=${test_path:-/storage/hujiacong/zxd/datasets/cost2100/in_test.pt}
 
-# ==============================================================================
-# 2. 模型结构与数据维度参数
-# ==============================================================================
 d_model=${d_model:-64}
 nt=${nt:-32}
 nc=${nc:-32}
@@ -23,22 +21,19 @@ encoder=${encoder:-transnet}
 decoder=${decoder:-transnet}
 code_adapter=${code_adapter:-false}
 
-# ==============================================================================
-# 3. 训练超参数与硬件设置
-# ==============================================================================
 epochs=${epochs:-400}
-batch_size=${batch_size:-1024}
+batch_size=${batch_size:-200}
 workers=${workers:-0}
 scheduler=${scheduler:-cosine}
 lr_init=${lr_init:-2e-4}
 weight_decay=${weight_decay:-1e-3}
 gpu=${gpu:-0}
-seed=${seed:-3407}
-exp_name=${exp_name:-COST2100/in/seed${seed}/${encoder}_${decoder}}
+seed=${seed:-2026}
+decoder_seed=${decoder_seed:-42}
+pretrained_decoder="exps/COST2100/in/seed${decoder_seed}/${encoder}_${decoder}/base/checkpoints/best_nmse.pth"
 
-# ==============================================================================
-# 4. 运行 Python 脚本
-# ==============================================================================
+exp_name=${exp_name:-COST2100/in/frozen_decoder/seed${seed}/${encoder}_${decoder}}
+
 /home/hujiacong/zxd/.envs/miniconda3/envs/torch/bin/python ./main.py \
   --exp_name "${exp_name}" \
   --train_path "${train_path}" \
@@ -61,4 +56,6 @@ exp_name=${exp_name:-COST2100/in/seed${seed}/${encoder}_${decoder}}
   --weight_decay "${weight_decay}" \
   --gpu "${gpu}" \
   --seed "${seed}" \
+  --pretrained_decoder "${pretrained_decoder}" \
+  $( [ "${code_adapter}" = "true" ] && printf '%s' "--code_adapter" ) \
   > /dev/null 2>&1 &

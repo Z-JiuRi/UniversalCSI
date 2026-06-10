@@ -1,6 +1,6 @@
 import torch
 
-__all__ = ['AverageMeter', 'evaluator']
+__all__ = ['AverageMeter', 'evaluator', 'nmse_from_sums']
 
 
 class AverageMeter(object):
@@ -33,7 +33,7 @@ class AverageMeter(object):
 
 def evaluator(sparse_pred, sparse_gt):
     r""" Evaluation of decoding implemented in PyTorch Tensor
-         Computes normalized mean square error (NMSE).
+         Computes error and signal power sums for global NMSE.
     """
 
     with torch.no_grad():
@@ -45,6 +45,12 @@ def evaluator(sparse_pred, sparse_gt):
         power_gt = sparse_gt[:, 0, :, :] ** 2 + sparse_gt[:, 1, :, :] ** 2
         difference = sparse_gt - sparse_pred
         mse = difference[:, 0, :, :] ** 2 + difference[:, 1, :, :] ** 2
-        nmse = 10 * torch.log10((mse.sum(dim=[1, 2]) / power_gt.sum(dim=[1, 2])).mean())
+        error_sum = mse.sum()
+        power_sum = power_gt.sum()
 
-        return nmse
+        return error_sum, power_sum
+
+
+def nmse_from_sums(error_sum, power_sum):
+    with torch.no_grad():
+        return 10 * torch.log10(error_sum / power_sum.clamp_min(1e-12))

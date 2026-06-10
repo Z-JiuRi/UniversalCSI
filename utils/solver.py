@@ -3,7 +3,8 @@ import os
 import torch
 from torch.utils.tensorboard.writer import SummaryWriter
 from utils import logger
-from utils.statics import AverageMeter, evaluator
+from utils.statics import AverageMeter, evaluator, nmse_from_sums
+from models.lora import collect_lora_metrics
 
 __all__ = ['Trainer', 'Tester']
 
@@ -13,7 +14,7 @@ class Trainer:
 
     def __init__(self, model, device, optimizer, criterion, scheduler, resume=None,
                  save_path='./checkpoints', tensorboard_dir=None, print_freq=20,
-                 val_freq=10, test_freq=10):
+                 val_freq=10, test_freq=10, lora_training=False):
 
         # Basic arguments
         self.model = model
@@ -29,6 +30,7 @@ class Trainer:
         self.print_freq = print_freq
         self.val_freq = val_freq
         self.test_freq = test_freq
+        self.lora_training = lora_training
 
         # Pipeline arguments
         self.cur_epoch = 1
@@ -65,13 +67,16 @@ class Trainer:
             if ep % self.val_freq == 0:
                 self.val_loss = self.val(val_loader)
 
-            if ep % self.test_freq == 0:
+            if self.lora_training or ep % self.test_freq == 0:
                 self.test_loss, nmse = self.test(test_loader)
                 self.vision.add_scalar("test/loss", self.test_loss, global_step=ep)
                 self.vision.add_scalar("test/nmse", nmse, global_step=ep)
                 self.vision.add_scalar("test/train_loss", self.train_loss, global_step=ep)
             else:
                 nmse = None
+
+            if self.lora_training:
+                self._log_lora_metrics(ep, nmse)
 
             # conduct saving, visualization and log printing
             self._loop_postprocessing(nmse)
@@ -198,7 +203,7 @@ class Trainer:
                 state['best_nmse'] = self.best_nmse
                 self._save(state, name=f"best_nmse.pth")
 
-        self._save(state, name='last.pth')
+        # self._save(state, name='last.pth')
 
         # print current best results
         if self.best_nmse['nmse'] is not None:
@@ -206,6 +211,25 @@ class Trainer:
                         f'epoch={self.best_nmse["epoch"]})\n')
             self.vision.add_scalar("best/mse", self.best_nmse['nmse'],
                                    global_step=self.best_nmse['epoch'])
+
+    def _log_lora_metrics(self, epoch, nmse):
+        metrics = collect_lora_metrics(self.model)
+        if not metrics:
+            logger.warning("LoRA training enabled but no LoRA metrics found.")
+            return
+        fields = []
+        for key in sorted(metrics):
+            value = metrics[key]
+            if isinstance(value, float):
+                fields.append(f"{key}: {value:.4e}")
+                self.vision.add_scalar(f"lora/{key}", value, global_step=epoch)
+            else:
+                fields.append(f"{key}: {value}")
+        if isinstance(nmse, torch.Tensor):
+            nmse = float(nmse.detach().cpu())
+        nmse_msg = "None" if nmse is None else f"{nmse:.4e}"
+        logger.info(f"=> LoRA Epoch {epoch}: NMSE={nmse_msg} | "
+                    + " | ".join(fields))
 
     def save_encoder_outputs(self, data_loader, output_path):
         if output_path is None:
@@ -265,20 +289,23 @@ class Tester:
         r""" protected function which test the model on given data loader for one epoch.
         """
 
-        iter_nmse = AverageMeter('Iter nmse')
         iter_loss = AverageMeter('Iter loss')
         iter_time = AverageMeter('Iter time')
+        total_error = torch.tensor(0., device=self.device)
+        total_power = torch.tensor(0., device=self.device)
         time_tmp = time.time()
 
         for batch_idx, (sparse_gt, ) in enumerate(data_loader):
             sparse_gt = sparse_gt.to(self.device)
             sparse_pred = self.model(sparse_gt)
             loss = self.criterion(sparse_pred, sparse_gt)
-            nmse = evaluator(sparse_pred, sparse_gt)
+            error_sum, power_sum = evaluator(sparse_pred, sparse_gt)
+            total_error += error_sum
+            total_power += power_sum
+            nmse = nmse_from_sums(total_error, total_power)
 
             # Log and visdom update
             iter_loss.update(loss)
-            iter_nmse.update(nmse)
             iter_time.update(time.time() - time_tmp)
             time_tmp = time.time()
 
@@ -286,9 +313,10 @@ class Tester:
             if (batch_idx + 1) % self.print_freq == 0:
                 logger.info(f'[{batch_idx + 1}/{len(data_loader)}] '
                             f'loss: {iter_loss.avg:.4e} | '
-                            f'NMSE: {iter_nmse.avg:.4e} | time: {iter_time.avg:.3f}')
+                            f'NMSE: {nmse:.4e} | time: {iter_time.avg:.3f}')
 
-        logger.info(f'=> Test NMSE: {iter_nmse.avg:.4e}\n')
+        nmse = nmse_from_sums(total_error, total_power)
+        logger.info(f'=> Test NMSE: {nmse:.4e}\n')
 
 
-        return iter_loss.avg, iter_nmse.avg
+        return iter_loss.avg, nmse

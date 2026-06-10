@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# seed=3407 gpu=0 nt=32 nc=32 encoder=transnet decoder=transnet batch_size=200 bash scripts/train.sh
+# lora_component=token_projection seed=3407 gpu=0 nt=32 nc=32 encoder=transnet decoder=hybrid batch_size=200 epochs=400 lora_rank=8 lora_alpha=16 bash scripts/train_lora.sh
 
 # ==============================================================================
 # 1. 基础路径与实验名称（环境变量传参，带默认值）
@@ -20,8 +20,11 @@ hidden=${hidden:-16}
 num_blocks=${num_blocks:-2}
 cr=${cr:-4}
 encoder=${encoder:-transnet}
-decoder=${decoder:-transnet}
+decoder=${decoder:-hybrid}
 code_adapter=${code_adapter:-false}
+lora_component=${lora_component:-token_projection}
+lora_rank=${lora_rank:-8}
+lora_alpha=${lora_alpha:-16}
 
 # ==============================================================================
 # 3. 训练超参数与硬件设置
@@ -34,7 +37,23 @@ lr_init=${lr_init:-2e-4}
 weight_decay=${weight_decay:-1e-3}
 gpu=${gpu:-0}
 seed=${seed:-3407}
-exp_name=${exp_name:-COST2100/in/seed${seed}/${encoder}_${decoder}}
+exp_name=${exp_name:-COST2100/in/lora/seed${seed}/${encoder}_${decoder}}
+pretrained=${pretrained:-exps/COST2100/in/frozen_decoder/seed${seed}/${encoder}_${decoder}/checkpoints/best_nmse.pth}
+
+if [ "${decoder}" != "hybrid" ]; then
+  echo "train_lora.sh currently supports decoder=hybrid only because --lora_component token_projection is only implemented for HybridDecoder." >&2
+  exit 1
+fi
+
+if [ "${lora_component}" != "token_projection" ]; then
+  echo "Unsupported lora_component=${lora_component}; currently only token_projection is supported." >&2
+  exit 1
+fi
+
+if [ ! -f "${pretrained}" ]; then
+  echo "pretrained checkpoint not found: ${pretrained}" >&2
+  exit 1
+fi
 
 # ==============================================================================
 # 4. 运行 Python 脚本
@@ -61,4 +80,12 @@ exp_name=${exp_name:-COST2100/in/seed${seed}/${encoder}_${decoder}}
   --weight_decay "${weight_decay}" \
   --gpu "${gpu}" \
   --seed "${seed}" \
+  --lora_component "${lora_component}" \
+  --lora_rank "${lora_rank}" \
+  --lora_alpha "${lora_alpha}" \
+  --pretrained "${pretrained}" \
   > /dev/null 2>&1 &
+
+# sleep 5
+
+# tail -f ${exp_name}/run.log

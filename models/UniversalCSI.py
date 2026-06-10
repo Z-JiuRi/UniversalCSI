@@ -99,6 +99,8 @@ class UniversalCSIModel(nn.Module):
         self.code_adapter = code_adapter if code_adapter is not None else nn.Identity()
         self.decoder = decoder
         self.init_strategy = init_strategy
+        self.encoder_is_frozen = False
+        self.decoder_is_frozen = False
         self._reset_parameters(init_strategy)
         if hasattr(self.decoder, "reset_refinement_output"):
             self.decoder.reset_refinement_output()
@@ -149,6 +151,27 @@ class UniversalCSIModel(nn.Module):
     def encode(self, x):
         return self.code_adapter(self.encoder(x))
 
+    def freeze_decoder(self):
+        for param in self.decoder.parameters():
+            param.requires_grad = False
+        self.decoder_is_frozen = True
+        self.decoder.eval()
+
+    def freeze_encoder(self):
+        for param in self.encoder.parameters():
+            param.requires_grad = False
+        self.encoder_is_frozen = True
+        self.encoder.eval()
+
+    def train(self, mode=True):
+        super().train(mode)
+        if mode:
+            if self.encoder_is_frozen:
+                self.encoder.eval()
+            if self.decoder_is_frozen:
+                self.decoder.eval()
+        return self
+
 
 def build_encoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
                   dim_feedforward=None):
@@ -186,7 +209,7 @@ def build_encoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
 
 
 def build_decoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
-                  dim_feedforward=None):
+                  dim_feedforward=None, hidden=16, num_blocks=2):
     name = name.lower()
     if name == "transnet":
         return TransNetDecoder(reduction, d_model, channel, nt, nc,
@@ -196,19 +219,22 @@ def build_decoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
                                   dim_feedforward)
     if name == "hybrid":
         return HybridDecoder(reduction, d_model, channel, nt, nc,
-                             dim_feedforward)
+                             dim_feedforward, hidden=hidden,
+                             num_blocks=num_blocks)
     raise ValueError(f"Unknown decoder: {name}")
 
 
 def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
                   channel=2, nt=32, nc=32, dim_feedforward=None,
-                  code_adapter=False, decoder_name="transnet"):
+                  code_adapter=False, decoder_name="transnet", hidden=16,
+                  num_blocks=2):
     input_dim = channel * nt * nc
     code_dim = input_dim // reduction
     encoder = build_encoder(encoder_name, reduction, d_model, channel, nt, nc,
                             dim_feedforward)
     decoder = build_decoder(decoder_name, reduction, d_model, channel, nt, nc,
-                            dim_feedforward)
+                            dim_feedforward, hidden=hidden,
+                            num_blocks=num_blocks)
     adapter = CodeAdapter(code_dim, enabled=code_adapter)
     init_strategy = select_init_strategy(encoder_name, decoder_name,
                                          code_adapter)
