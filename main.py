@@ -43,6 +43,12 @@ def main():
 
     model = init_model(args)
     model.to(device)
+    adapter_training = (
+        args.code_adapter
+        and args.pretrained_encoder is not None
+        and args.pretrained_decoder is not None
+        and args.lora_component is None
+    )
 
     # Define loss function
     criterion = nn.MSELoss().to(device)
@@ -62,9 +68,10 @@ def main():
             os.path.join(exp_dir, "codewords"))
         return
 
-    if args.lora_component is not None:
+    if args.lora_component is not None or adapter_training:
         loss, nmse = Tester(model, device, criterion)(test_loader)
-        logger.info(f'\n=> Before LoRA training: '
+        mode = "adapter" if adapter_training else "LoRA"
+        logger.info(f'\n=> Before {mode} training: '
                     f'loss: {loss:.4e}    NMSE: {nmse:.4e}\n')
 
     # Define optimizer and scheduler
@@ -109,7 +116,9 @@ def main():
                       resume=args.resume,
                       save_path=checkpoint_dir,
                       tensorboard_dir=tensorboard_dir,
-                      lora_training=args.lora_component is not None)
+                      lora_training=args.lora_component is not None,
+                      test_every_epoch=(
+                          args.lora_component is not None or adapter_training))
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)

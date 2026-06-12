@@ -14,7 +14,8 @@ class Trainer:
 
     def __init__(self, model, device, optimizer, criterion, scheduler, resume=None,
                  save_path='./checkpoints', tensorboard_dir=None, print_freq=20,
-                 val_freq=10, test_freq=10, lora_training=False):
+                 val_freq=10, test_freq=10, lora_training=False,
+                 test_every_epoch=False):
 
         # Basic arguments
         self.model = model
@@ -31,6 +32,7 @@ class Trainer:
         self.val_freq = val_freq
         self.test_freq = test_freq
         self.lora_training = lora_training
+        self.test_every_epoch = test_every_epoch
 
         # Pipeline arguments
         self.cur_epoch = 1
@@ -67,7 +69,7 @@ class Trainer:
             if ep % self.val_freq == 0:
                 self.val_loss = self.val(val_loader)
 
-            if self.lora_training or ep % self.test_freq == 0:
+            if self.test_every_epoch or ep % self.test_freq == 0:
                 self.test_loss, nmse = self.test(test_loader)
                 self.vision.add_scalar("test/loss", self.test_loss, global_step=ep)
                 self.vision.add_scalar("test/nmse", nmse, global_step=ep)

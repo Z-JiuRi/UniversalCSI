@@ -24,6 +24,8 @@ parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 parser.add_argument('--pretrained', type=str, default=None,
                     help='using locally pre-trained model. The path of pre-trained model should be given')
+parser.add_argument('--pretrained_encoder', type=str, default=None,
+                    help='load only encoder.* parameters from this checkpoint and freeze the encoder')
 parser.add_argument('--pretrained_decoder', type=str, default=None,
                     help='load only decoder.* parameters from this checkpoint and freeze the decoder')
 parser.add_argument('--resume', type=str, metavar='PATH', default=None,

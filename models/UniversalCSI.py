@@ -23,14 +23,16 @@ forward(x) 固定返回重建 CSI，用 MSE/NMSE 与原始 CSI 对齐评估。
 
 保存模型权重时的参数维度：
 encoder.*: 具体维度见 models/encoders/ 下对应架构文件顶部说明
-code_adapter.net.0.weight:          (code_dim,) 仅 --code_adapter 启用时存在
-code_adapter.net.0.bias:            (code_dim,) 仅 --code_adapter 启用时存在
-code_adapter.net.1.weight: (code_dim, code_dim) 仅 --code_adapter 启用时存在
-code_adapter.net.1.bias:            (code_dim,) 仅 --code_adapter 启用时存在
+code_adapter.scale:                         (1,) 仅 --code_adapter 启用时存在
+code_adapter.norm.weight:            (code_dim,) 仅 --code_adapter 启用时存在
+code_adapter.norm.bias:              (code_dim,) 仅 --code_adapter 启用时存在
+code_adapter.proj.weight:   (code_dim, code_dim) 仅 --code_adapter 启用时存在
+code_adapter.proj.bias:              (code_dim,) 仅 --code_adapter 启用时存在
 decoder.*: 具体维度见 models/decoders/ 下对应架构文件顶部说明
 '''
 
 
+import torch
 import torch.nn as nn
 
 from .decoders import CNNResidualDecoder, CNNRefinementHead, HybridDecoder
@@ -75,13 +77,26 @@ class CodeAdapter(nn.Module):
     def __init__(self, code_dim, enabled=False):
         super().__init__()
         self.enabled = enabled
-        self.net = nn.Sequential(
-            nn.LayerNorm(code_dim),
-            nn.Linear(code_dim, code_dim),
-        ) if enabled else nn.Identity()
+        if enabled:
+            self.norm = nn.LayerNorm(code_dim)
+            self.proj = nn.Linear(code_dim, code_dim)
+            self.scale = nn.Parameter(torch.ones(1))
+            nn.init.zeros_(self.proj.weight)
+            nn.init.zeros_(self.proj.bias)
+        else:
+            self.net = nn.Identity()
+
+    def reset_adapter(self):
+        if not self.enabled:
+            return
+        nn.init.zeros_(self.proj.weight)
+        nn.init.zeros_(self.proj.bias)
+        nn.init.ones_(self.scale)
 
     def forward(self, code):
-        return self.net(code)
+        if not self.enabled:
+            return self.net(code)
+        return code + self.scale * self.proj(self.norm(code))
 
 
 def select_init_strategy(encoder_name, decoder_name, code_adapter=False):
@@ -102,6 +117,8 @@ class UniversalCSIModel(nn.Module):
         self.encoder_is_frozen = False
         self.decoder_is_frozen = False
         self._reset_parameters(init_strategy)
+        if hasattr(self.code_adapter, "reset_adapter"):
+            self.code_adapter.reset_adapter()
         if hasattr(self.decoder, "reset_refinement_output"):
             self.decoder.reset_refinement_output()
 
