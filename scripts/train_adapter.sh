@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# batch_size=200 epochs=400 seed=3407 encoder_seed=3407 decoder_seed=42 gpu=0 encoder=transnet decoder=hybrid bash scripts/train_adapter.sh
+# batch_size=200 epochs=400 seed=3407 encoder_seed=3407 decoder_seed=42 gpu=3 encoder=transnet decoder=hybrid code_loss_only=true bash scripts/train_adapter.sh
 
 # ==============================================================================
 # 1. 基础路径与实验名称（环境变量传参，带默认值）
@@ -35,11 +35,17 @@ gpu=${gpu:-0}
 seed=${seed:-3407}
 encoder_seed=${encoder_seed:-3407}
 decoder_seed=${decoder_seed:-42}
-pretrained_encoder=${pretrained_encoder:-exps/COST2100/in/frozen_decoder/seed${encoder_seed}/${encoder}_${decoder}/checkpoints/best_nmse.pth}
-pretrained_decoder=${pretrained_decoder:-exps/COST2100/in/frozen_decoder/seed${decoder_seed}/${encoder}_${decoder}/checkpoints/best_nmse.pth}
-# teacher_code=${teacher_code:-exps/COST2100/in/frozen_decoder/seed${decoder_seed}/${encoder}_${decoder}/codewords/train_code.pt}
-code_loss_lambda=${code_loss_lambda:-}
-exp_name=${exp_name:-COST2100/in/adapter/seed${seed}/${encoder}${encoder_seed}_${decoder}${decoder_seed}_no_teacher_code}
+pretrained_encoder=${pretrained_encoder:-exps/COST2100/in/seed${encoder_seed}/${encoder}_${decoder}/checkpoints/best_nmse.pth}
+pretrained_decoder=${pretrained_decoder:-exps/COST2100/in/seed${decoder_seed}/${encoder}_${decoder}/checkpoints/best_nmse.pth}
+teacher_code=${teacher_code:-exps/COST2100/in/seed${decoder_seed}/${encoder}_${decoder}/codewords/train_code.pt}
+code_loss_lambda=${code_loss_lambda:-0.1}
+code_loss_only=${code_loss_only:-false}
+if [ "${code_loss_only}" = "true" ]; then
+  loss_tag=code_only
+else
+  loss_tag=lambda${code_loss_lambda}
+fi
+exp_name=${exp_name:-COST2100/in/adapter/seed${seed}/${encoder}${encoder_seed}_${decoder}${decoder_seed}_mlp_${loss_tag}}
 
 if [ -z "${pretrained_encoder}" ]; then
   echo "pretrained_encoder is required for adapter training." >&2
@@ -70,6 +76,9 @@ if [ -n "${teacher_code}" ]; then
   extra_args+=(--teacher_code "${teacher_code}")
   if [ -n "${code_loss_lambda}" ]; then
     extra_args+=(--code_loss_lambda "${code_loss_lambda}")
+  fi
+  if [ "${code_loss_only}" = "true" ]; then
+    extra_args+=(--code_loss_only)
   fi
 elif [ -n "${code_loss_lambda}" ]; then
   echo "code_loss_lambda=${code_loss_lambda} requires teacher_code." >&2

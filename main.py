@@ -39,7 +39,7 @@ def main():
         channel=args.channel,
         nt=args.nt,
         nc=args.nc,
-        return_indices=args.teacher_code is not None)
+        return_indices=True)
     train_loader, val_loader, test_loader = data_builder()
 
     # Define model
@@ -56,6 +56,8 @@ def main():
         raise ValueError('--teacher_code is only supported for adapter training')
     if args.code_loss_lambda is not None and args.teacher_code is None:
         raise ValueError('--code_loss_lambda requires --teacher_code')
+    if args.code_loss_only and args.teacher_code is None:
+        raise ValueError('--code_loss_only requires --teacher_code')
 
     # Define loss function
     criterion = nn.MSELoss().to(device)
@@ -141,7 +143,8 @@ def main():
                       teacher_code=args.teacher_code,
                       code_loss_lambda=args.code_loss_lambda,
                       teacher_code_size=len(data_builder.train_dataset),
-                      code_loss_raw_lambda=learnable_code_loss_lambda)
+                      code_loss_raw_lambda=learnable_code_loss_lambda,
+                      code_loss_only=args.code_loss_only)
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)

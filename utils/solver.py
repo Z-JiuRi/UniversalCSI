@@ -18,7 +18,7 @@ class Trainer:
                  val_freq=10, test_freq=10, lora_training=False,
                  test_every_epoch=False, teacher_code=None,
                  code_loss_lambda=None, teacher_code_size=None,
-                 code_loss_raw_lambda=None):
+                 code_loss_raw_lambda=None, code_loss_only=False):
 
         # Basic arguments
         self.model = model
@@ -39,6 +39,7 @@ class Trainer:
         self.teacher_code = teacher_code
         self.code_loss_lambda = code_loss_lambda
         self.code_loss_raw_lambda = code_loss_raw_lambda
+        self.code_loss_only = code_loss_only
         self.teacher_codes = self._load_teacher_codes(teacher_code,
                                                        teacher_code_size)
 
@@ -147,16 +148,23 @@ class Trainer:
                 if indices is None:
                     raise ValueError('teacher code loss requires data indices')
                 adapted_code = self.model.encode(sparse_gt)
-                sparse_pred = self.model.decoder(adapted_code)
                 teacher_code = self.teacher_codes[indices.cpu()].to(
                     self.device, non_blocking=True)
                 code_loss = self.criterion(adapted_code, teacher_code)
+                if self.code_loss_only:
+                    sparse_pred = None
+                else:
+                    sparse_pred = self.model.decoder(adapted_code)
             else:
                 sparse_pred = self.model(sparse_gt)
 
-            recon_loss = self.criterion(sparse_pred, sparse_gt)
-            loss = recon_loss
-            if code_loss is not None:
+            if self.code_loss_only and code_loss is not None:
+                recon_loss = None
+                loss = code_loss
+            else:
+                recon_loss = self.criterion(sparse_pred, sparse_gt)
+                loss = recon_loss
+            if code_loss is not None and not self.code_loss_only:
                 loss = loss + self._code_loss_weight() * code_loss
 
             # Scheduler update, backward pass and optimization
@@ -168,7 +176,8 @@ class Trainer:
 
             # Log and visdom update
             iter_loss.update(loss)
-            iter_recon_loss.update(recon_loss)
+            if recon_loss is not None:
+                iter_recon_loss.update(recon_loss)
             if code_loss is not None:
                 iter_code_loss.update(code_loss)
             iter_time.update(time.time() - time_tmp)
@@ -182,9 +191,13 @@ class Trainer:
                        f'MSE loss: {iter_loss.avg:.4e}')
                 if use_code_loss:
                     code_loss_weight = self._code_loss_weight()
-                    msg += (f' | recon: {iter_recon_loss.avg:.4e}'
-                            f' | code: {iter_code_loss.avg:.4e}'
-                            f' | lambda: {code_loss_weight.item():.4e}')
+                    if recon_loss is not None:
+                        msg += f' | recon: {iter_recon_loss.avg:.4e}'
+                    msg += f' | code: {iter_code_loss.avg:.4e}'
+                    if self.code_loss_only:
+                        msg += ' | code_loss_only: True'
+                    else:
+                        msg += f' | lambda: {code_loss_weight.item():.4e}'
                 msg += f' | time: {iter_time.avg:.3f}'
                 logger.info(msg)
                 self.vision.add_scalar("every/lr", self.scheduler.get_lr()[0],
@@ -200,9 +213,13 @@ class Trainer:
         msg = f'=> {mode}  Loss: {iter_loss.avg:.4e}'
         if use_code_loss:
             code_loss_weight = self._code_loss_weight()
-            msg += (f' | recon: {iter_recon_loss.avg:.4e}'
-                    f' | code: {iter_code_loss.avg:.4e}'
-                    f' | lambda: {code_loss_weight.item():.4e}')
+            if iter_recon_loss.count > 0:
+                msg += f' | recon: {iter_recon_loss.avg:.4e}'
+            msg += f' | code: {iter_code_loss.avg:.4e}'
+            if self.code_loss_only:
+                msg += ' | code_loss_only: True'
+            else:
+                msg += f' | lambda: {code_loss_weight.item():.4e}'
         logger.info(msg + '\n')
 
         return iter_loss.avg
@@ -331,17 +348,45 @@ class Trainer:
 
         self.model.eval()
         encoder_outputs = []
+        sample_indices = []
         with torch.no_grad():
             for batch in data_loader:
                 sparse_gt = batch[0]
+                indices = batch[1] if len(batch) > 1 else None
                 sparse_gt = sparse_gt.to(self.device)
-                encoder_output = self.model.encode(sparse_gt)
+                if hasattr(self.model, 'encoder'):
+                    encoder_output = self.model.encoder(sparse_gt)
+                else:
+                    encoder_output = self.model.encode(sparse_gt)
                 encoder_outputs.append(encoder_output.cpu())
+                if indices is not None:
+                    sample_indices.append(indices.cpu())
 
         encoder_outputs_tensor = torch.cat(encoder_outputs, dim=0)
+        index_aligned = len(sample_indices) > 0
+        if index_aligned:
+            indices_tensor = torch.cat(sample_indices, dim=0).to(torch.long)
+            if indices_tensor.numel() != encoder_outputs_tensor.size(0):
+                raise ValueError(
+                    'number of encoder outputs does not match number of '
+                    f'indices: {encoder_outputs_tensor.size(0)} vs '
+                    f'{indices_tensor.numel()}')
+            if indices_tensor.numel() == 0:
+                raise ValueError('cannot save empty indexed encoder outputs')
+            expected = torch.arange(indices_tensor.numel(), dtype=torch.long)
+            sorted_indices = torch.sort(indices_tensor).values
+            if not torch.equal(sorted_indices, expected):
+                raise ValueError(
+                    'encoder output indices must cover each sample exactly '
+                    'once from 0 to N-1')
+            aligned_outputs = torch.empty_like(encoder_outputs_tensor)
+            aligned_outputs[indices_tensor] = encoder_outputs_tensor
+            encoder_outputs_tensor = aligned_outputs
+
         torch.save(encoder_outputs_tensor, output_path)
-        logger.info(f'=> Saved encoder outputs {tuple(encoder_outputs_tensor.shape)} '
-                    f'to {output_path}')
+        order_msg = 'index-aligned' if index_aligned else 'loader-order'
+        logger.info(f'=> Saved {order_msg} encoder outputs '
+                    f'{tuple(encoder_outputs_tensor.shape)} to {output_path}')
 
     def save_all_encoder_outputs(self, loaders, output_dir):
         os.makedirs(output_dir, exist_ok=True)

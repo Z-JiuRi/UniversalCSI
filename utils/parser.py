@@ -61,6 +61,8 @@ parser.add_argument('--teacher_code', type=str, default=None,
 parser.add_argument('--code_loss_lambda', type=float, default=None,
                     help='fixed weight for MSE(adapter(code_A), teacher_code); '
                          'if omitted with --teacher_code, learn this weight')
+parser.add_argument('--code_loss_only', action='store_true',
+                    help='train adapter with only MSE(adapter(code_A), teacher_code)')
 parser.add_argument('--lora_component', type=str, default=None,
                     choices=['token_projection'],
                     help='enable LoRA training on the selected decoder component')

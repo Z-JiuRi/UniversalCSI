@@ -23,11 +23,13 @@ forward(x) 固定返回重建 CSI，用 MSE/NMSE 与原始 CSI 对齐评估。
 
 保存模型权重时的参数维度：
 encoder.*: 具体维度见 models/encoders/ 下对应架构文件顶部说明
-code_adapter.scale:                         (1,) 仅 --code_adapter 启用时存在
-code_adapter.norm.weight:            (code_dim,) 仅 --code_adapter 启用时存在
-code_adapter.norm.bias:              (code_dim,) 仅 --code_adapter 启用时存在
-code_adapter.proj.weight:   (code_dim, code_dim) 仅 --code_adapter 启用时存在
-code_adapter.proj.bias:              (code_dim,) 仅 --code_adapter 启用时存在
+code_adapter.scale:                                  (1,) 仅 --code_adapter 启用时存在
+code_adapter.norm.weight:                     (code_dim,) 仅 --code_adapter 启用时存在
+code_adapter.norm.bias:                       (code_dim,) 仅 --code_adapter 启用时存在
+code_adapter.mlp.0.weight:           (4 * code_dim, code_dim) 仅 --code_adapter 启用时存在
+code_adapter.mlp.0.bias:                    (4 * code_dim,) 仅 --code_adapter 启用时存在
+code_adapter.mlp.2.weight:           (code_dim, 4 * code_dim) 仅 --code_adapter 启用时存在
+code_adapter.mlp.2.bias:                       (code_dim,) 仅 --code_adapter 启用时存在
 decoder.*: 具体维度见 models/decoders/ 下对应架构文件顶部说明
 '''
 
@@ -79,24 +81,55 @@ class CodeAdapter(nn.Module):
         self.enabled = enabled
         if enabled:
             self.norm = nn.LayerNorm(code_dim)
-            self.proj = nn.Linear(code_dim, code_dim)
+            hidden_dim = 4 * code_dim
+            self.mlp = nn.Sequential(
+                nn.Linear(code_dim, hidden_dim),
+                nn.GELU(),
+                nn.Linear(hidden_dim, code_dim),
+            )
             self.scale = nn.Parameter(torch.ones(1))
-            nn.init.zeros_(self.proj.weight)
-            nn.init.zeros_(self.proj.bias)
+            nn.init.zeros_(self.mlp[-1].weight)
+            nn.init.zeros_(self.mlp[-1].bias)
         else:
             self.net = nn.Identity()
 
     def reset_adapter(self):
         if not self.enabled:
             return
-        nn.init.zeros_(self.proj.weight)
-        nn.init.zeros_(self.proj.bias)
+        nn.init.zeros_(self.mlp[-1].weight)
+        nn.init.zeros_(self.mlp[-1].bias)
         nn.init.ones_(self.scale)
 
     def forward(self, code):
         if not self.enabled:
             return self.net(code)
-        return code + self.scale * self.proj(self.norm(code))
+        return code + self.scale * self.mlp(self.norm(code))
+
+    # 旧版 residual linear adapter，保留用于对照历史实验：
+    #
+    # def __init__(self, code_dim, enabled=False):
+    #     super().__init__()
+    #     self.enabled = enabled
+    #     if enabled:
+    #         self.norm = nn.LayerNorm(code_dim)
+    #         self.proj = nn.Linear(code_dim, code_dim)
+    #         self.scale = nn.Parameter(torch.ones(1))
+    #         nn.init.zeros_(self.proj.weight)
+    #         nn.init.zeros_(self.proj.bias)
+    #     else:
+    #         self.net = nn.Identity()
+    #
+    # def reset_adapter(self):
+    #     if not self.enabled:
+    #         return
+    #     nn.init.zeros_(self.proj.weight)
+    #     nn.init.zeros_(self.proj.bias)
+    #     nn.init.ones_(self.scale)
+    #
+    # def forward(self, code):
+    #     if not self.enabled:
+    #         return self.net(code)
+    #     return code + self.scale * self.proj(self.norm(code))
 
 
 def select_init_strategy(encoder_name, decoder_name, code_adapter=False):
