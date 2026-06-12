@@ -48,17 +48,23 @@ class MyDataLoader(object):
     r""" PyTorch DataLoader for COST2100 dataset.
     """
 
-    def __init__(self, train_path, val_path, test_path, batch_size, num_workers, pin_memory, channel=2, nt=32, nc=32):
+    def __init__(self, train_path, val_path, test_path, batch_size,
+                 num_workers, pin_memory, channel=2, nt=32, nc=32,
+                 return_indices=False):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.pin_memory = pin_memory
         self.channel = channel
         self.nt = nt
         self.nc = nc
+        self.return_indices = return_indices
         
-        self.train_dataset = TensorDataset(self._load_tensor(train_path))
-        self.val_dataset = TensorDataset(self._load_tensor(val_path))
-        self.test_dataset = TensorDataset(self._load_tensor(test_path))
+        train_tensor = self._load_tensor(train_path)
+        val_tensor = self._load_tensor(val_path)
+        test_tensor = self._load_tensor(test_path)
+        self.train_dataset = self._build_dataset(train_tensor)
+        self.val_dataset = self._build_dataset(val_tensor)
+        self.test_dataset = self._build_dataset(test_tensor)
 
     def _load_tensor(self, path):
         data = torch.load(path, weights_only=True,
@@ -72,6 +78,12 @@ class MyDataLoader(object):
                 f"{path} should have shape (N, {self.channel}, "
                 f"{self.nt}, {self.nc}), got {tuple(data.shape)}")
         return data
+
+    def _build_dataset(self, data):
+        if not self.return_indices:
+            return TensorDataset(data)
+        indices = torch.arange(data.size(0), dtype=torch.long)
+        return TensorDataset(data, indices)
 
 
     def __call__(self):

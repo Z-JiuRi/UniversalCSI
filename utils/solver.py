@@ -1,6 +1,7 @@
 import time
 import os
 import torch
+import torch.nn.functional as F
 from torch.utils.tensorboard.writer import SummaryWriter
 from utils import logger
 from utils.statics import AverageMeter, evaluator, nmse_from_sums
@@ -15,7 +16,9 @@ class Trainer:
     def __init__(self, model, device, optimizer, criterion, scheduler, resume=None,
                  save_path='./checkpoints', tensorboard_dir=None, print_freq=20,
                  val_freq=10, test_freq=10, lora_training=False,
-                 test_every_epoch=False):
+                 test_every_epoch=False, teacher_code=None,
+                 code_loss_lambda=None, teacher_code_size=None,
+                 code_loss_raw_lambda=None):
 
         # Basic arguments
         self.model = model
@@ -33,6 +36,11 @@ class Trainer:
         self.test_freq = test_freq
         self.lora_training = lora_training
         self.test_every_epoch = test_every_epoch
+        self.teacher_code = teacher_code
+        self.code_loss_lambda = code_loss_lambda
+        self.code_loss_raw_lambda = code_loss_raw_lambda
+        self.teacher_codes = self._load_teacher_codes(teacher_code,
+                                                       teacher_code_size)
 
         # Pipeline arguments
         self.cur_epoch = 1
@@ -118,13 +126,38 @@ class Trainer:
 
     def _iteration(self, data_loader):
         iter_loss = AverageMeter('Iter loss')
+        iter_recon_loss = AverageMeter('Recon loss')
+        iter_code_loss = AverageMeter('Code loss')
         iter_time = AverageMeter('Iter time')
         time_tmp = time.time()
 
-        for batch_idx, (sparse_gt, ) in enumerate(data_loader):
+        use_code_loss = (
+            self.model.training
+            and self.teacher_codes is not None
+            and (self.code_loss_lambda is not None
+                 or self.code_loss_raw_lambda is not None)
+        )
+
+        for batch_idx, batch in enumerate(data_loader):
+            sparse_gt = batch[0]
+            indices = batch[1] if len(batch) > 1 else None
             sparse_gt = sparse_gt.to(self.device)
-            sparse_pred = self.model(sparse_gt)
-            loss = self.criterion(sparse_pred, sparse_gt)
+            code_loss = None
+            if use_code_loss:
+                if indices is None:
+                    raise ValueError('teacher code loss requires data indices')
+                adapted_code = self.model.encode(sparse_gt)
+                sparse_pred = self.model.decoder(adapted_code)
+                teacher_code = self.teacher_codes[indices.cpu()].to(
+                    self.device, non_blocking=True)
+                code_loss = self.criterion(adapted_code, teacher_code)
+            else:
+                sparse_pred = self.model(sparse_gt)
+
+            recon_loss = self.criterion(sparse_pred, sparse_gt)
+            loss = recon_loss
+            if code_loss is not None:
+                loss = loss + self._code_loss_weight() * code_loss
 
             # Scheduler update, backward pass and optimization
             if self.model.training:
@@ -135,24 +168,73 @@ class Trainer:
 
             # Log and visdom update
             iter_loss.update(loss)
+            iter_recon_loss.update(recon_loss)
+            if code_loss is not None:
+                iter_code_loss.update(code_loss)
             iter_time.update(time.time() - time_tmp)
             time_tmp = time.time()
 
             # plot progress
             if (batch_idx + 1) % self.print_freq == 0:
-                logger.info(f'Epoch: [{self.cur_epoch}/{self.all_epoch}]'
-                            f'[{batch_idx + 1}/{len(data_loader)}] '
-                            f'lr: {self.scheduler.get_lr()[0]:.2e} | '
-                            f'MSE loss: {iter_loss.avg:.4e} | '
-                            f'time: {iter_time.avg:.3f}')
+                msg = (f'Epoch: [{self.cur_epoch}/{self.all_epoch}]'
+                       f'[{batch_idx + 1}/{len(data_loader)}] '
+                       f'lr: {self.scheduler.get_lr()[0]:.2e} | '
+                       f'MSE loss: {iter_loss.avg:.4e}')
+                if use_code_loss:
+                    code_loss_weight = self._code_loss_weight()
+                    msg += (f' | recon: {iter_recon_loss.avg:.4e}'
+                            f' | code: {iter_code_loss.avg:.4e}'
+                            f' | lambda: {code_loss_weight.item():.4e}')
+                msg += f' | time: {iter_time.avg:.3f}'
+                logger.info(msg)
                 self.vision.add_scalar("every/lr", self.scheduler.get_lr()[0],
                                        global_step=self.cur_epoch)
                 self.vision.add_scalar("every/mse_loss", iter_loss.avg, self.cur_epoch)
+                if use_code_loss:
+                    self.vision.add_scalar("every/recon_loss",
+                                           iter_recon_loss.avg, self.cur_epoch)
+                    self.vision.add_scalar("every/code_loss",
+                                           iter_code_loss.avg, self.cur_epoch)
 
         mode = 'Train' if self.model.training else 'Val'
-        logger.info(f'=> {mode}  Loss: {iter_loss.avg:.4e}\n')
+        msg = f'=> {mode}  Loss: {iter_loss.avg:.4e}'
+        if use_code_loss:
+            code_loss_weight = self._code_loss_weight()
+            msg += (f' | recon: {iter_recon_loss.avg:.4e}'
+                    f' | code: {iter_code_loss.avg:.4e}'
+                    f' | lambda: {code_loss_weight.item():.4e}')
+        logger.info(msg + '\n')
 
         return iter_loss.avg
+
+    def _code_loss_weight(self):
+        if self.code_loss_raw_lambda is not None:
+            return F.softplus(self.code_loss_raw_lambda)
+        return torch.tensor(float(self.code_loss_lambda), device=self.device)
+
+    def _load_teacher_codes(self, teacher_code, teacher_code_size):
+        if teacher_code is None:
+            return None
+        if not os.path.isfile(teacher_code):
+            raise FileNotFoundError(teacher_code)
+        teacher_codes = torch.load(teacher_code, weights_only=True,
+                                   map_location=torch.device('cpu'))
+        teacher_codes = teacher_codes.to(torch.float32)
+        if teacher_codes.ndim != 2:
+            raise ValueError(
+                f'teacher codes should have shape (N, code_dim), '
+                f'got {tuple(teacher_codes.shape)}')
+        if (teacher_code_size is not None
+                and teacher_codes.size(0) != teacher_code_size):
+            raise ValueError(
+                f'teacher code count {teacher_codes.size(0)} does not match '
+                f'train dataset size {teacher_code_size}')
+        logger.info(f'=> Teacher codes loaded from {teacher_code}: '
+                    f'{tuple(teacher_codes.shape)}; '
+                    f'code_loss_lambda={self.code_loss_lambda}; '
+                    f'learnable_code_loss_lambda='
+                    f'{self.code_loss_raw_lambda is not None}')
+        return teacher_codes
 
     def _save(self, state, name):
         if self.save_path is None:
@@ -178,6 +260,9 @@ class Trainer:
         self.scheduler.load_state_dict(checkpoint['scheduler'])
         self.best_nmse = checkpoint.get('best_nmse',
                                         {'nmse': None, 'epoch': None})
+        raw_lambda = checkpoint.get('code_loss_raw_lambda')
+        if raw_lambda is not None and self.code_loss_raw_lambda is not None:
+            self.code_loss_raw_lambda.data.copy_(raw_lambda.to(self.device))
         self.cur_epoch += 1  # start from the next epoch
 
         logger.info(f'=> successfully loaded checkpoint {self.resume_file} '
@@ -197,6 +282,9 @@ class Trainer:
             'scheduler': self.scheduler.state_dict(),
             'best_nmse': self.best_nmse
         }
+        if self.code_loss_raw_lambda is not None:
+            state['code_loss_raw_lambda'] = (
+                self.code_loss_raw_lambda.detach().cpu())
 
         # save model with best nmse
         if nmse is not None:
@@ -244,7 +332,8 @@ class Trainer:
         self.model.eval()
         encoder_outputs = []
         with torch.no_grad():
-            for sparse_gt, in data_loader:
+            for batch in data_loader:
+                sparse_gt = batch[0]
                 sparse_gt = sparse_gt.to(self.device)
                 encoder_output = self.model.encode(sparse_gt)
                 encoder_outputs.append(encoder_output.cpu())
@@ -297,7 +386,8 @@ class Tester:
         total_power = torch.tensor(0., device=self.device)
         time_tmp = time.time()
 
-        for batch_idx, (sparse_gt, ) in enumerate(data_loader):
+        for batch_idx, batch in enumerate(data_loader):
+            sparse_gt = batch[0]
             sparse_gt = sparse_gt.to(self.device)
             sparse_pred = self.model(sparse_gt)
             loss = self.criterion(sparse_pred, sparse_gt)

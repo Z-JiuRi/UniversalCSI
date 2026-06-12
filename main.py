@@ -1,4 +1,5 @@
 import json
+import math
 import os
 
 import torch
@@ -28,7 +29,7 @@ def main():
 
     # Create the data loader
 
-    train_loader, val_loader, test_loader = MyDataLoader(
+    data_builder = MyDataLoader(
         train_path=args.train_path,
         val_path=args.val_path,
         test_path=args.test_path,
@@ -37,7 +38,9 @@ def main():
         pin_memory=pin_memory,
         channel=args.channel,
         nt=args.nt,
-        nc=args.nc)()
+        nc=args.nc,
+        return_indices=args.teacher_code is not None)
+    train_loader, val_loader, test_loader = data_builder()
 
     # Define model
 
@@ -49,6 +52,10 @@ def main():
         and args.pretrained_decoder is not None
         and args.lora_component is None
     )
+    if args.teacher_code is not None and not adapter_training:
+        raise ValueError('--teacher_code is only supported for adapter training')
+    if args.code_loss_lambda is not None and args.teacher_code is None:
+        raise ValueError('--code_loss_lambda requires --teacher_code')
 
     # Define loss function
     criterion = nn.MSELoss().to(device)
@@ -76,6 +83,15 @@ def main():
 
     # Define optimizer and scheduler
 
+    learnable_code_loss_lambda = None
+    if args.teacher_code is not None and args.code_loss_lambda is None:
+        init_lambda = 1.0
+        raw_value = math.log(math.exp(init_lambda) - 1.0)
+        learnable_code_loss_lambda = nn.Parameter(
+            torch.tensor(raw_value, dtype=torch.float32, device=device))
+        logger.info('=> code_loss_lambda is learnable; '
+                    f'initial value={init_lambda:.4e}')
+
     decay_params = []
     no_decay_params = []
     for name, param in model.named_parameters():
@@ -85,6 +101,9 @@ def main():
             no_decay_params.append(param)
         else:
             decay_params.append(param)
+
+    if learnable_code_loss_lambda is not None:
+        no_decay_params.append(learnable_code_loss_lambda)
 
     if not decay_params and not no_decay_params:
         raise ValueError("No trainable parameters found for optimizer")
@@ -118,7 +137,11 @@ def main():
                       tensorboard_dir=tensorboard_dir,
                       lora_training=args.lora_component is not None,
                       test_every_epoch=(
-                          args.lora_component is not None or adapter_training))
+                          args.lora_component is not None or adapter_training),
+                      teacher_code=args.teacher_code,
+                      code_loss_lambda=args.code_loss_lambda,
+                      teacher_code_size=len(data_builder.train_dataset),
+                      code_loss_raw_lambda=learnable_code_loss_lambda)
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)

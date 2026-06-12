@@ -55,7 +55,12 @@ parser.add_argument('--decoder', type=str, default='transnet',
                     choices=['transnet', 'cnn_residual', 'hybrid'], 
                     help='decoder backbone to use')
 parser.add_argument('--code_adapter', action='store_true',
-                    help='insert LayerNorm + Linear between encoder code and decoder')
+                    help='insert residual linear adapter between encoder code and decoder')
+parser.add_argument('--teacher_code', type=str, default=None,
+                    help='path to target train codewords from the encoder paired with the pretrained decoder')
+parser.add_argument('--code_loss_lambda', type=float, default=None,
+                    help='fixed weight for MSE(adapter(code_A), teacher_code); '
+                         'if omitted with --teacher_code, learn this weight')
 parser.add_argument('--lora_component', type=str, default=None,
                     choices=['token_projection'],
                     help='enable LoRA training on the selected decoder component')
