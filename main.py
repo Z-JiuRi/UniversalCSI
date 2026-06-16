@@ -1,5 +1,4 @@
 import json
-import math
 import os
 
 import torch
@@ -46,29 +45,6 @@ def main():
 
     model = init_model(args)
     model.to(device)
-    adapter_training = (
-        args.code_adapter
-        and args.pretrained_encoder is not None
-        and args.pretrained_decoder is not None
-        and args.lora_component is None
-    )
-    fc_decoder_training = (
-        args.train_fc_decoder
-        and args.pretrained_encoder is not None
-        and args.pretrained_decoder is not None
-        and args.lora_component is None
-    )
-    if args.train_fc_decoder and args.decoder != 'transnet':
-        raise ValueError('--train_fc_decoder requires --decoder transnet')
-    if args.train_fc_decoder and args.code_adapter:
-        raise ValueError('--train_fc_decoder should not be used with --code_adapter')
-    if args.teacher_code is not None and not (adapter_training or fc_decoder_training):
-        raise ValueError('--teacher_code is only supported for adapter/fc_decoder training')
-    if args.code_loss_lambda is not None and args.teacher_code is None:
-        raise ValueError('--code_loss_lambda requires --teacher_code')
-    if args.code_loss_only and args.teacher_code is None:
-        raise ValueError('--code_loss_only requires --teacher_code')
-
     # Define loss function
     criterion = nn.MSELoss().to(device)
 
@@ -87,28 +63,7 @@ def main():
             os.path.join(exp_dir, "codewords"))
         return
 
-    if args.lora_component is not None or adapter_training or fc_decoder_training:
-        loss, nmse = Tester(model, device, criterion)(test_loader)
-        if adapter_training:
-            mode = "adapter"
-        elif fc_decoder_training:
-            mode = "fc_decoder"
-        else:
-            mode = "LoRA"
-        logger.info(f'\n=> Before {mode} training: '
-                    f'loss: {loss:.4e}    NMSE: {nmse:.4e}\n')
-
     # Define optimizer and scheduler
-
-    learnable_code_loss_lambda = None
-    if (args.teacher_code is not None and args.code_loss_lambda is None
-            and not args.code_loss_only):
-        init_lambda = 1.0
-        raw_value = math.log(math.exp(init_lambda) - 1.0)
-        learnable_code_loss_lambda = nn.Parameter(
-            torch.tensor(raw_value, dtype=torch.float32, device=device))
-        logger.info('=> code_loss_lambda is learnable; '
-                    f'initial value={init_lambda:.4e}')
 
     decay_params = []
     no_decay_params = []
@@ -119,9 +74,6 @@ def main():
             no_decay_params.append(param)
         else:
             decay_params.append(param)
-
-    if learnable_code_loss_lambda is not None:
-        no_decay_params.append(learnable_code_loss_lambda)
 
     if not decay_params and not no_decay_params:
         raise ValueError("No trainable parameters found for optimizer")
@@ -153,17 +105,7 @@ def main():
                       resume=args.resume,
                       save_path=checkpoint_dir,
                       tensorboard_dir=tensorboard_dir,
-                      lora_training=args.lora_component is not None,
-                      test_every_epoch=(
-                          args.lora_component is not None
-                          or adapter_training
-                          or fc_decoder_training),
-                      teacher_code=args.teacher_code,
-                      code_loss_lambda=args.code_loss_lambda,
-                      teacher_code_size=len(data_builder.train_dataset),
-                      code_loss_raw_lambda=learnable_code_loss_lambda,
-                      code_loss_only=args.code_loss_only,
-                      train_fc_decoder=args.train_fc_decoder)
+                      test_every_epoch=False)
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)

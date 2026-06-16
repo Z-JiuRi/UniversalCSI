@@ -24,10 +24,6 @@ parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
                     help='evaluate model on validation set')
 parser.add_argument('--pretrained', type=str, default=None,
                     help='using locally pre-trained model. The path of pre-trained model should be given')
-parser.add_argument('--pretrained_encoder', type=str, default=None,
-                    help='load only encoder.* parameters from this checkpoint and freeze the encoder')
-parser.add_argument('--pretrained_decoder', type=str, default=None,
-                    help='load only decoder.* parameters from this checkpoint and freeze the decoder')
 parser.add_argument('--resume', type=str, metavar='PATH', default=None,
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('--seed', default=None, type=int,
@@ -54,24 +50,6 @@ parser.add_argument('--encoder', type=str, default='transnet',
 parser.add_argument('--decoder', type=str, default='transnet',
                     choices=['transnet', 'cnn_residual', 'hybrid'], 
                     help='decoder backbone to use')
-parser.add_argument('--code_adapter', action='store_true',
-                    help='insert residual linear adapter between encoder code and decoder')
-parser.add_argument('--teacher_code', type=str, default=None,
-                    help='path to target train codewords from the encoder paired with the pretrained decoder')
-parser.add_argument('--code_loss_lambda', type=float, default=None,
-                    help='fixed weight for MSE(adapter(code_A), teacher_code); '
-                         'if omitted with --teacher_code, learn this weight')
-parser.add_argument('--code_loss_only', action='store_true',
-                    help='train adapter with only MSE(adapter(code_A), teacher_code)')
-parser.add_argument('--train_fc_decoder', action='store_true',
-                    help='freeze all parameters except decoder.fc_decoder')
-parser.add_argument('--lora_component', type=str, default=None,
-                    choices=['token_projection'],
-                    help='enable LoRA training on the selected decoder component')
-parser.add_argument('--lora_rank', type=int, default=8,
-                    help='LoRA rank when --lora_component is enabled')
-parser.add_argument('--lora_alpha', type=int, default=16,
-                    help='LoRA alpha when --lora_component is enabled')
 parser.add_argument('--exp_name', metavar='NAME', type=str, default='exp_1',
                     help='experiment name; outputs are saved under ./exps/NAME')
 parser.add_argument('--channel', type=int, default=2,

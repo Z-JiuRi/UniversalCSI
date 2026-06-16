@@ -4,7 +4,6 @@ import thop
 import torch
 
 from models import universal_csi
-from models.lora import apply_decoder_lora
 from utils import logger, line_seg
 
 __all__ = ["seed_everything", "init_device", "init_model", "show_parameter"]
@@ -47,60 +46,6 @@ def _load_clean_state_dict(checkpoint_path):
     return state_dict
 
 
-def _load_prefix_only(model, checkpoint_path, prefix):
-    state_dict = _load_clean_state_dict(checkpoint_path)
-    model_state = model.state_dict()
-    copied = 0
-    for key, value in state_dict.items():
-        if not key.startswith(prefix):
-            continue
-        if key not in model_state:
-            raise KeyError(f'{key} from {checkpoint_path} is not in model')
-        if tuple(model_state[key].shape) != tuple(value.shape):
-            raise ValueError(
-                f'{key} shape mismatch: model={tuple(model_state[key].shape)} '
-                f'checkpoint={tuple(value.shape)}')
-        model_state[key] = value
-        copied += 1
-
-    if copied == 0:
-        raise ValueError(f'No {prefix} parameters found in {checkpoint_path}')
-    model.load_state_dict(model_state, strict=True)
-    return copied
-
-
-def _load_encoder_only(model, checkpoint_path):
-    copied = _load_prefix_only(model, checkpoint_path, 'encoder.')
-    if hasattr(model, 'freeze_encoder'):
-        model.freeze_encoder()
-    else:
-        for param in model.encoder.parameters():
-            param.requires_grad = False
-        model.encoder.eval()
-    return copied
-
-
-def _load_decoder_only(model, checkpoint_path):
-    copied = _load_prefix_only(model, checkpoint_path, 'decoder.')
-    if hasattr(model, 'freeze_decoder'):
-        model.freeze_decoder()
-    else:
-        for param in model.decoder.parameters():
-            param.requires_grad = False
-        model.decoder.eval()
-    return copied
-
-
-def _unfreeze_decoder_fc_decoder(model):
-    if not hasattr(model.decoder, 'fc_decoder'):
-        raise ValueError('--train_fc_decoder requires decoder.fc_decoder')
-    for param in model.parameters():
-        param.requires_grad = False
-    for param in model.decoder.fc_decoder.parameters():
-        param.requires_grad = True
-    return sum(param.numel() for param in model.decoder.fc_decoder.parameters())
-
-
 def init_device(seed=None, cpu=None, gpu=None, affinity=None):
     # set the CPU affinity
     if affinity is not None:
@@ -137,49 +82,13 @@ def init_model(args):
                           nt=args.nt,
                           nc=args.nc,
                           dim_feedforward=args.dim_feedforward,
-                          code_adapter=args.code_adapter,
                           hidden=args.hidden,
                           num_blocks=args.num_blocks)
 
-    pretrained_encoder = getattr(args, 'pretrained_encoder', None)
-    pretrained_decoder = getattr(args, 'pretrained_decoder', None)
-    lora_component = getattr(args, 'lora_component', None)
-    has_partial_pretrained = (
-        pretrained_encoder is not None or pretrained_decoder is not None)
-
-    if has_partial_pretrained and args.pretrained is not None:
-        logger.info('--pretrained ignored because --pretrained_encoder or '
-                    '--pretrained_decoder was provided')
-
-    if not has_partial_pretrained and args.pretrained is not None:
+    if args.pretrained is not None:
         state_dict = _load_clean_state_dict(args.pretrained)
         model.load_state_dict(state_dict)
         logger.info("pretrained model loaded from {}".format(args.pretrained))
-
-    if pretrained_encoder is not None:
-        copied_encoder = _load_encoder_only(model, pretrained_encoder)
-        logger.info("pretrained encoder loaded from {} ({} tensors); "
-                    "encoder frozen".format(pretrained_encoder, copied_encoder))
-
-    if pretrained_decoder is not None:
-        copied_decoder = _load_decoder_only(model, pretrained_decoder)
-        logger.info("pretrained decoder loaded from {} ({} tensors); "
-                    "decoder frozen".format(pretrained_decoder, copied_decoder))
-
-    if getattr(args, 'train_fc_decoder', False):
-        trainable = _unfreeze_decoder_fc_decoder(model)
-        logger.info("decoder.fc_decoder unfrozen; trainable params={}".format(
-            trainable))
-
-    if lora_component is not None:
-        trainable = apply_decoder_lora(model,
-                                       component=lora_component,
-                                       rank=args.lora_rank,
-                                       alpha=args.lora_alpha)
-        logger.info("LoRA enabled on decoder.{}; rank={}; alpha={}; "
-                    "trainable LoRA params={}".format(
-                        lora_component, args.lora_rank,
-                        args.lora_alpha, trainable))
 
     # Model flops and params counting
     H_a = torch.randn([1, args.channel, args.nt, args.nc])
@@ -187,14 +96,10 @@ def init_model(args):
     flops, params = thop.clever_format([flops, params], "%.4e")
 
     # Model info logging
-    logger.info(f'=> Model Name: UniversalCSI [pretrained: {args.pretrained}; '
-                f'pretrained_encoder: {pretrained_encoder}; '
-                f'pretrained_decoder: {pretrained_decoder}]')
+    logger.info(f'=> Model Name: UniversalCSI [pretrained: {args.pretrained}]')
     logger.info(f'=> Model Config: compression ratio=1/{args.cr}; '
                 f'encoder={args.encoder}; '
                 f'decoder={args.decoder}; '
-                f'code_adapter={args.code_adapter}; '
-                f'lora_component={lora_component}; '
                 f'input shape=({args.channel}, {args.nt}, {args.nc}); '
                 f'input dim={args.channel * args.nt * args.nc}')
     logger.info(f'=> Model Flops: {flops}')

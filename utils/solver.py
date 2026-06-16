@@ -1,12 +1,9 @@
 import time
 import os
-import copy
 import torch
-import torch.nn.functional as F
 from torch.utils.tensorboard.writer import SummaryWriter
 from utils import logger
 from utils.statics import AverageMeter, evaluator, nmse_from_sums
-from models.lora import collect_lora_metrics
 
 __all__ = ['Trainer', 'Tester']
 
@@ -16,11 +13,7 @@ class Trainer:
 
     def __init__(self, model, device, optimizer, criterion, scheduler, resume=None,
                  save_path='./checkpoints', tensorboard_dir=None, print_freq=20,
-                 val_freq=10, test_freq=10, lora_training=False,
-                 test_every_epoch=False, teacher_code=None,
-                 code_loss_lambda=None, teacher_code_size=None,
-                 code_loss_raw_lambda=None, code_loss_only=False,
-                 train_fc_decoder=False):
+                 val_freq=10, test_freq=10, test_every_epoch=False):
 
         # Basic arguments
         self.model = model
@@ -36,24 +29,7 @@ class Trainer:
         self.print_freq = print_freq
         self.val_freq = val_freq
         self.test_freq = test_freq
-        self.lora_training = lora_training
         self.test_every_epoch = test_every_epoch
-        self.teacher_code = teacher_code
-        self.code_loss_lambda = code_loss_lambda
-        self.code_loss_raw_lambda = code_loss_raw_lambda
-        self.code_loss_only = code_loss_only
-        self.train_fc_decoder = train_fc_decoder
-        self.teacher_codes = self._load_teacher_codes(teacher_code,
-                                                       teacher_code_size)
-        self.teacher_fc_decoder = None
-        if self.train_fc_decoder and self.teacher_codes is not None:
-            if not hasattr(self.model.decoder, 'fc_decoder'):
-                raise ValueError('train_fc_decoder requires decoder.fc_decoder')
-            self.teacher_fc_decoder = copy.deepcopy(
-                self.model.decoder.fc_decoder).to(self.device)
-            self.teacher_fc_decoder.eval()
-            for param in self.teacher_fc_decoder.parameters():
-                param.requires_grad = False
 
         # Pipeline arguments
         self.cur_epoch = 1
@@ -98,9 +74,6 @@ class Trainer:
             else:
                 nmse = None
 
-            if self.lora_training:
-                self._log_lora_metrics(ep, nmse)
-
             # conduct saving, visualization and log printing
             self._loop_postprocessing(nmse)
 
@@ -139,52 +112,14 @@ class Trainer:
 
     def _iteration(self, data_loader):
         iter_loss = AverageMeter('Iter loss')
-        iter_recon_loss = AverageMeter('Recon loss')
-        iter_code_loss = AverageMeter('Code loss')
         iter_time = AverageMeter('Iter time')
         time_tmp = time.time()
 
-        use_code_loss = (
-            self.model.training
-            and self.teacher_codes is not None
-            and (self.code_loss_only
-                 or self.code_loss_lambda is not None
-                 or self.code_loss_raw_lambda is not None)
-        )
-
         for batch_idx, batch in enumerate(data_loader):
             sparse_gt = batch[0]
-            indices = batch[1] if len(batch) > 1 else None
             sparse_gt = sparse_gt.to(self.device)
-            code_loss = None
-            if use_code_loss:
-                if indices is None:
-                    raise ValueError('teacher code loss requires data indices')
-                source_code = self.model.encode(sparse_gt)
-                teacher_code = self.teacher_codes[indices.cpu()].to(
-                    self.device, non_blocking=True)
-                if self.train_fc_decoder:
-                    source_token = self.model.decoder.fc_decoder(source_code)
-                    with torch.no_grad():
-                        teacher_token = self.teacher_fc_decoder(teacher_code)
-                    code_loss = self.criterion(source_token, teacher_token)
-                else:
-                    code_loss = self.criterion(source_code, teacher_code)
-                if self.code_loss_only:
-                    sparse_pred = None
-                else:
-                    sparse_pred = self.model.decoder(source_code)
-            else:
-                sparse_pred = self.model(sparse_gt)
-
-            if self.code_loss_only and code_loss is not None:
-                recon_loss = None
-                loss = code_loss
-            else:
-                recon_loss = self.criterion(sparse_pred, sparse_gt)
-                loss = recon_loss
-            if code_loss is not None and not self.code_loss_only:
-                loss = loss + self._code_loss_weight() * code_loss
+            sparse_pred = self.model(sparse_gt)
+            loss = self.criterion(sparse_pred, sparse_gt)
 
             # Scheduler update, backward pass and optimization
             if self.model.training:
@@ -195,10 +130,6 @@ class Trainer:
 
             # Log and visdom update
             iter_loss.update(loss)
-            if recon_loss is not None:
-                iter_recon_loss.update(recon_loss)
-            if code_loss is not None:
-                iter_code_loss.update(code_loss)
             iter_time.update(time.time() - time_tmp)
             time_tmp = time.time()
 
@@ -208,70 +139,17 @@ class Trainer:
                        f'[{batch_idx + 1}/{len(data_loader)}] '
                        f'lr: {self.scheduler.get_lr()[0]:.2e} | '
                        f'MSE loss: {iter_loss.avg:.4e}')
-                if use_code_loss:
-                    code_loss_weight = self._code_loss_weight()
-                    if recon_loss is not None:
-                        msg += f' | recon: {iter_recon_loss.avg:.4e}'
-                    msg += f' | code: {iter_code_loss.avg:.4e}'
-                    if self.code_loss_only:
-                        msg += ' | code_loss_only: True'
-                    else:
-                        msg += f' | lambda: {code_loss_weight.item():.4e}'
                 msg += f' | time: {iter_time.avg:.3f}'
                 logger.info(msg)
                 self.vision.add_scalar("every/lr", self.scheduler.get_lr()[0],
                                        global_step=self.cur_epoch)
                 self.vision.add_scalar("every/mse_loss", iter_loss.avg, self.cur_epoch)
-                if use_code_loss and iter_recon_loss.count > 0:
-                    self.vision.add_scalar("every/recon_loss",
-                                           iter_recon_loss.avg, self.cur_epoch)
-                if use_code_loss:
-                    self.vision.add_scalar("every/code_loss",
-                                           iter_code_loss.avg, self.cur_epoch)
 
         mode = 'Train' if self.model.training else 'Val'
         msg = f'=> {mode}  Loss: {iter_loss.avg:.4e}'
-        if use_code_loss:
-            code_loss_weight = self._code_loss_weight()
-            if iter_recon_loss.count > 0:
-                msg += f' | recon: {iter_recon_loss.avg:.4e}'
-            msg += f' | code: {iter_code_loss.avg:.4e}'
-            if self.code_loss_only:
-                msg += ' | code_loss_only: True'
-            else:
-                msg += f' | lambda: {code_loss_weight.item():.4e}'
         logger.info(msg + '\n')
 
         return iter_loss.avg
-
-    def _code_loss_weight(self):
-        if self.code_loss_raw_lambda is not None:
-            return F.softplus(self.code_loss_raw_lambda)
-        return torch.tensor(float(self.code_loss_lambda), device=self.device)
-
-    def _load_teacher_codes(self, teacher_code, teacher_code_size):
-        if teacher_code is None:
-            return None
-        if not os.path.isfile(teacher_code):
-            raise FileNotFoundError(teacher_code)
-        teacher_codes = torch.load(teacher_code, weights_only=True,
-                                   map_location=torch.device('cpu'))
-        teacher_codes = teacher_codes.to(torch.float32)
-        if teacher_codes.ndim != 2:
-            raise ValueError(
-                f'teacher codes should have shape (N, code_dim), '
-                f'got {tuple(teacher_codes.shape)}')
-        if (teacher_code_size is not None
-                and teacher_codes.size(0) != teacher_code_size):
-            raise ValueError(
-                f'teacher code count {teacher_codes.size(0)} does not match '
-                f'train dataset size {teacher_code_size}')
-        logger.info(f'=> Teacher codes loaded from {teacher_code}: '
-                    f'{tuple(teacher_codes.shape)}; '
-                    f'code_loss_lambda={self.code_loss_lambda}; '
-                    f'learnable_code_loss_lambda='
-                    f'{self.code_loss_raw_lambda is not None}')
-        return teacher_codes
 
     def _save(self, state, name):
         if self.save_path is None:
@@ -297,9 +175,6 @@ class Trainer:
         self.scheduler.load_state_dict(checkpoint['scheduler'])
         self.best_nmse = checkpoint.get('best_nmse',
                                         {'nmse': None, 'epoch': None})
-        raw_lambda = checkpoint.get('code_loss_raw_lambda')
-        if raw_lambda is not None and self.code_loss_raw_lambda is not None:
-            self.code_loss_raw_lambda.data.copy_(raw_lambda.to(self.device))
         self.cur_epoch += 1  # start from the next epoch
 
         logger.info(f'=> successfully loaded checkpoint {self.resume_file} '
@@ -319,9 +194,6 @@ class Trainer:
             'scheduler': self.scheduler.state_dict(),
             'best_nmse': self.best_nmse
         }
-        if self.code_loss_raw_lambda is not None:
-            state['code_loss_raw_lambda'] = (
-                self.code_loss_raw_lambda.detach().cpu())
 
         # save model with best nmse
         if nmse is not None:
@@ -338,25 +210,6 @@ class Trainer:
                         f'epoch={self.best_nmse["epoch"]})\n')
             self.vision.add_scalar("best/mse", self.best_nmse['nmse'],
                                    global_step=self.best_nmse['epoch'])
-
-    def _log_lora_metrics(self, epoch, nmse):
-        metrics = collect_lora_metrics(self.model)
-        if not metrics:
-            logger.warning("LoRA training enabled but no LoRA metrics found.")
-            return
-        fields = []
-        for key in sorted(metrics):
-            value = metrics[key]
-            if isinstance(value, float):
-                fields.append(f"{key}: {value:.4e}")
-                self.vision.add_scalar(f"lora/{key}", value, global_step=epoch)
-            else:
-                fields.append(f"{key}: {value}")
-        if isinstance(nmse, torch.Tensor):
-            nmse = float(nmse.detach().cpu())
-        nmse_msg = "None" if nmse is None else f"{nmse:.4e}"
-        logger.info(f"=> LoRA Epoch {epoch}: NMSE={nmse_msg} | "
-                    + " | ".join(fields))
 
     def save_encoder_outputs(self, data_loader, output_path):
         if output_path is None:

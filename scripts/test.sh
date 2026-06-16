@@ -16,7 +16,6 @@ num_blocks=${num_blocks:-2}
 cr=${cr:-4}
 encoder=${encoder:-transnet}
 decoder=${decoder:-transnet}
-code_adapter=${code_adapter:-false}
 
 batch_size=${batch_size:-32}
 workers=${workers:-4}

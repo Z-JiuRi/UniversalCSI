@@ -21,7 +21,6 @@ num_blocks=${num_blocks:-2}
 cr=${cr:-4}
 encoder=${encoder:-transnet}
 decoder=${decoder:-transnet}
-code_adapter=${code_adapter:-false}
 
 # ==============================================================================
 # 3. 训练超参数与硬件设置
