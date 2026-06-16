@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# seed=3407 gpu=0 nt=32 nc=32 encoder=transnet decoder=transnet batch_size=200 bash scripts/train.sh
+# encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=0 bash scripts/train.sh
 
 # ==============================================================================
 # 1. 基础路径与实验名称（环境变量传参，带默认值）

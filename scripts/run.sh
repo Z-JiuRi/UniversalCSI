@@ -1,48 +1,29 @@
-#!/bin/bash
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=1337 bash scripts/train.sh
 
-# 定义列表
-encoders=('csinet' 'cnn' 'cbam_cnn' 'crnet' 'clnet' 'transnet'
-          'resnet' 'dscnn' 'convnext' 'mlp_mixer' 'attention_cnn'
-          'swin' 'mlp_ae' 'sparse_resnet')
-decoders=('transnet' 'hybrid')
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=1014 bash scripts/train.sh
 
-gpu_count=6
-index=0
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=1115 bash scripts/train.sh
 
-# 嵌套循环
-for encoder in "${encoders[@]}"; do
-    for decoder in "${decoders[@]}"; do
-        # 计算 GPU 编号（循环 0~5）
-        gpu=$((index % gpu_count))
-        
-        # 日志文件名
-        logfile="in_${encoder}_${decoder}_seed42.log"
-        
-        echo "Launching: encoder=${encoder}, decoder=${decoder}, gpu=${gpu}, log=${logfile}"
-        
-        # 启动训练任务（后台运行）
-        exp_name="seed42/WAIRD/${encoder}_${decoder}/base" \
-        train_path="/storage/hujiacong/zxd/datasets/WAIRD/data/base/train.pt" \
-        val_path="/storage/hujiacong/zxd/datasets/WAIRD/data/base/val.pt" \
-        test_path="/storage/hujiacong/zxd/datasets/WAIRD/data/base/test.pt" \
-        encoder="$encoder" \
-        decoder="$decoder" \
-        code_adapter=false \
-        nt=64 \
-        nc=64 \
-        batch_size=200 \
-        epochs=400 \
-        lr_init=2e-4 \
-        gpu=$gpu \
-        seed=42 \
-        ./scripts/train.sh > "$logfile" 2>&1 &
-        
-        # 计数器递增
-        index=$((index + 1))
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=314 bash scripts/train.sh
 
-        sleep 5
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=31415 bash scripts/train.sh
 
-    done
-done
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=2718 bash scripts/train.sh
 
-echo "All jobs launched. Monitor with 'nvidia-smi' or 'ps'."
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=796 bash scripts/train.sh
+
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=1024 bash scripts/train.sh
+
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=2048 bash scripts/train.sh
+
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=404 bash scripts/train.sh
+
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=520 bash scripts/train.sh
+
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=223 bash scripts/train.sh
+
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=424 bash scripts/train.sh
+
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=611 bash scripts/train.sh
+
+encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=1234 bash scripts/train.sh

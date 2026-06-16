@@ -1,5 +1,6 @@
 import time
 import os
+import copy
 import torch
 import torch.nn.functional as F
 from torch.utils.tensorboard.writer import SummaryWriter
@@ -18,7 +19,8 @@ class Trainer:
                  val_freq=10, test_freq=10, lora_training=False,
                  test_every_epoch=False, teacher_code=None,
                  code_loss_lambda=None, teacher_code_size=None,
-                 code_loss_raw_lambda=None, code_loss_only=False):
+                 code_loss_raw_lambda=None, code_loss_only=False,
+                 train_fc_decoder=False):
 
         # Basic arguments
         self.model = model
@@ -40,8 +42,18 @@ class Trainer:
         self.code_loss_lambda = code_loss_lambda
         self.code_loss_raw_lambda = code_loss_raw_lambda
         self.code_loss_only = code_loss_only
+        self.train_fc_decoder = train_fc_decoder
         self.teacher_codes = self._load_teacher_codes(teacher_code,
                                                        teacher_code_size)
+        self.teacher_fc_decoder = None
+        if self.train_fc_decoder and self.teacher_codes is not None:
+            if not hasattr(self.model.decoder, 'fc_decoder'):
+                raise ValueError('train_fc_decoder requires decoder.fc_decoder')
+            self.teacher_fc_decoder = copy.deepcopy(
+                self.model.decoder.fc_decoder).to(self.device)
+            self.teacher_fc_decoder.eval()
+            for param in self.teacher_fc_decoder.parameters():
+                param.requires_grad = False
 
         # Pipeline arguments
         self.cur_epoch = 1
@@ -135,7 +147,8 @@ class Trainer:
         use_code_loss = (
             self.model.training
             and self.teacher_codes is not None
-            and (self.code_loss_lambda is not None
+            and (self.code_loss_only
+                 or self.code_loss_lambda is not None
                  or self.code_loss_raw_lambda is not None)
         )
 
@@ -147,14 +160,20 @@ class Trainer:
             if use_code_loss:
                 if indices is None:
                     raise ValueError('teacher code loss requires data indices')
-                adapted_code = self.model.encode(sparse_gt)
+                source_code = self.model.encode(sparse_gt)
                 teacher_code = self.teacher_codes[indices.cpu()].to(
                     self.device, non_blocking=True)
-                code_loss = self.criterion(adapted_code, teacher_code)
+                if self.train_fc_decoder:
+                    source_token = self.model.decoder.fc_decoder(source_code)
+                    with torch.no_grad():
+                        teacher_token = self.teacher_fc_decoder(teacher_code)
+                    code_loss = self.criterion(source_token, teacher_token)
+                else:
+                    code_loss = self.criterion(source_code, teacher_code)
                 if self.code_loss_only:
                     sparse_pred = None
                 else:
-                    sparse_pred = self.model.decoder(adapted_code)
+                    sparse_pred = self.model.decoder(source_code)
             else:
                 sparse_pred = self.model(sparse_gt)
 
@@ -203,9 +222,10 @@ class Trainer:
                 self.vision.add_scalar("every/lr", self.scheduler.get_lr()[0],
                                        global_step=self.cur_epoch)
                 self.vision.add_scalar("every/mse_loss", iter_loss.avg, self.cur_epoch)
-                if use_code_loss:
+                if use_code_loss and iter_recon_loss.count > 0:
                     self.vision.add_scalar("every/recon_loss",
                                            iter_recon_loss.avg, self.cur_epoch)
+                if use_code_loss:
                     self.vision.add_scalar("every/code_loss",
                                            iter_code_loss.avg, self.cur_epoch)
 

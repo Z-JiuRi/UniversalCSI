@@ -62,6 +62,23 @@ class CodeOnlyPathModel(AdapterPathModel):
         self.decoder = FailingDecoder()
 
 
+class FailingTransNetLikeDecoder(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.fc_decoder = nn.Linear(2, 2)
+        nn.init.eye_(self.fc_decoder.weight)
+        nn.init.zeros_(self.fc_decoder.bias)
+
+    def forward(self, code):
+        raise AssertionError("decoder forward should not run in fc_decoder code_loss_only mode")
+
+
+class FcDecoderPathModel(AdapterPathModel):
+    def __init__(self):
+        super().__init__()
+        self.decoder = FailingTransNetLikeDecoder()
+
+
 class OffsetAdapterModel(IndexedEncoderModel):
     def __init__(self):
         super().__init__()
@@ -280,6 +297,49 @@ def test_trainer_code_loss_only_skips_decoder():
     assert float(loss) == 0.0
 
 
+def test_trainer_fc_decoder_code_loss_only_skips_decoder_forward():
+    num_samples = 17
+    data = torch.arange(num_samples, dtype=torch.float32).view(num_samples, 1, 1, 1)
+    indices = torch.arange(num_samples, dtype=torch.long)
+    teacher_codes = torch.stack(
+        (
+            indices.to(torch.float32),
+            indices.to(torch.float32) + 1000.0,
+        ),
+        dim=1,
+    )
+    loader = DataLoader(
+        TensorDataset(data, indices),
+        batch_size=5,
+        shuffle=True,
+        generator=torch.Generator().manual_seed(654),
+    )
+    model = FcDecoderPathModel()
+    optimizer = torch.optim.SGD(model.decoder.fc_decoder.parameters(), lr=0.0)
+
+    with tempfile.TemporaryDirectory(prefix="teacher_code_") as tmpdir:
+        teacher_code_path = os.path.join(tmpdir, "train_code.pt")
+        torch.save(teacher_codes, teacher_code_path)
+        trainer = Trainer(
+            model=model,
+            device=torch.device("cpu"),
+            optimizer=optimizer,
+            criterion=nn.MSELoss(),
+            scheduler=IdentityScheduler(),
+            tensorboard_dir=tempfile.mkdtemp(prefix="codeword_align_tb_"),
+            teacher_code=teacher_code_path,
+            code_loss_lambda=1.0,
+            teacher_code_size=num_samples,
+            code_loss_only=True,
+            train_fc_decoder=True,
+        )
+        trainer.cur_epoch = 1
+        trainer.all_epoch = 1
+        loss = trainer.train(loader)
+
+    assert float(loss) == 0.0
+
+
 if __name__ == "__main__":
     test_index_aligned_codeword_save()
     test_rewrite_export_uses_raw_encoder_before_adapter()
@@ -287,4 +347,5 @@ if __name__ == "__main__":
     test_teacher_codes_match_shuffled_batch_indices()
     test_trainer_code_loss_uses_sample_indices()
     test_trainer_code_loss_only_skips_decoder()
+    test_trainer_fc_decoder_code_loss_only_skips_decoder_forward()
     print("codeword alignment tests passed")

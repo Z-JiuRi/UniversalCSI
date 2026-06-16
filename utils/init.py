@@ -91,6 +91,16 @@ def _load_decoder_only(model, checkpoint_path):
     return copied
 
 
+def _unfreeze_decoder_fc_decoder(model):
+    if not hasattr(model.decoder, 'fc_decoder'):
+        raise ValueError('--train_fc_decoder requires decoder.fc_decoder')
+    for param in model.parameters():
+        param.requires_grad = False
+    for param in model.decoder.fc_decoder.parameters():
+        param.requires_grad = True
+    return sum(param.numel() for param in model.decoder.fc_decoder.parameters())
+
+
 def init_device(seed=None, cpu=None, gpu=None, affinity=None):
     # set the CPU affinity
     if affinity is not None:
@@ -155,6 +165,11 @@ def init_model(args):
         copied_decoder = _load_decoder_only(model, pretrained_decoder)
         logger.info("pretrained decoder loaded from {} ({} tensors); "
                     "decoder frozen".format(pretrained_decoder, copied_decoder))
+
+    if getattr(args, 'train_fc_decoder', False):
+        trainable = _unfreeze_decoder_fc_decoder(model)
+        logger.info("decoder.fc_decoder unfrozen; trainable params={}".format(
+            trainable))
 
     if lora_component is not None:
         trainable = apply_decoder_lora(model,
