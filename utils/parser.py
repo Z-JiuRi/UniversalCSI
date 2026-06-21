@@ -36,7 +36,7 @@ parser.add_argument('--decoder_seed', default=None, type=int,
                     help='seed used to initialize the shared code adapter')
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
-parser.add_argument('--cpu', action='store_true',
+parser.add_argument('--cpu', action='store_true', default=False,
                     help='disable GPU training (default: False)')
 parser.add_argument('--cpu_affinity', default=None, type=str,
                     help='CPU affinity, like "0xffff"')
