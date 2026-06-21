@@ -59,6 +59,19 @@ def _load_decoder_state_dict(checkpoint_path):
     return decoder_state
 
 
+def _load_encoder_state_dict(checkpoint_path):
+    state_dict = _load_clean_state_dict(checkpoint_path)
+    encoder_state = {
+        key[len("encoder."):]: value
+        for key, value in state_dict.items()
+        if key.startswith("encoder.")
+    }
+    if not encoder_state:
+        raise ValueError(
+            f"No encoder.* parameters found in checkpoint: {checkpoint_path}")
+    return encoder_state
+
+
 def init_device(seed=None, cpu=None, gpu=None, affinity=None):
     # set the CPU affinity
     if affinity is not None:
@@ -126,6 +139,22 @@ def init_model(args):
         logger.info("pretrained decoder loaded and frozen from {}".format(
             args.pretrained_decoder))
 
+    if args.pretrained_encoder is not None:
+        encoder_state = _load_encoder_state_dict(args.pretrained_encoder)
+        if hasattr(model, 'encoders'):
+            # Multi-encoder model: load into each encoder
+            for key, encoder in model.encoders.items():
+                encoder.load_state_dict(encoder_state)
+                for param in encoder.parameters():
+                    param.requires_grad = False
+        else:
+            # Single-encoder model
+            model.encoder.load_state_dict(encoder_state)
+            for param in model.encoder.parameters():
+                param.requires_grad = False
+        logger.info("pretrained encoder loaded and frozen from {}".format(
+            args.pretrained_encoder))
+
     # Model flops and params counting
     H_a = torch.randn([1, args.channel, args.nt, args.nc])
     try:
@@ -138,7 +167,8 @@ def init_model(args):
     # Model info logging
     model_name = "MultiSeedEncoderAdapterCSI" if args.encoder_seeds else "UniversalCSI"
     logger.info(f'=> Model Name: {model_name} [pretrained: {args.pretrained}; '
-                f'pretrained_decoder: {args.pretrained_decoder}]')
+                f'pretrained_decoder: {args.pretrained_decoder}; '
+                f'pretrained_encoder: {args.pretrained_encoder}]')
     logger.info(f'=> Model Config: compression ratio=1/{args.cr}; '
                 f'encoder={args.encoder}; '
                 f'decoder={args.decoder}; '

@@ -26,6 +26,8 @@ parser.add_argument('--pretrained', type=str, default=None,
                     help='using locally pre-trained model. The path of pre-trained model should be given')
 parser.add_argument('--pretrained_decoder', type=str, default=None,
                     help='path to a checkpoint whose decoder weights will be loaded and frozen')
+parser.add_argument('--pretrained_encoder', type=str, default=None,
+                    help='path to a checkpoint whose encoder weights will be loaded and frozen')
 parser.add_argument('--resume', type=str, metavar='PATH', default=None,
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('--seed', default=None, type=int,
