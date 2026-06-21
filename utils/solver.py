@@ -38,6 +38,9 @@ class Trainer:
         self.val_loss = None
         self.test_loss = None
         self.best_nmse = {'nmse': None, 'epoch': None}
+        self.last_train_metrics = {}
+        self.last_val_metrics = {}
+        self.last_test_metrics = {}
 
         self.tester = Tester(model, device, criterion, print_freq)
         self.test_loader = None
@@ -71,10 +74,12 @@ class Trainer:
                 self.vision.add_scalar("test/loss", self.test_loss, global_step=ep)
                 self.vision.add_scalar("test/nmse", nmse, global_step=ep)
                 self.vision.add_scalar("test/train_loss", self.train_loss, global_step=ep)
+                self._write_encoder_scalars(ep)
             else:
                 nmse = None
 
             # conduct saving, visualization and log printing
+            self._write_adapter_scalars(ep)
             self._loop_postprocessing(nmse)
 
     def train(self, train_loader):
@@ -112,6 +117,7 @@ class Trainer:
 
     def _iteration(self, data_loader):
         iter_loss = AverageMeter('Iter loss')
+        encoder_losses = {}
         iter_time = AverageMeter('Iter time')
         time_tmp = time.time()
 
@@ -119,7 +125,18 @@ class Trainer:
             sparse_gt = batch[0]
             sparse_gt = sparse_gt.to(self.device)
             sparse_pred = self.model(sparse_gt)
-            loss = self.criterion(sparse_pred, sparse_gt)
+            if isinstance(sparse_pred, dict):
+                losses = {
+                    key: self.criterion(pred, sparse_gt)
+                    for key, pred in sparse_pred.items()
+                }
+                loss = torch.stack(list(losses.values())).mean()
+                for key, key_loss in losses.items():
+                    if key not in encoder_losses:
+                        encoder_losses[key] = AverageMeter(f'{key} loss')
+                    encoder_losses[key].update(key_loss)
+            else:
+                loss = self.criterion(sparse_pred, sparse_gt)
 
             # Scheduler update, backward pass and optimization
             if self.model.training:
@@ -139,6 +156,12 @@ class Trainer:
                        f'[{batch_idx + 1}/{len(data_loader)}] '
                        f'lr: {self.scheduler.get_lr()[0]:.2e} | '
                        f'MSE loss: {iter_loss.avg:.4e}')
+                if encoder_losses:
+                    loss_parts = [
+                        f'{key}: {meter.avg:.4e}'
+                        for key, meter in encoder_losses.items()
+                    ]
+                    msg += ' | encoders ' + '; '.join(loss_parts)
                 msg += f' | time: {iter_time.avg:.3f}'
                 logger.info(msg)
                 self.vision.add_scalar("every/lr", self.scheduler.get_lr()[0],
@@ -147,7 +170,18 @@ class Trainer:
 
         mode = 'Train' if self.model.training else 'Val'
         msg = f'=> {mode}  Loss: {iter_loss.avg:.4e}'
+        metrics = {"loss": self._as_float(iter_loss.avg)}
+        if encoder_losses:
+            parts = []
+            for key, meter in encoder_losses.items():
+                metrics[key] = {"loss": self._as_float(meter.avg)}
+                parts.append(f'{key}: loss={meter.avg:.4e}')
+            msg += ' | encoders ' + '; '.join(parts)
         logger.info(msg + '\n')
+        if self.model.training:
+            self.last_train_metrics = metrics
+        else:
+            self.last_val_metrics = metrics
 
         return iter_loss.avg
 
@@ -211,6 +245,41 @@ class Trainer:
             self.vision.add_scalar("best/mse", self.best_nmse['nmse'],
                                    global_step=self.best_nmse['epoch'])
 
+    def _as_float(self, value):
+        if isinstance(value, torch.Tensor):
+            return float(value.detach().cpu())
+        return float(value)
+
+    def _write_encoder_scalars(self, ep):
+        metrics = getattr(self.tester, "last_metrics", {})
+        self.last_test_metrics = metrics
+        train_metrics = self.last_train_metrics
+        for key, item in metrics.items():
+            if key == "aggregate" or not isinstance(item, dict):
+                continue
+            if "loss" in item:
+                self.vision.add_scalar(f"encoders/{key}/test_loss",
+                                       item["loss"], global_step=ep)
+            if "nmse" in item:
+                self.vision.add_scalar(f"encoders/{key}/nmse",
+                                       item["nmse"], global_step=ep)
+            train_item = train_metrics.get(key, {})
+            if isinstance(train_item, dict) and "loss" in train_item:
+                self.vision.add_scalar(f"encoders/{key}/train_loss",
+                                       train_item["loss"], global_step=ep)
+
+    def _write_adapter_scalars(self, ep):
+        if not hasattr(self.model, "adapter_metrics"):
+            return
+        metrics = self.model.adapter_metrics()
+        if not metrics:
+            return
+        parts = []
+        for name, value in metrics.items():
+            self.vision.add_scalar(name, value, global_step=ep)
+            parts.append(f"{name}={value:.4e}")
+        logger.info("=> Adapter metrics: " + " | ".join(parts) + "\n")
+
     def save_encoder_outputs(self, data_loader, output_path):
         if output_path is None:
             logger.warning('No path to save encoder outputs.')
@@ -227,10 +296,16 @@ class Trainer:
                 sparse_gt = batch[0]
                 indices = batch[1] if len(batch) > 1 else None
                 sparse_gt = sparse_gt.to(self.device)
-                if hasattr(self.model, 'encoder'):
+                if hasattr(self.model, 'encoders'):
+                    encoder_output = self.model.encode(sparse_gt)
+                elif hasattr(self.model, 'encoder'):
                     encoder_output = self.model.encoder(sparse_gt)
                 else:
                     encoder_output = self.model.encode(sparse_gt)
+                if isinstance(encoder_output, dict):
+                    raise TypeError(
+                        "save_encoder_outputs cannot save dict outputs; "
+                        "use save_all_encoder_outputs for multi-encoder models")
                 encoder_outputs.append(encoder_output.cpu())
                 if indices is not None:
                     sample_indices.append(indices.cpu())
@@ -263,9 +338,57 @@ class Trainer:
 
     def save_all_encoder_outputs(self, loaders, output_dir):
         os.makedirs(output_dir, exist_ok=True)
+        if hasattr(self.model, 'encoders'):
+            for split, data_loader in loaders.items():
+                self._save_multi_encoder_outputs(data_loader, output_dir, split)
+            return
         for split, data_loader in loaders.items():
             output_path = os.path.join(output_dir, f"{split}_code.pt")
             self.save_encoder_outputs(data_loader, output_path)
+
+    def _save_multi_encoder_outputs(self, data_loader, output_dir, split):
+        self.model.eval()
+        outputs = {key: [] for key in self.model.encoder_keys}
+        sample_indices = []
+        with torch.no_grad():
+            for batch in data_loader:
+                sparse_gt = batch[0].to(self.device)
+                indices = batch[1] if len(batch) > 1 else None
+                encoder_outputs = self.model.encode(sparse_gt)
+                for key, value in encoder_outputs.items():
+                    outputs[key].append(value.cpu())
+                if indices is not None:
+                    sample_indices.append(indices.cpu())
+
+        indices_tensor = None
+        index_aligned = len(sample_indices) > 0
+        if index_aligned:
+            indices_tensor = torch.cat(sample_indices, dim=0).to(torch.long)
+            if indices_tensor.numel() == 0:
+                raise ValueError('cannot save empty indexed encoder outputs')
+            expected = torch.arange(indices_tensor.numel(), dtype=torch.long)
+            sorted_indices = torch.sort(indices_tensor).values
+            if not torch.equal(sorted_indices, expected):
+                raise ValueError(
+                    'encoder output indices must cover each sample exactly '
+                    'once from 0 to N-1')
+
+        for key, tensors in outputs.items():
+            encoder_outputs_tensor = torch.cat(tensors, dim=0)
+            if index_aligned:
+                if indices_tensor.numel() != encoder_outputs_tensor.size(0):
+                    raise ValueError(
+                        'number of encoder outputs does not match number of '
+                        f'indices: {encoder_outputs_tensor.size(0)} vs '
+                        f'{indices_tensor.numel()}')
+                aligned_outputs = torch.empty_like(encoder_outputs_tensor)
+                aligned_outputs[indices_tensor] = encoder_outputs_tensor
+                encoder_outputs_tensor = aligned_outputs
+            output_path = os.path.join(output_dir, f"{key}_{split}_code.pt")
+            torch.save(encoder_outputs_tensor, output_path)
+            order_msg = 'index-aligned' if index_aligned else 'loader-order'
+            logger.info(f'=> Saved {order_msg} encoder outputs '
+                        f'{tuple(encoder_outputs_tensor.shape)} to {output_path}')
 
 
 
@@ -278,6 +401,7 @@ class Tester:
         self.device = device
         self.criterion = criterion
         self.print_freq = print_freq
+        self.last_metrics = {}
 
     def __call__(self, test_data, verbose=True):
         r""" Runs the testing procedure.
@@ -299,19 +423,41 @@ class Tester:
         """
 
         iter_loss = AverageMeter('Iter loss')
+        encoder_losses = {}
         iter_time = AverageMeter('Iter time')
         total_error = torch.tensor(0., device=self.device)
         total_power = torch.tensor(0., device=self.device)
+        encoder_errors = {}
+        encoder_powers = {}
         time_tmp = time.time()
 
         for batch_idx, batch in enumerate(data_loader):
             sparse_gt = batch[0]
             sparse_gt = sparse_gt.to(self.device)
             sparse_pred = self.model(sparse_gt)
-            loss = self.criterion(sparse_pred, sparse_gt)
-            error_sum, power_sum = evaluator(sparse_pred, sparse_gt)
-            total_error += error_sum
-            total_power += power_sum
+            if isinstance(sparse_pred, dict):
+                losses = {}
+                for key, pred in sparse_pred.items():
+                    key_loss = self.criterion(pred, sparse_gt)
+                    losses[key] = key_loss
+                    if key not in encoder_losses:
+                        encoder_losses[key] = AverageMeter(f'{key} loss')
+                        encoder_errors[key] = torch.tensor(
+                            0., device=self.device)
+                        encoder_powers[key] = torch.tensor(
+                            0., device=self.device)
+                    encoder_losses[key].update(key_loss)
+                    error_sum, power_sum = evaluator(pred, sparse_gt)
+                    encoder_errors[key] += error_sum
+                    encoder_powers[key] += power_sum
+                    total_error += error_sum
+                    total_power += power_sum
+                loss = torch.stack(list(losses.values())).mean()
+            else:
+                loss = self.criterion(sparse_pred, sparse_gt)
+                error_sum, power_sum = evaluator(sparse_pred, sparse_gt)
+                total_error += error_sum
+                total_power += power_sum
             nmse = nmse_from_sums(total_error, total_power)
 
             # Log and visdom update
@@ -321,12 +467,46 @@ class Tester:
 
             # plot progress
             if (batch_idx + 1) % self.print_freq == 0:
-                logger.info(f'[{batch_idx + 1}/{len(data_loader)}] '
-                            f'loss: {iter_loss.avg:.4e} | '
-                            f'NMSE: {nmse:.4e} | time: {iter_time.avg:.3f}')
+                msg = (f'[{batch_idx + 1}/{len(data_loader)}] '
+                       f'loss: {iter_loss.avg:.4e} | '
+                       f'NMSE: {nmse:.4e}')
+                if encoder_losses:
+                    parts = []
+                    for key, meter in encoder_losses.items():
+                        key_nmse = nmse_from_sums(encoder_errors[key],
+                                                  encoder_powers[key])
+                        parts.append(f'{key}: loss={meter.avg:.4e}, '
+                                     f'NMSE={key_nmse:.4e}')
+                    msg += ' | encoders ' + '; '.join(parts)
+                msg += f' | time: {iter_time.avg:.3f}'
+                logger.info(msg)
 
         nmse = nmse_from_sums(total_error, total_power)
-        logger.info(f'=> Test NMSE: {nmse:.4e}\n')
-
+        self.last_metrics = {
+            "aggregate": {
+                "loss": self._as_float(iter_loss.avg),
+                "nmse": self._as_float(nmse),
+            }
+        }
+        if encoder_losses:
+            parts = []
+            for key, meter in encoder_losses.items():
+                key_nmse = nmse_from_sums(encoder_errors[key],
+                                          encoder_powers[key])
+                self.last_metrics[key] = {
+                    "loss": self._as_float(meter.avg),
+                    "nmse": self._as_float(key_nmse),
+                }
+                parts.append(f'{key}: loss={meter.avg:.4e}, '
+                             f'NMSE={key_nmse:.4e}')
+            logger.info(f'=> Test NMSE: {nmse:.4e} | encoders '
+                        f'{"; ".join(parts)}\n')
+        else:
+            logger.info(f'=> Test NMSE: {nmse:.4e}\n')
 
         return iter_loss.avg, nmse
+
+    def _as_float(self, value):
+        if isinstance(value, torch.Tensor):
+            return float(value.detach().cpu())
+        return float(value)

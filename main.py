@@ -105,7 +105,7 @@ def main():
                       resume=args.resume,
                       save_path=checkpoint_dir,
                       tensorboard_dir=tensorboard_dir,
-                      test_every_epoch=False)
+                      test_every_epoch=args.encoder_seeds is not None)
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)

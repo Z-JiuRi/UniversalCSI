@@ -3,7 +3,7 @@ import random
 import thop
 import torch
 
-from models import universal_csi
+from models import multi_seed_adapter_csi, universal_csi
 from utils import logger, line_seg
 
 __all__ = ["seed_everything", "init_device", "init_model", "show_parameter"]
@@ -46,6 +46,19 @@ def _load_clean_state_dict(checkpoint_path):
     return state_dict
 
 
+def _load_decoder_state_dict(checkpoint_path):
+    state_dict = _load_clean_state_dict(checkpoint_path)
+    decoder_state = {
+        key[len("decoder."):]: value
+        for key, value in state_dict.items()
+        if key.startswith("decoder.")
+    }
+    if not decoder_state:
+        raise ValueError(
+            f"No decoder.* parameters found in checkpoint: {checkpoint_path}")
+    return decoder_state
+
+
 def init_device(seed=None, cpu=None, gpu=None, affinity=None):
     # set the CPU affinity
     if affinity is not None:
@@ -74,32 +87,63 @@ def init_device(seed=None, cpu=None, gpu=None, affinity=None):
 
 def init_model(args):
     # Model loading
-    model = universal_csi(encoder_name=args.encoder,
-                          decoder_name=args.decoder,
-                          reduction=args.cr,
-                          d_model=args.d_model,
-                          channel=args.channel,
-                          nt=args.nt,
-                          nc=args.nc,
-                          dim_feedforward=args.dim_feedforward,
-                          hidden=args.hidden,
-                          num_blocks=args.num_blocks)
+    if args.encoder_seeds is not None:
+        model = multi_seed_adapter_csi(
+            encoder_name=args.encoder,
+            decoder_name=args.decoder,
+            reduction=args.cr,
+            d_model=args.d_model,
+            channel=args.channel,
+            nt=args.nt,
+            nc=args.nc,
+            dim_feedforward=args.dim_feedforward,
+            hidden=args.hidden,
+            num_blocks=args.num_blocks,
+            encoder_seeds=args.encoder_seeds,
+            decoder_seed=args.decoder_seed)
+    else:
+        model = universal_csi(encoder_name=args.encoder,
+                              decoder_name=args.decoder,
+                              reduction=args.cr,
+                              d_model=args.d_model,
+                              channel=args.channel,
+                              nt=args.nt,
+                              nc=args.nc,
+                              dim_feedforward=args.dim_feedforward,
+                              hidden=args.hidden,
+                              num_blocks=args.num_blocks)
 
     if args.pretrained is not None:
         state_dict = _load_clean_state_dict(args.pretrained)
         model.load_state_dict(state_dict)
         logger.info("pretrained model loaded from {}".format(args.pretrained))
 
+    if args.pretrained_decoder is not None:
+        decoder_state = _load_decoder_state_dict(args.pretrained_decoder)
+        model.decoder.load_state_dict(decoder_state)
+        for param in model.decoder.parameters():
+            param.requires_grad = False
+        logger.info("pretrained decoder loaded and frozen from {}".format(
+            args.pretrained_decoder))
+
     # Model flops and params counting
     H_a = torch.randn([1, args.channel, args.nt, args.nc])
-    flops, params = thop.profile(model, inputs=(H_a,), verbose=False)
-    flops, params = thop.clever_format([flops, params], "%.4e")
+    try:
+        flops, params = thop.profile(model, inputs=(H_a,), verbose=False)
+        flops, params = thop.clever_format([flops, params], "%.4e")
+    except Exception as exc:
+        flops, params = "unavailable", "unavailable"
+        logger.warning(f"=> Model profiling skipped: {exc}")
 
     # Model info logging
-    logger.info(f'=> Model Name: UniversalCSI [pretrained: {args.pretrained}]')
+    model_name = "MultiSeedEncoderAdapterCSI" if args.encoder_seeds else "UniversalCSI"
+    logger.info(f'=> Model Name: {model_name} [pretrained: {args.pretrained}; '
+                f'pretrained_decoder: {args.pretrained_decoder}]')
     logger.info(f'=> Model Config: compression ratio=1/{args.cr}; '
                 f'encoder={args.encoder}; '
                 f'decoder={args.decoder}; '
+                f'encoder_seeds={args.encoder_seeds}; '
+                f'decoder_seed={args.decoder_seed}; '
                 f'input shape=({args.channel}, {args.nt}, {args.nc}); '
                 f'input dim={args.channel * args.nt * args.nc}')
     logger.info(f'=> Model Flops: {flops}')
