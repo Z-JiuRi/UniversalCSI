@@ -27,7 +27,7 @@ decoder.*: 具体维度见 models/decoders/ 下对应架构文件顶部说明
 import torch
 import torch.nn as nn
 
-from .adapters import CodeAdapter
+from .adapters import LinearAdapter
 from .decoders import CNNResidualDecoder, CNNRefinementHead, HybridDecoder
 from .decoders import TransNetDecoder
 from .encoders import AttentionCNNEncoder, CBAMCNNEncoder, CLNetEncoder
@@ -46,7 +46,7 @@ __all__ = [
     "build_decoder",
     "multi_seed_adapter_csi",
     "select_init_strategy",
-    "CodeAdapter",
+    "LinearAdapter",
     "CsiNetEncoder",
     "CNNEncoder",
     "CBAMCNNEncoder",
@@ -77,10 +77,12 @@ def select_init_strategy(encoder_name, decoder_name):
 
 
 class UniversalCSIModel(nn.Module):
-    def __init__(self, encoder, decoder, init_strategy="typed"):
+    def __init__(self, encoder, decoder, init_strategy="typed",
+                 code_adapter=None):
         super().__init__()
         self.encoder = encoder
         self.decoder = decoder
+        self.code_adapter = code_adapter
         self.init_strategy = init_strategy
         self._reset_parameters(init_strategy)
         if hasattr(self.decoder, "reset_refinement_output"):
@@ -130,7 +132,10 @@ class UniversalCSIModel(nn.Module):
         return self.decoder(code)
 
     def encode(self, x):
-        return self.encoder(x)
+        code = self.encoder(x)
+        if self.code_adapter is not None:
+            code = self.code_adapter(code)
+        return code
 
 
 def _reset_module_parameters(module, strategy):
@@ -192,10 +197,11 @@ def _seeded_adapter_reset(adapter, seed):
 
 
 class MultiSeedEncoderAdapterCSI(nn.Module):
-    def __init__(self, encoders, adapter, decoder):
+    def __init__(self, encoders, adapter, decoder, code_adapter=None):
         super().__init__()
         self.encoders = nn.ModuleDict(encoders)
         self.adapter = adapter
+        self.code_adapter = code_adapter
         self.decoder = decoder
         self.encoder_keys = list(encoders.keys())
         self.latest_adapter_stats = {}
@@ -212,11 +218,16 @@ class MultiSeedEncoderAdapterCSI(nn.Module):
                 self.latest_adapter_stats[key] = {
                     "residual_ratio": float(ratio.detach().cpu())
                 }
+            if self.code_adapter is not None:
+                adapted_code = self.code_adapter(adapted_code)
             outputs[key] = self.decoder(adapted_code)
         return outputs
 
     def encode(self, x):
-        return {key: encoder(x) for key, encoder in self.encoders.items()}
+        codes = {key: encoder(x) for key, encoder in self.encoders.items()}
+        if self.code_adapter is not None:
+            codes = {k: self.code_adapter(c) for k, c in codes.items()}
+        return codes
 
     def adapter_metrics(self):
         metrics = {
@@ -271,7 +282,8 @@ def build_encoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
 
 
 def build_decoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
-                  dim_feedforward=None, hidden=16, num_blocks=2):
+                  dim_feedforward=None, hidden=16, num_blocks=2,
+                  adapter_positions=None, adapter_hidden_dim=None):
     name = name.lower()
     if name == "transnet":
         return TransNetDecoder(reduction, d_model, channel, nt, nc,
@@ -282,26 +294,40 @@ def build_decoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
     if name == "hybrid":
         return HybridDecoder(reduction, d_model, channel, nt, nc,
                              dim_feedforward, hidden=hidden,
-                             num_blocks=num_blocks)
+                             num_blocks=num_blocks,
+                             adapter_positions=adapter_positions,
+                             adapter_hidden_dim=adapter_hidden_dim)
     raise ValueError(f"Unknown decoder: {name}")
 
 
 def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
                   channel=2, nt=32, nc=32, dim_feedforward=None,
-                  decoder_name="transnet", hidden=16, num_blocks=2):
+                  decoder_name="transnet", hidden=16, num_blocks=2,
+                  adapter_positions=None, adapter_hidden_dim=None):
     encoder = build_encoder(encoder_name, reduction, d_model, channel, nt, nc,
                             dim_feedforward)
     decoder = build_decoder(decoder_name, reduction, d_model, channel, nt, nc,
                             dim_feedforward, hidden=hidden,
-                            num_blocks=num_blocks)
+                            num_blocks=num_blocks,
+                            adapter_positions=adapter_positions,
+                            adapter_hidden_dim=adapter_hidden_dim)
     init_strategy = select_init_strategy(encoder_name, decoder_name)
-    return UniversalCSIModel(encoder, decoder, init_strategy)
+    code_adapter = None
+    if adapter_positions and "encoder" in adapter_positions:
+        input_dim = channel * nt * nc
+        code_dim = input_dim // reduction
+        from .adapters import MLPAdapter
+        code_adapter = MLPAdapter(code_dim, adapter_hidden_dim)
+    return UniversalCSIModel(encoder, decoder, init_strategy,
+                             code_adapter=code_adapter)
 
 
 def multi_seed_adapter_csi(encoder_name="transnet", reduction=4, d_model=64,
                            channel=2, nt=32, nc=32, dim_feedforward=None,
                            decoder_name="transnet", hidden=16, num_blocks=2,
-                           encoder_seeds=None, decoder_seed=None):
+                           encoder_seeds=None, decoder_seed=None,
+                           adapter_positions=None,
+                           adapter_hidden_dim=None):
     if not encoder_seeds:
         raise ValueError("encoder_seeds must contain at least one seed")
 
@@ -316,7 +342,9 @@ def multi_seed_adapter_csi(encoder_name="transnet", reduction=4, d_model=64,
 
     decoder = build_decoder(decoder_name, reduction, d_model, channel, nt, nc,
                             dim_feedforward, hidden=hidden,
-                            num_blocks=num_blocks)
+                            num_blocks=num_blocks,
+                            adapter_positions=adapter_positions,
+                            adapter_hidden_dim=adapter_hidden_dim)
     _reset_module_parameters(decoder, init_strategy)
     if hasattr(decoder, "reset_refinement_output"):
         decoder.reset_refinement_output()
@@ -326,6 +354,13 @@ def multi_seed_adapter_csi(encoder_name="transnet", reduction=4, d_model=64,
         raise ValueError(
             f"input_dim={input_dim} must be divisible by reduction={reduction}")
     code_dim = input_dim // reduction
-    adapter = CodeAdapter(code_dim)
+    adapter = LinearAdapter(code_dim)
     _seeded_adapter_reset(adapter, decoder_seed)
-    return MultiSeedEncoderAdapterCSI(encoders, adapter, decoder)
+
+    code_adapter = None
+    if adapter_positions and "encoder" in adapter_positions:
+        from .adapters import MLPAdapter
+        code_adapter = MLPAdapter(code_dim, adapter_hidden_dim)
+
+    return MultiSeedEncoderAdapterCSI(encoders, adapter, decoder,
+                                      code_adapter=code_adapter)

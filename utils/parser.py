@@ -36,6 +36,12 @@ parser.add_argument('--encoder_seeds', nargs='+', type=int, default=None,
                     help='seeds used to initialize multiple encoders')
 parser.add_argument('--decoder_seed', default=None, type=int,
                     help='seed used to initialize the shared code adapter')
+parser.add_argument('--adapter_pos', nargs='+', type=str, default=None,
+                    choices=['encoder', 'semantic_projector',
+                             'token_projection', 'token_mixer'],
+                    help='positions to insert MLP adapters')
+parser.add_argument('--adapter_hidden_dim', default=None, type=int,
+                    help='hidden dimension of MLP adapters (default: 4 * adapter_dim)')
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
 parser.add_argument('--cpu', action='store_true', default=False,

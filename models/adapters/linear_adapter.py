@@ -1,11 +1,11 @@
 import torch.nn as nn
 
 
-class CodeAdapter(nn.Module):
-    def __init__(self, code_dim):
+class LinearAdapter(nn.Module):
+    def __init__(self, adapter_dim):
         super().__init__()
-        self.norm = nn.LayerNorm(code_dim)
-        self.proj = nn.Linear(code_dim, code_dim)
+        self.norm = nn.LayerNorm(adapter_dim)
+        self.proj = nn.Linear(adapter_dim, adapter_dim)
         self.reset_parameters()
 
     def reset_parameters(self):

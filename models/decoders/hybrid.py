@@ -74,7 +74,8 @@ from .cnn_residual import CNNRefinementHead
 
 class HybridDecoder(nn.Module):
     def __init__(self, reduction=4, d_model=64, channel=2, nt=32, nc=32,
-                 dim_feedforward=None, hidden=16, num_blocks=2):
+                 dim_feedforward=None, hidden=16, num_blocks=2,
+                 adapter_positions=None, adapter_hidden_dim=None):
         super().__init__()
         input_dim = channel * nt * nc
         assert input_dim % d_model == 0
@@ -84,6 +85,9 @@ class HybridDecoder(nn.Module):
         self.nc = nc
         self.feature_shape = (input_dim // d_model, d_model)
         code_dim = input_dim // reduction
+        self.adapter_positions = adapter_positions or []
+
+        # ---- submodules ----
         self.semantic_projector = nn.Sequential(OrderedDict([
             ("norm", nn.LayerNorm(code_dim)),
             ("linear", nn.Linear(code_dim, code_dim)),
@@ -97,14 +101,36 @@ class HybridDecoder(nn.Module):
                                         zero_init_output=True)
         self.residual_scale = nn.Parameter(torch.ones(1))
 
+        # ---- internal adapters (zero-init, identity at start) ----
+        from ..adapters import MLPAdapter
+
+        self.sp_adapter = None
+        if "semantic_projector" in self.adapter_positions:
+            self.sp_adapter = MLPAdapter(code_dim, adapter_hidden_dim)
+
+        self.tp_adapter = None
+        if "token_projection" in self.adapter_positions:
+            self.tp_adapter = MLPAdapter(d_model, adapter_hidden_dim)
+
+        self.tm_adapter = None
+        if "token_mixer" in self.adapter_positions:
+            self.tm_adapter = MLPAdapter(d_model, adapter_hidden_dim)
+
     def reset_refinement_output(self):
         self.refine.reset_output()
 
     def forward(self, code):
         batch_size = code.size(0)
-        tokens = self.token_projection(self.semantic_projector(code))
+        x = self.semantic_projector(code)
+        if self.sp_adapter is not None:
+            x = self.sp_adapter(x)
+        tokens = self.token_projection(x)
         tokens = tokens.view(batch_size, self.feature_shape[0],
                              self.feature_shape[1])
+        if self.tp_adapter is not None:
+            tokens = self.tp_adapter(tokens)
         tokens = self.token_mixer(tokens)
+        if self.tm_adapter is not None:
+            tokens = self.tm_adapter(tokens)
         coarse = tokens.view(batch_size, self.channel, self.nt, self.nc)
         return coarse + self.residual_scale * self.refine(coarse)
