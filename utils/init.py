@@ -72,15 +72,6 @@ def _load_encoder_state_dict(checkpoint_path):
     return encoder_state
 
 
-def _unfreeze_decoder_adapters(decoder):
-    """Re-enable adapter params inside a frozen decoder."""
-    for name, param in decoder.named_parameters():
-        if name.startswith("sp_adapter.") or \
-           name.startswith("tp_adapter.") or \
-           name.startswith("tm_adapter."):
-            param.requires_grad = True
-
-
 def init_device(seed=None, cpu=None, gpu=None, affinity=None):
     # set the CPU affinity
     if affinity is not None:
@@ -119,7 +110,7 @@ def init_model(args):
                           dim_feedforward=args.dim_feedforward,
                           hidden=args.hidden,
                           num_blocks=args.num_blocks,
-                          adapter_positions=args.adapter_pos,
+                          adapter=args.adapter,
                           adapter_hidden_dim=args.adapter_hidden_dim)
 
     if args.pretrained is not None:
@@ -132,8 +123,6 @@ def init_model(args):
         model.decoder.load_state_dict(decoder_state)
         for param in model.decoder.parameters():
             param.requires_grad = False
-        # Re-enable internal adapters so they stay trainable
-        _unfreeze_decoder_adapters(model.decoder)
         logger.info("pretrained decoder loaded and frozen from {}".format(
             args.pretrained_decoder))
 
@@ -159,7 +148,8 @@ def init_model(args):
     logger.info(f'=> Model Name: {model_name} [pretrained: {args.pretrained}; '
                 f'pretrained_decoder: {args.pretrained_decoder}; '
                 f'pretrained_encoder: {args.pretrained_encoder}; '
-                f'adapter_pos: {args.adapter_pos}]')
+                f'adapter: {args.adapter}; '
+                f'adapter_hidden_dim: {args.adapter_hidden_dim}]')
     logger.info(f'=> Model Config: compression ratio=1/{args.cr}; '
                 f'encoder={args.encoder}; '
                 f'decoder={args.decoder}; '

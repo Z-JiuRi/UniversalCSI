@@ -171,8 +171,7 @@ def build_encoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
 
 
 def build_decoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
-                  dim_feedforward=None, hidden=16, num_blocks=2,
-                  adapter_positions=None, adapter_hidden_dim=None):
+                  dim_feedforward=None, hidden=16, num_blocks=2):
     name = name.lower()
     if name == "transnet":
         return TransNetDecoder(reduction, d_model, channel, nt, nc,
@@ -183,29 +182,27 @@ def build_decoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
     if name == "hybrid":
         return HybridDecoder(reduction, d_model, channel, nt, nc,
                              dim_feedforward, hidden=hidden,
-                             num_blocks=num_blocks,
-                             adapter_positions=adapter_positions,
-                             adapter_hidden_dim=adapter_hidden_dim)
+                             num_blocks=num_blocks)
     raise ValueError(f"Unknown decoder: {name}")
 
 
 def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
                   channel=2, nt=32, nc=32, dim_feedforward=None,
                   decoder_name="transnet", hidden=16, num_blocks=2,
-                  adapter_positions=None, adapter_hidden_dim=None):
+                  adapter=None, adapter_hidden_dim=None):
     encoder = build_encoder(encoder_name, reduction, d_model, channel, nt, nc,
                             dim_feedforward)
     decoder = build_decoder(decoder_name, reduction, d_model, channel, nt, nc,
                             dim_feedforward, hidden=hidden,
-                            num_blocks=num_blocks,
-                            adapter_positions=adapter_positions,
-                            adapter_hidden_dim=adapter_hidden_dim)
+                            num_blocks=num_blocks)
     init_strategy = select_init_strategy(encoder_name, decoder_name)
     code_adapter = None
-    if adapter_positions and "encoder" in adapter_positions:
+    if adapter == "mlp":
         input_dim = channel * nt * nc
         code_dim = input_dim // reduction
         from .adapters import MLPAdapter
         code_adapter = MLPAdapter(code_dim, adapter_hidden_dim)
+    elif adapter is not None:
+        raise ValueError(f"Unknown adapter: {adapter}")
     return UniversalCSIModel(encoder, decoder, init_strategy,
                              code_adapter=code_adapter)

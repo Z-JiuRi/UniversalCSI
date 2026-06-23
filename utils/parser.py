@@ -32,12 +32,11 @@ parser.add_argument('--resume', type=str, metavar='PATH', default=None,
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('--seed', default=None, type=int,
                     help='seed for initializing training. ')
-parser.add_argument('--adapter_pos', nargs='+', type=str, default=None,
-                    choices=['encoder', 'semantic_projector',
-                             'token_projection', 'token_mixer'],
-                    help='positions to insert MLP adapters')
+parser.add_argument('--adapter', type=str, default=None,
+                    choices=['mlp'],
+                    help='adapter type to insert between encoder and decoder')
 parser.add_argument('--adapter_hidden_dim', default=None, type=int,
-                    help='hidden dimension of MLP adapters (default: 4 * adapter_dim)')
+                    help='hidden dimension of the encoder-decoder MLP adapter (default: 4 * adapter_dim)')
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
 parser.add_argument('--cpu', action='store_true', default=False,
