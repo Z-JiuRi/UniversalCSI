@@ -81,6 +81,8 @@ class UniversalCSIModel(nn.Module):
         self.code_adapter = code_adapter
         self.init_strategy = init_strategy
         self._reset_parameters(init_strategy)
+        if self.code_adapter is not None:
+            self.code_adapter.reset_parameters()
         if hasattr(self.decoder, "reset_refinement_output"):
             self.decoder.reset_refinement_output()
 
@@ -202,6 +204,11 @@ def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
         code_dim = input_dim // reduction
         from .adapters import MLPAdapter
         code_adapter = MLPAdapter(code_dim, adapter_hidden_dim)
+    elif adapter == "mlp_direct":
+        input_dim = channel * nt * nc
+        code_dim = input_dim // reduction
+        from .adapters import MLPDirectAdapter
+        code_adapter = MLPDirectAdapter(code_dim, adapter_hidden_dim)
     elif adapter is not None:
         raise ValueError(f"Unknown adapter: {adapter}")
     return UniversalCSIModel(encoder, decoder, init_strategy,

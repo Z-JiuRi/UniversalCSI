@@ -1,18 +1,18 @@
 import torch.nn as nn
 
 
-class MLPAdapter(nn.Module):
-    """MLP adapter with residual connection and zero-initialized output projection.
+class MLPDirectAdapter(nn.Module):
+    """MLP adapter WITHOUT residual connection.
 
-    Applies LayerNorm -> Linear -> GELU -> Linear, then adds the result
-    back to the input via a residual connection.
+    Applies LayerNorm -> Linear -> GELU -> Linear.  No residual means
+    the adapter needs to learn the full target transformation from
+    scratch rather than starting from identity.
 
-    The first Linear (W1) is Kaiming-initialized to produce non-zero
-    activations so gradients can flow.  The second Linear (W2) is
-    zero-initialized so the adapter starts as an identity function,
-    preserving the frozen model's exact behaviour at step 0 while still
-    allowing gradients to reach W2 (and subsequently W1) after the first
-    backward pass.
+    W1 is Kaiming-initialized for healthy activation variance.
+    W2 is initialized with small random values (std=0.01) so the
+    initial adapter output is a near-zero perturbation — the decoder
+    sees something close to the original code at step 0 and the
+    adapter gradually learns the full transformation.
     """
 
     def __init__(self, adapter_dim, adapter_hidden_dim=None):
@@ -33,8 +33,8 @@ class MLPAdapter(nn.Module):
         nn.init.kaiming_uniform_(self.mlp[0].weight, a=0.3,
                                  nonlinearity='leaky_relu')
         nn.init.zeros_(self.mlp[0].bias)
-        nn.init.zeros_(self.mlp[2].weight)
+        nn.init.normal_(self.mlp[2].weight, mean=0.0, std=0.01)
         nn.init.zeros_(self.mlp[2].bias)
 
     def forward(self, x):
-        return x + self.mlp(self.norm(x))
+        return self.mlp(self.norm(x))
