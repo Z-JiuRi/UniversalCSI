@@ -58,9 +58,9 @@ def main():
                           scheduler=None,
                           save_path=checkpoint_dir,
                           tensorboard_dir=tensorboard_dir)
-        trainer.save_all_encoder_outputs(
-            {"train": train_loader},
-            os.path.join(exp_dir, "codewords"))
+        trainer.save_encoder_outputs(
+            train_loader,
+            os.path.join(exp_dir, "codewords", "train_code.pt"))
         return
 
     # Define optimizer and scheduler
@@ -105,14 +105,14 @@ def main():
                       resume=args.resume,
                       save_path=checkpoint_dir,
                       tensorboard_dir=tensorboard_dir,
-                      test_every_epoch=args.encoder_seeds is not None)
+                      test_every_epoch=False)
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)
 
-    trainer.save_all_encoder_outputs(
-        {"train": train_loader},
-        os.path.join(exp_dir, "codewords"))
+    trainer.save_encoder_outputs(
+        train_loader,
+        os.path.join(exp_dir, "codewords", "train_code.pt"))
 
     # Final testing
     loss, nmse = Tester(model, device, criterion)(test_loader)

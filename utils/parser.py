@@ -32,10 +32,6 @@ parser.add_argument('--resume', type=str, metavar='PATH', default=None,
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('--seed', default=None, type=int,
                     help='seed for initializing training. ')
-parser.add_argument('--encoder_seeds', nargs='+', type=int, default=None,
-                    help='seeds used to initialize multiple encoders')
-parser.add_argument('--decoder_seed', default=None, type=int,
-                    help='seed used to initialize the shared code adapter')
 parser.add_argument('--adapter_pos', nargs='+', type=str, default=None,
                     choices=['encoder', 'semantic_projector',
                              'token_projection', 'token_mixer'],

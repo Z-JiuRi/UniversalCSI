@@ -3,7 +3,7 @@ import random
 import thop
 import torch
 
-from models import multi_seed_adapter_csi, universal_csi
+from models import universal_csi
 from utils import logger, line_seg
 
 __all__ = ["seed_everything", "init_device", "init_model", "show_parameter"]
@@ -109,35 +109,18 @@ def init_device(seed=None, cpu=None, gpu=None, affinity=None):
 
 def init_model(args):
     # Model loading
-    if args.encoder_seeds is not None:
-        model = multi_seed_adapter_csi(
-            encoder_name=args.encoder,
-            decoder_name=args.decoder,
-            reduction=args.cr,
-            d_model=args.d_model,
-            channel=args.channel,
-            nt=args.nt,
-            nc=args.nc,
-            dim_feedforward=args.dim_feedforward,
-            hidden=args.hidden,
-            num_blocks=args.num_blocks,
-            encoder_seeds=args.encoder_seeds,
-            decoder_seed=args.decoder_seed,
-            adapter_positions=args.adapter_pos,
-            adapter_hidden_dim=args.adapter_hidden_dim)
-    else:
-        model = universal_csi(encoder_name=args.encoder,
-                              decoder_name=args.decoder,
-                              reduction=args.cr,
-                              d_model=args.d_model,
-                              channel=args.channel,
-                              nt=args.nt,
-                              nc=args.nc,
-                              dim_feedforward=args.dim_feedforward,
-                              hidden=args.hidden,
-                              num_blocks=args.num_blocks,
-                              adapter_positions=args.adapter_pos,
-                              adapter_hidden_dim=args.adapter_hidden_dim)
+    model = universal_csi(encoder_name=args.encoder,
+                          decoder_name=args.decoder,
+                          reduction=args.cr,
+                          d_model=args.d_model,
+                          channel=args.channel,
+                          nt=args.nt,
+                          nc=args.nc,
+                          dim_feedforward=args.dim_feedforward,
+                          hidden=args.hidden,
+                          num_blocks=args.num_blocks,
+                          adapter_positions=args.adapter_pos,
+                          adapter_hidden_dim=args.adapter_hidden_dim)
 
     if args.pretrained is not None:
         state_dict = _load_clean_state_dict(args.pretrained)
@@ -156,17 +139,9 @@ def init_model(args):
 
     if args.pretrained_encoder is not None:
         encoder_state = _load_encoder_state_dict(args.pretrained_encoder)
-        if hasattr(model, 'encoders'):
-            # Multi-encoder model: load into each encoder
-            for key, encoder in model.encoders.items():
-                encoder.load_state_dict(encoder_state)
-                for param in encoder.parameters():
-                    param.requires_grad = False
-        else:
-            # Single-encoder model
-            model.encoder.load_state_dict(encoder_state)
-            for param in model.encoder.parameters():
-                param.requires_grad = False
+        model.encoder.load_state_dict(encoder_state)
+        for param in model.encoder.parameters():
+            param.requires_grad = False
         logger.info("pretrained encoder loaded and frozen from {}".format(
             args.pretrained_encoder))
 
@@ -180,7 +155,7 @@ def init_model(args):
         logger.warning(f"=> Model profiling skipped: {exc}")
 
     # Model info logging
-    model_name = "MultiSeedEncoderAdapterCSI" if args.encoder_seeds else "UniversalCSI"
+    model_name = "UniversalCSI"
     logger.info(f'=> Model Name: {model_name} [pretrained: {args.pretrained}; '
                 f'pretrained_decoder: {args.pretrained_decoder}; '
                 f'pretrained_encoder: {args.pretrained_encoder}; '
@@ -188,8 +163,6 @@ def init_model(args):
     logger.info(f'=> Model Config: compression ratio=1/{args.cr}; '
                 f'encoder={args.encoder}; '
                 f'decoder={args.decoder}; '
-                f'encoder_seeds={args.encoder_seeds}; '
-                f'decoder_seed={args.decoder_seed}; '
                 f'input shape=({args.channel}, {args.nt}, {args.nc}); '
                 f'input dim={args.channel * args.nt * args.nc}')
     logger.info(f'=> Model Flops: {flops}')
