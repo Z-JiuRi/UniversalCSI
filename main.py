@@ -110,7 +110,10 @@ def main():
                       resume=args.resume,
                       save_path=checkpoint_dir,
                       tensorboard_dir=tensorboard_dir,
-                      test_every_epoch=False)
+                      test_every_epoch=False,
+                      teacher_code_path=args.teacher_code,
+                      lambda_recon=args.lambda_recon,
+                      lambda_code=args.lambda_code)
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)

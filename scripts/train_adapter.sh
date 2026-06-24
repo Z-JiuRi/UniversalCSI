@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 运行命令 (一行复制即可):
-#   adapter=mlp gpu=2 seed=3407 bash scripts/train_adapter.sh
+#   adapter=mlp gpu=6 seed=3407 lambda_recon=0.0 lambda_code=1.0 bash scripts/train_adapter.sh
 #   adapter=transformer adapter_hidden_dim=256 gpu=2 seed=3407 bash scripts/train_adapter.sh
 
 # ==============================================================================
@@ -37,11 +37,15 @@ gpu=${gpu:-2}
 seed=${seed:-42}
 
 adapter=${adapter:-mlp}
-adapter_hidden_dim=${adapter_hidden_dim:-}
+adapter_hidden_dim=${adapter_hidden_dim:-2048}
 pretrained_encoder=${pretrained_encoder:-exps/COST2100/in/seed${seed}/transnet_hybrid/checkpoints/best_nmse.pth}
 pretrained_decoder=${pretrained_decoder:-exps/COST2100/in/seed42/transnet_hybrid/checkpoints/best_nmse.pth}
 
-exp_name=${exp_name:-COST2100/in/adapter/${adapter}/seed${seed}}
+teacher_code=${teacher_code:-exps/COST2100/in/seed42/transnet_hybrid/codewords/train_code.pt}
+lambda_recon=${lambda_recon:-1.0}
+lambda_code=${lambda_code:-0.0}
+
+exp_name=${exp_name:-COST2100/in/adapter/${adapter}/seed${seed}_${lambda_recon}_${lambda_code}}
 
 extra_args=()
 add_arg() { local flag=$1 val=$2; [ -n "$val" ] && extra_args+=("$flag" "$val"); }
@@ -50,6 +54,9 @@ add_arg --adapter             "$adapter"
 add_arg --adapter_hidden_dim  "$adapter_hidden_dim"
 add_arg --pretrained_encoder  "$pretrained_encoder"
 add_arg --pretrained_decoder  "$pretrained_decoder"
+add_arg --teacher_code        "$teacher_code"
+add_arg --lambda_recon        "$lambda_recon"
+add_arg --lambda_code         "$lambda_code"
 
 
 # ==============================================================================

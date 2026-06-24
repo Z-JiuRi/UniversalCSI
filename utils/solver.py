@@ -13,7 +13,8 @@ class Trainer:
 
     def __init__(self, model, device, optimizer, criterion, scheduler, resume=None,
                  save_path='./checkpoints', tensorboard_dir=None, print_freq=20,
-                 val_freq=10, test_freq=10, test_every_epoch=False):
+                 val_freq=10, test_freq=10, test_every_epoch=False,
+                 teacher_code_path=None, lambda_recon=1.0, lambda_code=0.0):
 
         # Basic arguments
         self.model = model
@@ -47,6 +48,14 @@ class Trainer:
         if self.tensorboard_dir is None:
             self.tensorboard_dir = os.path.join("exps", "default", "tensorboard")
         self.vision = SummaryWriter(log_dir=self.tensorboard_dir)
+
+        # Teacher code distillation
+        self.lambda_recon = lambda_recon
+        self.lambda_code = lambda_code
+        self.teacher_codes = None
+        if teacher_code_path is not None:
+            self._load_teacher_codes(teacher_code_path)
+            self._move_teacher_codes_to_device()
 
     def loop(self, epochs, train_loader, val_loader, test_loader):
         r""" The main loop function which runs training and validation iteratively.
@@ -115,6 +124,8 @@ class Trainer:
 
     def _iteration(self, data_loader):
         iter_loss = AverageMeter('Iter loss')
+        iter_code_loss = AverageMeter('Code loss')
+        iter_recon_loss = AverageMeter('Recon loss')
         iter_time = AverageMeter('Iter time')
         time_tmp = time.time()
 
@@ -122,35 +133,61 @@ class Trainer:
             sparse_gt = batch[0]
             sparse_gt = sparse_gt.to(self.device)
             sparse_pred = self.model(sparse_gt)
-            loss = self.criterion(sparse_pred, sparse_gt)
+
+            # Reconstruction loss (always computed)
+            recon_loss = self.criterion(sparse_pred, sparse_gt)
+            total_loss = self.lambda_recon * recon_loss
+
+            # Code-space distillation loss (training only, when teacher codes available)
+            code_loss = torch.tensor(0., device=self.device)
+            if self.model.training and self.teacher_codes is not None:
+                indices = batch[1]
+                code_pred = self.model.encode(sparse_gt)  # code after adapter
+                teacher_code = self.teacher_codes[indices]
+                code_loss = self.criterion(code_pred, teacher_code)
+                total_loss = total_loss + self.lambda_code * code_loss
 
             # Scheduler update, backward pass and optimization
             if self.model.training:
                 self.optimizer.zero_grad()
-                loss.backward()
+                total_loss.backward()
                 self.optimizer.step()
                 self.scheduler.step()
 
             # Log and visdom update
-            iter_loss.update(loss)
+            iter_loss.update(total_loss)
+            iter_recon_loss.update(recon_loss)
+            if self.model.training and self.teacher_codes is not None:
+                iter_code_loss.update(code_loss)
             iter_time.update(time.time() - time_tmp)
             time_tmp = time.time()
 
             # plot progress
             if (batch_idx + 1) % self.print_freq == 0:
-                msg = (f'Epoch: [{self.cur_epoch}/{self.all_epoch}]'
-                       f'[{batch_idx + 1}/{len(data_loader)}] '
-                       f'lr: {self.scheduler.get_lr()[0]:.2e} | '
-                       f'MSE loss: {iter_loss.avg:.4e}'
-                       f' | time: {iter_time.avg:.3f}')
-                logger.info(msg)
+                parts = [f'Epoch: [{self.cur_epoch}/{self.all_epoch}]'
+                         f'[{batch_idx + 1}/{len(data_loader)}] '
+                         f'lr: {self.scheduler.get_lr()[0]:.2e} | '
+                         f'recon: {iter_recon_loss.avg:.4e}']
+                if self.model.training and self.teacher_codes is not None:
+                    parts.append(f'code: {iter_code_loss.avg:.4e}')
+                parts.append(f'total: {iter_loss.avg:.4e}'
+                             f' | time: {iter_time.avg:.3f}')
+                logger.info(' '.join(parts))
                 self.vision.add_scalar("every/lr", self.scheduler.get_lr()[0],
                                        global_step=self.cur_epoch)
-                self.vision.add_scalar("every/mse_loss", iter_loss.avg, self.cur_epoch)
+                self.vision.add_scalar("every/total_loss", iter_loss.avg,
+                                       global_step=self.cur_epoch)
 
         mode = 'Train' if self.model.training else 'Val'
-        msg = f'=> {mode}  Loss: {iter_loss.avg:.4e}'
-        metrics = {"loss": self._as_float(iter_loss.avg)}
+        parts = [f'=> {mode}  Recon loss: {iter_recon_loss.avg:.4e}']
+        if self.model.training and self.teacher_codes is not None:
+            parts.append(f'Code loss: {iter_code_loss.avg:.4e}')
+        parts.append(f'Total: {iter_loss.avg:.4e}')
+        msg = ' | '.join(parts)
+        metrics = {"loss": self._as_float(iter_loss.avg),
+                   "recon_loss": self._as_float(iter_recon_loss.avg)}
+        if self.model.training and self.teacher_codes is not None:
+            metrics["code_loss"] = self._as_float(iter_code_loss.avg)
         adapter_metrics = self._get_adapter_metrics()
         if adapter_metrics:
             parts = [f"{k}={v:.4e}" for k, v in adapter_metrics.items()]
@@ -162,6 +199,23 @@ class Trainer:
             self.last_val_metrics = metrics
 
         return iter_loss.avg
+
+    def _load_teacher_codes(self, path):
+        r"""Load precomputed teacher codewords from disk."""
+        if not os.path.isfile(path):
+            raise FileNotFoundError(f"Teacher code file not found: {path}")
+        logger.info(f'=> Loading teacher codewords from {path}')
+        self.teacher_codes = torch.load(path, weights_only=True, map_location='cpu')
+        if self.teacher_codes.ndim != 2:
+            raise ValueError(
+                f'Teacher codewords must be 2D (N, code_dim), '
+                f'got shape {self.teacher_codes.shape}')
+        logger.info(f'=> Loaded teacher codewords: {self.teacher_codes.shape}')
+
+    def _move_teacher_codes_to_device(self):
+        r"""Move teacher codes to the compute device for efficient indexing."""
+        if self.teacher_codes is not None:
+            self.teacher_codes = self.teacher_codes.to(self.device)
 
     def _save(self, state, name):
         if self.save_path is None:

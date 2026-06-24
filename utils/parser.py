@@ -83,4 +83,12 @@ parser.add_argument('--lr_init', type=float, default=5e-4,
                     help='initial learning rate')
 parser.add_argument('--weight_decay', type=float, default=1e-3,
                     help='weight decay for AdamW')
+
+# Teacher code distillation arguments
+parser.add_argument('--teacher_code', type=str, default=None, metavar='PATH',
+                    help='path to precomputed teacher codewords (train_code.pt)')
+parser.add_argument('--lambda_recon', type=float, default=1.0,
+                    help='weight for reconstruction MSE loss (default: 1.0)')
+parser.add_argument('--lambda_code', type=float, default=0.0,
+                    help='weight for code-space MSE loss against teacher (default: 0.0)')
 args = parser.parse_args()
