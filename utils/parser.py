@@ -33,10 +33,11 @@ parser.add_argument('--resume', type=str, metavar='PATH', default=None,
 parser.add_argument('--seed', default=None, type=int,
                     help='seed for initializing training. ')
 parser.add_argument('--adapter', type=str, default=None,
-                    choices=['mlp', 'mlp_direct'],
-                    help='adapter type to insert between encoder and decoder '
-                         '(mlp=with residual, mlp_direct=without residual)')
-parser.add_argument('--adapter_hidden_dim', default=None, type=int,
+                    choices=['mlp', 'mlp_direct', 'transformer'],
+                    help='adapter type: mlp (residual MLP), '
+                         'mlp_direct (MLP w/o residual), '
+                         'transformer (self-attention)')
+parser.add_argument('--adapter_hidden_dim', default=2048, type=int,
                     help='hidden dimension of the adapter MLP (default: 4 * adapter_dim)')
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')

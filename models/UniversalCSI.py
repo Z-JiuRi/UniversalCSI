@@ -215,6 +215,11 @@ def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
         code_dim = input_dim // reduction
         from .adapters import MLPDirectAdapter
         code_adapter = MLPDirectAdapter(code_dim, adapter_hidden_dim)
+    elif adapter == "transformer":
+        input_dim = channel * nt * nc
+        code_dim = input_dim // reduction
+        from .adapters import TransformerAdapter
+        code_adapter = TransformerAdapter(code_dim, d_model=d_model, dim_feedforward=adapter_hidden_dim)
     elif adapter is not None:
         raise ValueError(f"Unknown adapter: {adapter}")
     return UniversalCSIModel(encoder, decoder, init_strategy,

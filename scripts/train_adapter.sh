@@ -2,6 +2,7 @@
 
 # 运行命令 (一行复制即可):
 #   adapter=mlp gpu=2 seed=3407 bash scripts/train_adapter.sh
+#   adapter=transformer adapter_hidden_dim=256 gpu=2 seed=3407 bash scripts/train_adapter.sh
 
 # ==============================================================================
 # 1. 基础路径与实验名称（环境变量传参，带默认值）
@@ -43,9 +44,13 @@ pretrained_decoder=${pretrained_decoder:-exps/COST2100/in/seed42/transnet_hybrid
 exp_name=${exp_name:-COST2100/in/adapter/${adapter}/seed${seed}}
 
 extra_args=()
-if [ -n "$adapter_hidden_dim" ]; then
-  extra_args+=(--adapter_hidden_dim ${adapter_hidden_dim})
-fi
+add_arg() { local flag=$1 val=$2; [ -n "$val" ] && extra_args+=("$flag" "$val"); }
+
+add_arg --adapter             "$adapter"
+add_arg --adapter_hidden_dim  "$adapter_hidden_dim"
+add_arg --pretrained_encoder  "$pretrained_encoder"
+add_arg --pretrained_decoder  "$pretrained_decoder"
+
 
 # ==============================================================================
 # 5. 运行 Python 脚本
@@ -67,9 +72,6 @@ python -u main.py \
   --cr ${cr} \
   --encoder ${encoder} \
   --decoder ${decoder} \
-  --adapter ${adapter} \
-  --pretrained_encoder ${pretrained_encoder} \
-  --pretrained_decoder ${pretrained_decoder} \
   --scheduler ${scheduler} \
   --lr_init ${lr_init} \
   --weight_decay ${weight_decay} \
