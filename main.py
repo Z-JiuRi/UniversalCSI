@@ -48,6 +48,11 @@ def main():
     # Define loss function
     criterion = nn.MSELoss().to(device)
 
+    # Before-train evaluation (adapter mode only)
+    if args.adapter:
+        logger.info("=> Before-train evaluation (frozen encoder + decoder + untrained adapter):")
+        Tester(model, device, criterion)(test_loader)
+
     # Inference mode
     if args.evaluate:
         Tester(model, device, criterion)(test_loader)

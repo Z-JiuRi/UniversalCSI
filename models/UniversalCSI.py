@@ -135,6 +135,12 @@ class UniversalCSIModel(nn.Module):
             code = self.code_adapter(code)
         return code
 
+    @torch.no_grad()
+    def adapter_metrics(self):
+        if self.code_adapter is not None:
+            return self.code_adapter.get_metrics()
+        return {}
+
 
 
 def build_encoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,

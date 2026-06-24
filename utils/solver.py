@@ -151,6 +151,10 @@ class Trainer:
         mode = 'Train' if self.model.training else 'Val'
         msg = f'=> {mode}  Loss: {iter_loss.avg:.4e}'
         metrics = {"loss": self._as_float(iter_loss.avg)}
+        adapter_metrics = self._get_adapter_metrics()
+        if adapter_metrics:
+            parts = [f"{k}={v:.4e}" for k, v in adapter_metrics.items()]
+            msg += " | " + " | ".join(parts)
         logger.info(msg + '\n')
         if self.model.training:
             self.last_train_metrics = metrics
@@ -223,6 +227,11 @@ class Trainer:
         if isinstance(value, torch.Tensor):
             return float(value.detach().cpu())
         return float(value)
+
+    def _get_adapter_metrics(self):
+        if hasattr(self.model, "adapter_metrics"):
+            return self.model.adapter_metrics()
+        return {}
 
     def save_encoder_outputs(self, data_loader, output_path):
         if output_path is None:
@@ -339,7 +348,12 @@ class Tester:
                 "nmse": self._as_float(nmse),
             }
         }
-        logger.info(f'=> Test NMSE: {nmse:.4e}\n')
+        msg = f'=> Test NMSE: {nmse:.4e}'
+        adapter_metrics = self._get_adapter_metrics()
+        if adapter_metrics:
+            parts = [f"{k}={v:.4e}" for k, v in adapter_metrics.items()]
+            msg += " | " + " | ".join(parts)
+        logger.info(msg + '\n')
 
         return iter_loss.avg, nmse
 
@@ -347,3 +361,8 @@ class Tester:
         if isinstance(value, torch.Tensor):
             return float(value.detach().cpu())
         return float(value)
+
+    def _get_adapter_metrics(self):
+        if hasattr(self.model, "adapter_metrics"):
+            return self.model.adapter_metrics()
+        return {}

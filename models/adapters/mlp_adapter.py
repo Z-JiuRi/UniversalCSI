@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 
@@ -9,10 +10,7 @@ class MLPAdapter(nn.Module):
 
     The first Linear (W1) is Kaiming-initialized to produce non-zero
     activations so gradients can flow.  The second Linear (W2) is
-    zero-initialized so the adapter starts as an identity function,
-    preserving the frozen model's exact behaviour at step 0 while still
-    allowing gradients to reach W2 (and subsequently W1) after the first
-    backward pass.
+    zero-initialized so the adapter starts as an identity function.
     """
 
     def __init__(self, adapter_dim, adapter_hidden_dim=None):
@@ -25,6 +23,7 @@ class MLPAdapter(nn.Module):
             nn.GELU(),
             nn.Linear(adapter_hidden_dim, adapter_dim),
         )
+        self.register_buffer("_ratio", torch.tensor(0.0))
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -37,4 +36,22 @@ class MLPAdapter(nn.Module):
         nn.init.zeros_(self.mlp[2].bias)
 
     def forward(self, x):
-        return x + self.mlp(self.norm(x))
+        delta = self.mlp(self.norm(x))
+        with torch.no_grad():
+            self._ratio.fill_(delta.norm() / x.norm().clamp_min(1e-8))
+        return x + delta
+
+    @torch.no_grad()
+    def get_metrics(self):
+        """Return lightweight metrics about the adapter state."""
+        w1 = self.mlp[0].weight
+        w2 = self.mlp[2].weight
+        return {
+            "adapter/W1_norm": float(w1.norm().cpu()),
+            "adapter/W1_mean": float(w1.mean().cpu()),
+            "adapter/W1_std": float(w1.std().cpu()),
+            "adapter/W2_norm": float(w2.norm().cpu()),
+            "adapter/W2_mean": float(w2.mean().cpu()),
+            "adapter/W2_std": float(w2.std().cpu()),
+            "adapter/delta_ratio": float(self._ratio.cpu()),
+        }
