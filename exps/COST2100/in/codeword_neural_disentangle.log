@@ -1,0 +1,163 @@
+found 59 seed codeword files
+loaded seed0: (100000, 512)
+loaded seed42: (100000, 512)
+loaded seed223: (100000, 512)
+loaded seed287: (100000, 512)
+loaded seed314: (100000, 512)
+loaded seed404: (100000, 512)
+loaded seed424: (100000, 512)
+loaded seed517: (100000, 512)
+loaded seed520: (100000, 512)
+loaded seed611: (100000, 512)
+loaded seed796: (100000, 512)
+loaded seed1014: (100000, 512)
+loaded seed1024: (100000, 512)
+loaded seed1115: (100000, 512)
+loaded seed1234: (100000, 512)
+loaded seed1337: (100000, 512)
+loaded seed1474: (100000, 512)
+loaded seed1480: (100000, 512)
+loaded seed2026: (100000, 512)
+loaded seed2048: (100000, 512)
+loaded seed2718: (100000, 512)
+loaded seed3407: (100000, 512)
+loaded seed4442: (100000, 512)
+loaded seed4784: (100000, 512)
+loaded seed6563: (100000, 512)
+loaded seed7161: (100000, 512)
+loaded seed7861: (100000, 512)
+loaded seed8000: (100000, 512)
+loaded seed9436: (100000, 512)
+loaded seed9560: (100000, 512)
+loaded seed9856: (100000, 512)
+loaded seed11227: (100000, 512)
+loaded seed12471: (100000, 512)
+loaded seed12837: (100000, 512)
+loaded seed12867: (100000, 512)
+loaded seed13498: (100000, 512)
+loaded seed14115: (100000, 512)
+loaded seed14131: (100000, 512)
+loaded seed15777: (100000, 512)
+loaded seed17227: (100000, 512)
+loaded seed17262: (100000, 512)
+loaded seed17287: (100000, 512)
+loaded seed17538: (100000, 512)
+loaded seed17669: (100000, 512)
+loaded seed18804: (100000, 512)
+loaded seed19330: (100000, 512)
+loaded seed19655: (100000, 512)
+loaded seed20128: (100000, 512)
+loaded seed21840: (100000, 512)
+loaded seed23685: (100000, 512)
+loaded seed23746: (100000, 512)
+loaded seed27694: (100000, 512)
+loaded seed28344: (100000, 512)
+loaded seed28544: (100000, 512)
+loaded seed30243: (100000, 512)
+loaded seed31001: (100000, 512)
+loaded seed31039: (100000, 512)
+loaded seed31306: (100000, 512)
+loaded seed31415: (100000, 512)
+training on cuda:1
+epoch 0001/100 loss=1.7407e+00 recon=4.1038e-01 align=2.4806e-03 v_cls=1.6917e-02 v_acc=1.000 c_seed_acc=0.021 nmse=-6.11dB
+epoch 0002/100 loss=8.7458e-01 recon=3.8430e-01 align=3.1349e-03 v_cls=1.0395e-02 v_acc=1.000 c_seed_acc=0.001 nmse=-6.39dB
+epoch 0003/100 loss=8.3527e-01 recon=3.3193e-01 align=5.7515e-03 v_cls=1.1569e-02 v_acc=1.000 c_seed_acc=0.002 nmse=-7.03dB
+epoch 0004/100 loss=7.7920e-01 recon=2.7134e-01 align=7.1400e-03 v_cls=1.2574e-02 v_acc=1.000 c_seed_acc=0.004 nmse=-7.90dB
+epoch 0005/100 loss=7.2250e-01 recon=2.2526e-01 align=7.0302e-03 v_cls=1.1861e-02 v_acc=1.000 c_seed_acc=0.009 nmse=-8.71dB
+epoch 0006/100 loss=6.7657e-01 recon=1.9266e-01 align=6.2701e-03 v_cls=1.0443e-02 v_acc=1.000 c_seed_acc=0.014 nmse=-9.39dB
+epoch 0007/100 loss=6.4229e-01 recon=1.7202e-01 align=5.3111e-03 v_cls=8.8619e-03 v_acc=1.000 c_seed_acc=0.017 nmse=-9.88dB
+epoch 0008/100 loss=6.1845e-01 recon=1.6056e-01 align=4.3155e-03 v_cls=7.3047e-03 v_acc=1.000 c_seed_acc=0.016 nmse=-10.18dB
+epoch 0009/100 loss=6.0295e-01 recon=1.5508e-01 align=3.4748e-03 v_cls=6.0257e-03 v_acc=1.000 c_seed_acc=0.014 nmse=-10.33dB
+epoch 0010/100 loss=5.9260e-01 recon=1.5123e-01 align=2.8527e-03 v_cls=5.0672e-03 v_acc=1.000 c_seed_acc=0.014 nmse=-10.44dB
+epoch 0011/100 loss=5.8492e-01 recon=1.4833e-01 align=2.3955e-03 v_cls=4.4045e-03 v_acc=1.000 c_seed_acc=0.015 nmse=-10.53dB
+epoch 0012/100 loss=5.7890e-01 recon=1.4598e-01 align=2.0457e-03 v_cls=3.8123e-03 v_acc=1.000 c_seed_acc=0.017 nmse=-10.60dB
+epoch 0013/100 loss=5.7399e-01 recon=1.4399e-01 align=1.7714e-03 v_cls=3.3641e-03 v_acc=1.000 c_seed_acc=0.019 nmse=-10.66dB
+epoch 0014/100 loss=5.6996e-01 recon=1.4261e-01 align=1.5513e-03 v_cls=2.9712e-03 v_acc=1.000 c_seed_acc=0.020 nmse=-10.70dB
+epoch 0015/100 loss=5.6655e-01 recon=1.4113e-01 align=1.3700e-03 v_cls=2.6374e-03 v_acc=1.000 c_seed_acc=0.020 nmse=-10.74dB
+epoch 0016/100 loss=5.6364e-01 recon=1.4005e-01 align=1.2174e-03 v_cls=2.3515e-03 v_acc=1.000 c_seed_acc=0.020 nmse=-10.78dB
+epoch 0017/100 loss=5.6111e-01 recon=1.3933e-01 align=1.0898e-03 v_cls=2.0951e-03 v_acc=1.000 c_seed_acc=0.019 nmse=-10.80dB
+epoch 0018/100 loss=5.5887e-01 recon=1.3812e-01 align=9.8205e-04 v_cls=1.8792e-03 v_acc=1.000 c_seed_acc=0.019 nmse=-10.84dB
+epoch 0019/100 loss=5.5691e-01 recon=1.3748e-01 align=8.8758e-04 v_cls=1.7095e-03 v_acc=1.000 c_seed_acc=0.020 nmse=-10.86dB
+epoch 0020/100 loss=5.5516e-01 recon=1.3677e-01 align=8.0558e-04 v_cls=1.5426e-03 v_acc=1.000 c_seed_acc=0.020 nmse=-10.88dB
+epoch 0021/100 loss=5.5360e-01 recon=1.3602e-01 align=7.3321e-04 v_cls=1.3954e-03 v_acc=1.000 c_seed_acc=0.021 nmse=-10.90dB
+epoch 0022/100 loss=5.5221e-01 recon=1.3540e-01 align=6.7088e-04 v_cls=1.2599e-03 v_acc=1.000 c_seed_acc=0.022 nmse=-10.92dB
+epoch 0023/100 loss=5.5096e-01 recon=1.3504e-01 align=6.1430e-04 v_cls=1.1409e-03 v_acc=1.000 c_seed_acc=0.023 nmse=-10.93dB
+epoch 0024/100 loss=5.4982e-01 recon=1.3476e-01 align=5.6364e-04 v_cls=1.0511e-03 v_acc=1.000 c_seed_acc=0.023 nmse=-10.94dB
+epoch 0025/100 loss=5.4879e-01 recon=1.3412e-01 align=5.1850e-04 v_cls=9.4989e-04 v_acc=1.000 c_seed_acc=0.024 nmse=-10.96dB
+epoch 0026/100 loss=5.4786e-01 recon=1.3375e-01 align=4.7793e-04 v_cls=8.6904e-04 v_acc=1.000 c_seed_acc=0.025 nmse=-10.98dB
+epoch 0027/100 loss=5.4700e-01 recon=1.3331e-01 align=4.4149e-04 v_cls=7.9171e-04 v_acc=1.000 c_seed_acc=0.025 nmse=-10.99dB
+epoch 0028/100 loss=5.4622e-01 recon=1.3296e-01 align=4.0870e-04 v_cls=7.2736e-04 v_acc=1.000 c_seed_acc=0.025 nmse=-11.00dB
+epoch 0029/100 loss=5.4550e-01 recon=1.3266e-01 align=3.7870e-04 v_cls=6.6389e-04 v_acc=1.000 c_seed_acc=0.027 nmse=-11.01dB
+epoch 0030/100 loss=5.4483e-01 recon=1.3228e-01 align=3.5135e-04 v_cls=6.2061e-04 v_acc=1.000 c_seed_acc=0.027 nmse=-11.02dB
+epoch 0031/100 loss=5.4422e-01 recon=1.3208e-01 align=3.2650e-04 v_cls=5.6459e-04 v_acc=1.000 c_seed_acc=0.028 nmse=-11.03dB
+epoch 0032/100 loss=5.4365e-01 recon=1.3203e-01 align=3.0370e-04 v_cls=5.1887e-04 v_acc=1.000 c_seed_acc=0.028 nmse=-11.03dB
+epoch 0033/100 loss=5.4313e-01 recon=1.3151e-01 align=2.8325e-04 v_cls=4.7345e-04 v_acc=1.000 c_seed_acc=0.029 nmse=-11.05dB
+epoch 0034/100 loss=5.4263e-01 recon=1.3130e-01 align=2.6428e-04 v_cls=4.4205e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.06dB
+epoch 0035/100 loss=5.4218e-01 recon=1.3107e-01 align=2.4698e-04 v_cls=4.0866e-04 v_acc=1.000 c_seed_acc=0.030 nmse=-11.06dB
+epoch 0036/100 loss=5.4175e-01 recon=1.3089e-01 align=2.3126e-04 v_cls=3.7549e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.07dB
+epoch 0037/100 loss=5.4135e-01 recon=1.3063e-01 align=2.1646e-04 v_cls=3.5173e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.08dB
+epoch 0038/100 loss=5.4097e-01 recon=1.3036e-01 align=2.0320e-04 v_cls=3.2614e-04 v_acc=1.000 c_seed_acc=0.030 nmse=-11.09dB
+epoch 0039/100 loss=5.4062e-01 recon=1.3036e-01 align=1.9054e-04 v_cls=3.0225e-04 v_acc=1.000 c_seed_acc=0.030 nmse=-11.09dB
+epoch 0040/100 loss=5.4029e-01 recon=1.3005e-01 align=1.7929e-04 v_cls=2.8137e-04 v_acc=1.000 c_seed_acc=0.032 nmse=-11.10dB
+epoch 0041/100 loss=5.3998e-01 recon=1.3020e-01 align=1.6862e-04 v_cls=2.5979e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.09dB
+epoch 0042/100 loss=5.3968e-01 recon=1.2984e-01 align=1.5889e-04 v_cls=2.4336e-04 v_acc=1.000 c_seed_acc=0.030 nmse=-11.10dB
+epoch 0043/100 loss=5.3940e-01 recon=1.2956e-01 align=1.5005e-04 v_cls=2.3053e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.11dB
+epoch 0044/100 loss=5.3914e-01 recon=1.2957e-01 align=1.4169e-04 v_cls=2.1356e-04 v_acc=1.000 c_seed_acc=0.030 nmse=-11.11dB
+epoch 0045/100 loss=5.3889e-01 recon=1.2918e-01 align=1.3405e-04 v_cls=2.0113e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.13dB
+epoch 0046/100 loss=5.3865e-01 recon=1.2912e-01 align=1.2694e-04 v_cls=1.8817e-04 v_acc=1.000 c_seed_acc=0.032 nmse=-11.13dB
+epoch 0047/100 loss=5.3843e-01 recon=1.2904e-01 align=1.2026e-04 v_cls=1.7580e-04 v_acc=1.000 c_seed_acc=0.033 nmse=-11.13dB
+epoch 0048/100 loss=5.3821e-01 recon=1.2889e-01 align=1.1405e-04 v_cls=1.6557e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.14dB
+epoch 0049/100 loss=5.3801e-01 recon=1.2885e-01 align=1.0819e-04 v_cls=1.5430e-04 v_acc=1.000 c_seed_acc=0.029 nmse=-11.14dB
+epoch 0050/100 loss=5.3781e-01 recon=1.2862e-01 align=1.0310e-04 v_cls=1.4703e-04 v_acc=1.000 c_seed_acc=0.032 nmse=-11.15dB
+epoch 0051/100 loss=5.3762e-01 recon=1.2859e-01 align=9.8142e-05 v_cls=1.3868e-04 v_acc=1.000 c_seed_acc=0.032 nmse=-11.15dB
+epoch 0052/100 loss=5.3744e-01 recon=1.2843e-01 align=9.3517e-05 v_cls=1.3048e-04 v_acc=1.000 c_seed_acc=0.033 nmse=-11.15dB
+epoch 0053/100 loss=5.3727e-01 recon=1.2820e-01 align=8.9234e-05 v_cls=1.2328e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.16dB
+epoch 0054/100 loss=5.3710e-01 recon=1.2821e-01 align=8.5180e-05 v_cls=1.1833e-04 v_acc=1.000 c_seed_acc=0.030 nmse=-11.16dB
+epoch 0055/100 loss=5.3694e-01 recon=1.2815e-01 align=8.1421e-05 v_cls=1.1149e-04 v_acc=1.000 c_seed_acc=0.032 nmse=-11.16dB
+epoch 0056/100 loss=5.3679e-01 recon=1.2803e-01 align=7.7995e-05 v_cls=1.0528e-04 v_acc=1.000 c_seed_acc=0.032 nmse=-11.17dB
+epoch 0057/100 loss=5.3663e-01 recon=1.2774e-01 align=7.4704e-05 v_cls=1.0138e-04 v_acc=1.000 c_seed_acc=0.031 nmse=-11.18dB
+epoch 0058/100 loss=5.3649e-01 recon=1.2772e-01 align=7.1575e-05 v_cls=9.6384e-05 v_acc=1.000 c_seed_acc=0.030 nmse=-11.18dB
+epoch 0059/100 loss=5.3635e-01 recon=1.2788e-01 align=6.8719e-05 v_cls=9.2315e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.17dB
+epoch 0060/100 loss=5.3621e-01 recon=1.2741e-01 align=6.6059e-05 v_cls=8.7268e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.19dB
+epoch 0061/100 loss=5.3607e-01 recon=1.2734e-01 align=6.3582e-05 v_cls=8.3880e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.19dB
+epoch 0062/100 loss=5.3594e-01 recon=1.2723e-01 align=6.1157e-05 v_cls=8.0010e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.19dB
+epoch 0063/100 loss=5.3580e-01 recon=1.2716e-01 align=5.8877e-05 v_cls=7.5933e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.20dB
+epoch 0064/100 loss=5.3568e-01 recon=1.2714e-01 align=5.6758e-05 v_cls=7.3268e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.20dB
+epoch 0065/100 loss=5.3555e-01 recon=1.2709e-01 align=5.4860e-05 v_cls=6.9771e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.20dB
+epoch 0066/100 loss=5.3542e-01 recon=1.2697e-01 align=5.3008e-05 v_cls=6.7669e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.20dB
+epoch 0067/100 loss=5.3530e-01 recon=1.2683e-01 align=5.1266e-05 v_cls=6.5131e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.21dB
+epoch 0068/100 loss=5.3518e-01 recon=1.2674e-01 align=4.9617e-05 v_cls=6.1966e-05 v_acc=1.000 c_seed_acc=0.030 nmse=-11.21dB
+epoch 0069/100 loss=5.3504e-01 recon=1.2660e-01 align=4.8051e-05 v_cls=5.9789e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.21dB
+epoch 0070/100 loss=5.3492e-01 recon=1.2647e-01 align=4.6528e-05 v_cls=5.7952e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.22dB
+epoch 0071/100 loss=5.3480e-01 recon=1.2634e-01 align=4.5151e-05 v_cls=5.5636e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.22dB
+epoch 0072/100 loss=5.3467e-01 recon=1.2627e-01 align=4.3867e-05 v_cls=5.4225e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.23dB
+epoch 0073/100 loss=5.3455e-01 recon=1.2614e-01 align=4.2615e-05 v_cls=5.2290e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.23dB
+epoch 0074/100 loss=5.3442e-01 recon=1.2597e-01 align=4.1473e-05 v_cls=5.0804e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.24dB
+epoch 0075/100 loss=5.3430e-01 recon=1.2591e-01 align=4.0393e-05 v_cls=4.9116e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.24dB
+epoch 0076/100 loss=5.3417e-01 recon=1.2582e-01 align=3.9292e-05 v_cls=4.7834e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.24dB
+epoch 0077/100 loss=5.3404e-01 recon=1.2574e-01 align=3.8347e-05 v_cls=4.6330e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.24dB
+epoch 0078/100 loss=5.3391e-01 recon=1.2556e-01 align=3.7408e-05 v_cls=4.5097e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.25dB
+epoch 0079/100 loss=5.3378e-01 recon=1.2543e-01 align=3.6505e-05 v_cls=4.3620e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.25dB
+epoch 0080/100 loss=5.3365e-01 recon=1.2545e-01 align=3.5685e-05 v_cls=4.2123e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.25dB
+epoch 0081/100 loss=5.3351e-01 recon=1.2524e-01 align=3.4870e-05 v_cls=4.1556e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.26dB
+epoch 0082/100 loss=5.3338e-01 recon=1.2508e-01 align=3.4149e-05 v_cls=4.0034e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.27dB
+epoch 0083/100 loss=5.3324e-01 recon=1.2503e-01 align=3.3437e-05 v_cls=3.9384e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.27dB
+epoch 0084/100 loss=5.3311e-01 recon=1.2490e-01 align=3.2761e-05 v_cls=3.7799e-05 v_acc=1.000 c_seed_acc=0.034 nmse=-11.27dB
+epoch 0085/100 loss=5.3296e-01 recon=1.2468e-01 align=3.2090e-05 v_cls=3.7053e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.28dB
+epoch 0086/100 loss=5.3283e-01 recon=1.2454e-01 align=3.1440e-05 v_cls=3.6104e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.29dB
+epoch 0087/100 loss=5.3269e-01 recon=1.2440e-01 align=3.0902e-05 v_cls=3.5314e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.29dB
+epoch 0088/100 loss=5.3254e-01 recon=1.2433e-01 align=3.0335e-05 v_cls=3.4537e-05 v_acc=1.000 c_seed_acc=0.034 nmse=-11.29dB
+epoch 0089/100 loss=5.3240e-01 recon=1.2411e-01 align=2.9822e-05 v_cls=3.3620e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.30dB
+epoch 0090/100 loss=5.3225e-01 recon=1.2397e-01 align=2.9329e-05 v_cls=3.2991e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.31dB
+epoch 0091/100 loss=5.3210e-01 recon=1.2379e-01 align=2.8838e-05 v_cls=3.2290e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.31dB
+epoch 0092/100 loss=5.3196e-01 recon=1.2371e-01 align=2.8360e-05 v_cls=3.1451e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.31dB
+epoch 0093/100 loss=5.3180e-01 recon=1.2363e-01 align=2.7963e-05 v_cls=3.0965e-05 v_acc=1.000 c_seed_acc=0.034 nmse=-11.32dB
+epoch 0094/100 loss=5.3165e-01 recon=1.2344e-01 align=2.7547e-05 v_cls=3.0460e-05 v_acc=1.000 c_seed_acc=0.032 nmse=-11.32dB
+epoch 0095/100 loss=5.3150e-01 recon=1.2334e-01 align=2.7156e-05 v_cls=2.9837e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.33dB
+epoch 0096/100 loss=5.3134e-01 recon=1.2313e-01 align=2.6775e-05 v_cls=2.9306e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.33dB
+epoch 0097/100 loss=5.3119e-01 recon=1.2294e-01 align=2.6453e-05 v_cls=2.8332e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.34dB
+epoch 0098/100 loss=5.3102e-01 recon=1.2276e-01 align=2.6091e-05 v_cls=2.8144e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.35dB
+epoch 0099/100 loss=5.3086e-01 recon=1.2270e-01 align=2.5781e-05 v_cls=2.7764e-05 v_acc=1.000 c_seed_acc=0.033 nmse=-11.35dB
+epoch 0100/100 loss=5.3070e-01 recon=1.2244e-01 align=2.5472e-05 v_cls=2.6949e-05 v_acc=1.000 c_seed_acc=0.031 nmse=-11.36dB
+saved neural decomposition checkpoint: exps/COST2100/in/codeword_neural_disentangle.pth
+saved metrics: exps/COST2100/in/codeword_neural_disentangle_metrics.json
