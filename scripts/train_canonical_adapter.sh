@@ -16,7 +16,7 @@
 #     exps/COST2100/in/encoder_canonical/aux_pca_1e-3/seed2026_transnet_transnet/checkpoints/best_nmse.pth
 #   decoder checkpoint：
 #     exps/COST2100/in/encoder_canonical/aux_pca_1e-3/seed42_transnet_transnet/checkpoints/best_nmse.pth
-#   teacher code，仅在 lambda_code > 0 时使用：
+#   teacher code。脚本会始终传入；lambda 为 0 时对应 loss 不生效：
 #     exps/COST2100/in/encoder_canonical/aux_pca_1e-3/seed42_transnet_transnet/codewords/train_code.pt
 #
 # 1. 基础 aux_pca_1e-3 adapter 测试，只用重建损失：
@@ -26,6 +26,10 @@
 # 2. 同样的测试，但额外用 decoder seed 的码字做 code 对齐：
 # seed=2026 decoder_seed=42 lambda_recon=1.0 lambda_code=1e-2 gpu=1 lr_init=1e-3 \
 # bash scripts/train_canonical_adapter.sh
+#
+# 2b. code + decoder fc feature + teacher reconstruction consistency：
+#   seed=2026 decoder_seed=42 lambda_recon=1.0 lambda_code=1e-3 \
+#     lambda_fc=1e-3 lambda_recT=1.0 gpu=1 bash scripts/train_canonical_adapter.sh
 #
 # 3. 换另一个 encoder seed，仍然接同一个 decoder seed：
 #   seed=1024 decoder_seed=42 gpu=1 bash scripts/train_canonical_adapter.sh
@@ -105,7 +109,13 @@
 #     重建损失权重。做 adapter 性能测试时通常保持 1.0。
 #
 #   lambda_code:
-#     code 对齐损失权重。0.0 表示不加载 teacher_code；非 0 时要求 teacher_code 存在。
+#     code 对齐损失权重。0.0 表示不启用该 loss。
+#
+#   lambda_fc:
+#     decoder fc feature 对齐损失权重。0.0 表示不启用该 loss。
+#
+#   lambda_recT:
+#     teacher reconstruction consistency 损失权重。0.0 表示不启用该 loss。
 #
 #   canonical_head:
 #     通常不要手动设置，会根据 canonical_scheme 自动推断。
@@ -149,6 +159,8 @@ adapter=${adapter:-mlp}
 adapter_hidden_dim=${adapter_hidden_dim:-2048}
 lambda_recon=${lambda_recon:-1.0}
 lambda_code=${lambda_code:-0.0}
+lambda_fc=${lambda_fc:-0.0}
+lambda_recT=${lambda_recT:-0.0}
 
 canonical_scheme=${canonical_scheme:-aux_pca_1e-3}
 canonical_root=${canonical_root:-exps/COST2100/in/encoder_canonical/${canonical_scheme}}
@@ -180,7 +192,7 @@ pretrained_encoder=${pretrained_encoder:-${canonical_root}/seed${seed}_${encoder
 pretrained_decoder=${pretrained_decoder:-${canonical_root}/seed${decoder_seed}_${encoder}_${decoder}/checkpoints/best_nmse.pth}
 teacher_code=${teacher_code:-${canonical_root}/seed${decoder_seed}_${encoder}_${decoder}/codewords/train_code.pt}
 
-exp_name=${exp_name:-COST2100/in/encoder_canonical/adapter/${canonical_scheme}/${adapter}/enc_seed${seed}_dec_seed${decoder_seed}_recon${lambda_recon}_code${lambda_code}_lr${lr_init}}
+exp_name=${exp_name:-COST2100/in/encoder_canonical/adapter/${canonical_scheme}/${adapter}/enc_seed${seed}_dec_seed${decoder_seed}_recon${lambda_recon}_code${lambda_code}_fc${lambda_fc}_recT${lambda_recT}_lr${lr_init}}
 
 if [ ! -f "${pretrained_encoder}" ]; then
   echo "Missing pretrained_encoder: ${pretrained_encoder}" >&2
@@ -192,8 +204,8 @@ if [ ! -f "${pretrained_decoder}" ]; then
   exit 1
 fi
 
-if [ "${lambda_code}" != "0" ] && [ "${lambda_code}" != "0.0" ] && [ ! -f "${teacher_code}" ]; then
-  echo "Missing teacher_code for lambda_code=${lambda_code}: ${teacher_code}" >&2
+if [ ! -f "${teacher_code}" ]; then
+  echo "Missing teacher_code: ${teacher_code}" >&2
   exit 1
 fi
 
@@ -206,10 +218,9 @@ add_arg --pretrained_encoder "${pretrained_encoder}"
 add_arg --pretrained_decoder "${pretrained_decoder}"
 add_arg --lambda_recon "${lambda_recon}"
 add_arg --lambda_code "${lambda_code}"
-
-if [ "${lambda_code}" != "0" ] && [ "${lambda_code}" != "0.0" ]; then
-  add_arg --teacher_code "${teacher_code}"
-fi
+add_arg --lambda_fc "${lambda_fc}"
+add_arg --lambda_recT "${lambda_recT}"
+add_arg --teacher_code "${teacher_code}"
 
 add_arg --canonical_head "${canonical_head}"
 add_arg --canonical_anchor_seed "${canonical_anchor_seed}"
@@ -222,6 +233,7 @@ echo "Training canonical adapter:"
 echo "  encoder checkpoint: ${pretrained_encoder}"
 echo "  decoder checkpoint: ${pretrained_decoder}"
 echo "  teacher code: ${teacher_code}"
+echo "  lambda_recon/code/fc/recT: ${lambda_recon}/${lambda_code}/${lambda_fc}/${lambda_recT}"
 echo "  canonical_head: ${canonical_head}"
 echo "  exp_name: ${exp_name}"
 

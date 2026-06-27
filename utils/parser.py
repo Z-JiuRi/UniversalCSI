@@ -104,6 +104,10 @@ parser.add_argument('--lambda_recon', type=float, default=1.0,
                     help='weight for reconstruction MSE loss (default: 1.0)')
 parser.add_argument('--lambda_code', type=float, default=0.0,
                     help='weight for code-space MSE loss against teacher (default: 0.0)')
+parser.add_argument('--lambda_fc', type=float, default=0.0,
+                    help='weight for decoder fc feature MSE loss against teacher code')
+parser.add_argument('--lambda_recT', type=float, default=0.0,
+                    help='weight for teacher reconstruction consistency loss')
 parser.add_argument('--anchor_target', type=str, default='none',
                     choices=['none', 'pca', 'dct'],
                     help='raw CSI auxiliary target for encoder code')

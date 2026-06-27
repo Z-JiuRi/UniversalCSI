@@ -114,6 +114,8 @@ def main():
                       teacher_code_path=args.teacher_code,
                       lambda_recon=args.lambda_recon,
                       lambda_code=args.lambda_code,
+                      lambda_fc=args.lambda_fc,
+                      lambda_recT=args.lambda_recT,
                       anchor_target=args.anchor_target,
                       lambda_anchor=args.lambda_anchor,
                       anchor_loss=args.anchor_loss,

@@ -17,6 +17,7 @@ class Trainer:
                  save_path='./checkpoints', tensorboard_dir=None, print_freq=20,
                  val_freq=10, test_freq=10, test_every_epoch=False,
                  teacher_code_path=None, lambda_recon=1.0, lambda_code=0.0,
+                 lambda_fc=0.0, lambda_recT=0.0,
                  anchor_target='none', lambda_anchor=0.0, anchor_loss='mse',
                  train_path=None, channel=2, nt=32, nc=32, cr=4,
                  lambda_code_mean=0.0, lambda_code_var=0.0,
@@ -59,7 +60,13 @@ class Trainer:
         # Teacher code distillation
         self.lambda_recon = lambda_recon
         self.lambda_code = lambda_code
+        self.lambda_fc = lambda_fc
+        self.lambda_recT = lambda_recT
         self.teacher_codes = None
+        if (lambda_code or lambda_fc or lambda_recT) and teacher_code_path is None:
+            raise ValueError(
+                "teacher_code is required when lambda_code, lambda_fc, "
+                "or lambda_recT is non-zero")
         if teacher_code_path is not None:
             self._load_teacher_codes(teacher_code_path)
             self._move_teacher_codes_to_device()
@@ -158,6 +165,8 @@ class Trainer:
     def _iteration(self, data_loader):
         iter_loss = AverageMeter('Iter loss')
         iter_code_loss = AverageMeter('Code loss')
+        iter_fc_loss = AverageMeter('FC loss')
+        iter_recT_loss = AverageMeter('Teacher recon loss')
         iter_anchor_loss = AverageMeter('Anchor loss')
         iter_code_reg_loss = AverageMeter('Code reg loss')
         iter_recon_loss = AverageMeter('Recon loss')
@@ -167,7 +176,19 @@ class Trainer:
         for batch_idx, batch in enumerate(data_loader):
             sparse_gt = batch[0]
             sparse_gt = sparse_gt.to(self.device)
-            sparse_pred = self.model(sparse_gt)
+            code_pred = None
+            needs_code_pred = (
+                self.model.training and (
+                    self.teacher_codes is not None
+                    or self.anchor_target is not None
+                    or self._has_code_regularization()
+                )
+            )
+            if needs_code_pred:
+                code_pred = self.model.encode(sparse_gt)
+                sparse_pred = self.model.decoder(code_pred)
+            else:
+                sparse_pred = self.model(sparse_gt)
 
             # Reconstruction loss (always computed)
             recon_loss = self.criterion(sparse_pred, sparse_gt)
@@ -175,18 +196,32 @@ class Trainer:
 
             # Code-space distillation loss (training only, when teacher codes available)
             code_loss = torch.tensor(0., device=self.device)
-            code_pred = None
+            fc_loss = torch.tensor(0., device=self.device)
+            recT_loss = torch.tensor(0., device=self.device)
             if self.model.training and self.teacher_codes is not None:
                 indices = batch[1]
-                code_pred = self.model.encode(sparse_gt)  # code after adapter
                 teacher_code = self.teacher_codes[indices]
                 code_loss = self.criterion(code_pred, teacher_code)
-                total_loss = total_loss + self.lambda_code * code_loss
+                if self.lambda_code:
+                    total_loss = total_loss + self.lambda_code * code_loss
+                if self.lambda_fc:
+                    if not hasattr(self.model.decoder, "fc_decoder"):
+                        raise ValueError(
+                            "lambda_fc requires decoder.fc_decoder, "
+                            f"got {type(self.model.decoder).__name__}")
+                    fc_adapter = self.model.decoder.fc_decoder(code_pred)
+                    with torch.no_grad():
+                        fc_teacher = self.model.decoder.fc_decoder(teacher_code)
+                    fc_loss = self.criterion(fc_adapter, fc_teacher)
+                    total_loss = total_loss + self.lambda_fc * fc_loss
+                if self.lambda_recT:
+                    with torch.no_grad():
+                        teacher_recon = self.model.decoder(teacher_code)
+                    recT_loss = self.criterion(sparse_pred, teacher_recon)
+                    total_loss = total_loss + self.lambda_recT * recT_loss
 
             anchor_loss = torch.tensor(0., device=self.device)
             if self.model.training and self.anchor_target is not None:
-                if code_pred is None:
-                    code_pred = self.model.encode(sparse_gt)
                 anchor_code = self.anchor_target(sparse_gt)
                 if self.anchor_loss == 'cosine':
                     anchor_loss = (
@@ -202,8 +237,6 @@ class Trainer:
 
             code_reg_loss = torch.tensor(0., device=self.device)
             if self.model.training and self._has_code_regularization():
-                if code_pred is None:
-                    code_pred = self.model.encode(sparse_gt)
                 code_reg_loss = self._code_regularization_loss(code_pred)
                 total_loss = total_loss + code_reg_loss
 
@@ -219,6 +252,8 @@ class Trainer:
             iter_recon_loss.update(recon_loss)
             if self.model.training and self.teacher_codes is not None:
                 iter_code_loss.update(code_loss)
+                iter_fc_loss.update(fc_loss)
+                iter_recT_loss.update(recT_loss)
             if self.model.training and self.anchor_target is not None:
                 iter_anchor_loss.update(anchor_loss)
             if self.model.training and self._has_code_regularization():
@@ -234,6 +269,10 @@ class Trainer:
                          f'recon: {iter_recon_loss.avg:.4e}']
                 if self.model.training and self.teacher_codes is not None:
                     parts.append(f'code: {iter_code_loss.avg:.4e}')
+                    if self.lambda_fc:
+                        parts.append(f'fc: {iter_fc_loss.avg:.4e}')
+                    if self.lambda_recT:
+                        parts.append(f'recT: {iter_recT_loss.avg:.4e}')
                 if self.model.training and self.anchor_target is not None:
                     parts.append(f'anchor: {iter_anchor_loss.avg:.4e}')
                 if self.model.training and self._has_code_regularization():
@@ -250,6 +289,10 @@ class Trainer:
         parts = [f'=> {mode}  Recon loss: {iter_recon_loss.avg:.4e}']
         if self.model.training and self.teacher_codes is not None:
             parts.append(f'Code loss: {iter_code_loss.avg:.4e}')
+            if self.lambda_fc:
+                parts.append(f'FC loss: {iter_fc_loss.avg:.4e}')
+            if self.lambda_recT:
+                parts.append(f'Teacher recon loss: {iter_recT_loss.avg:.4e}')
         if self.model.training and self.anchor_target is not None:
             parts.append(f'Anchor loss: {iter_anchor_loss.avg:.4e}')
         if self.model.training and self._has_code_regularization():
@@ -260,6 +303,10 @@ class Trainer:
                    "recon_loss": self._as_float(iter_recon_loss.avg)}
         if self.model.training and self.teacher_codes is not None:
             metrics["code_loss"] = self._as_float(iter_code_loss.avg)
+            if self.lambda_fc:
+                metrics["fc_loss"] = self._as_float(iter_fc_loss.avg)
+            if self.lambda_recT:
+                metrics["teacher_recon_loss"] = self._as_float(iter_recT_loss.avg)
         if self.model.training and self.anchor_target is not None:
             metrics["anchor_loss"] = self._as_float(iter_anchor_loss.avg)
         if self.model.training and self._has_code_regularization():

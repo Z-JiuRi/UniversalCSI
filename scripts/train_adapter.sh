@@ -23,7 +23,7 @@ hidden=${hidden:-16}
 num_blocks=${num_blocks:-2}
 cr=${cr:-4}
 encoder=${encoder:-transnet}
-decoder=${decoder:-hybrid}
+decoder=${decoder:-transnet}
 
 # ==============================================================================
 # 3. 训练超参数与硬件设置
@@ -39,14 +39,21 @@ seed=${seed:-42}
 
 adapter=${adapter:-mlp}
 adapter_hidden_dim=${adapter_hidden_dim:-2048}
-pretrained_encoder=${pretrained_encoder:-exps/COST2100/in/seed${seed}/transnet_hybrid/checkpoints/best_nmse.pth}
-pretrained_decoder=${pretrained_decoder:-exps/COST2100/in/seed42/transnet_hybrid/checkpoints/best_nmse.pth}
+pretrained_encoder=${pretrained_encoder:-exps/COST2100/in/seed${seed}/${encoder}_${decoder}/checkpoints/best_nmse.pth}
+pretrained_decoder=${pretrained_decoder:-exps/COST2100/in/seed42/${encoder}_${decoder}/checkpoints/best_nmse.pth}
 
-teacher_code=${teacher_code:-exps/COST2100/in/seed42/transnet_hybrid/codewords/train_code.pt}
+teacher_code=${teacher_code:-exps/COST2100/in/seed42/${encoder}_${decoder}/codewords/train_code.pt}
 lambda_recon=${lambda_recon:-1.0}
 lambda_code=${lambda_code:-0.0}
+lambda_fc=${lambda_fc:-0.0}
+lambda_recT=${lambda_recT:-0.0}
 
-exp_name=${exp_name:-COST2100/in/adapter/${adapter}/seed${seed}_${lambda_recon}_${lambda_code}}
+exp_name=${exp_name:-COST2100/in/adapter/${adapter}/seed${seed}_recon${lambda_recon}_code${lambda_code}_fc${lambda_fc}_recT${lambda_recT}_lr${lr_init}}
+
+if [ ! -f "${teacher_code}" ]; then
+  echo "Missing teacher_code: ${teacher_code}" >&2
+  exit 1
+fi
 
 extra_args=()
 add_arg() { local flag=$1 val=$2; [ -n "$val" ] && extra_args+=("$flag" "$val"); }
@@ -55,9 +62,11 @@ add_arg --adapter             "$adapter"
 add_arg --adapter_hidden_dim  "$adapter_hidden_dim"
 add_arg --pretrained_encoder  "$pretrained_encoder"
 add_arg --pretrained_decoder  "$pretrained_decoder"
-add_arg --teacher_code        "$teacher_code"
 add_arg --lambda_recon        "$lambda_recon"
 add_arg --lambda_code         "$lambda_code"
+add_arg --lambda_fc           "$lambda_fc"
+add_arg --lambda_recT         "$lambda_recT"
+add_arg --teacher_code        "$teacher_code"
 
 
 # ==============================================================================
