@@ -1,7 +1,9 @@
 import time
 import os
 import torch
+import torch.nn.functional as F
 from torch.utils.tensorboard.writer import SummaryWriter
+from models.canonical_heads import AnchorTargetBuilder
 from utils import logger
 from utils.statics import AverageMeter, evaluator, nmse_from_sums
 
@@ -14,7 +16,12 @@ class Trainer:
     def __init__(self, model, device, optimizer, criterion, scheduler, resume=None,
                  save_path='./checkpoints', tensorboard_dir=None, print_freq=20,
                  val_freq=10, test_freq=10, test_every_epoch=False,
-                 teacher_code_path=None, lambda_recon=1.0, lambda_code=0.0):
+                 teacher_code_path=None, lambda_recon=1.0, lambda_code=0.0,
+                 anchor_target='none', lambda_anchor=0.0, anchor_loss='mse',
+                 train_path=None, channel=2, nt=32, nc=32, cr=4,
+                 lambda_code_mean=0.0, lambda_code_var=0.0,
+                 lambda_code_cov=0.0, lambda_code_l1=0.0,
+                 code_var_tau=256.0):
 
         # Basic arguments
         self.model = model
@@ -56,6 +63,32 @@ class Trainer:
         if teacher_code_path is not None:
             self._load_teacher_codes(teacher_code_path)
             self._move_teacher_codes_to_device()
+        self.lambda_anchor = lambda_anchor
+        self.anchor_loss = anchor_loss
+        self.anchor_target = None
+        if anchor_target not in (None, '', 'none') and lambda_anchor > 0:
+            code_dim = channel * nt * nc // cr
+            self.anchor_target = AnchorTargetBuilder(
+                target_type=anchor_target,
+                code_dim=code_dim,
+                channel=channel,
+                nt=nt,
+                nc=nc,
+                train_path=train_path,
+                device=device)
+            logger.info(f'=> Enabled {anchor_target} anchor target '
+                        f'(lambda={lambda_anchor}, loss={anchor_loss})')
+
+        self.lambda_code_mean = lambda_code_mean
+        self.lambda_code_var = lambda_code_var
+        self.lambda_code_cov = lambda_code_cov
+        self.lambda_code_l1 = lambda_code_l1
+        self.code_var_tau = code_var_tau
+        self.code_dim = channel * nt * nc // cr
+        index = torch.arange(self.code_dim, dtype=torch.float32)
+        target_var = torch.exp(-index / code_var_tau)
+        target_var = target_var / target_var.mean()
+        self.code_target_var = target_var.to(device)
 
     def loop(self, epochs, train_loader, val_loader, test_loader):
         r""" The main loop function which runs training and validation iteratively.
@@ -125,6 +158,8 @@ class Trainer:
     def _iteration(self, data_loader):
         iter_loss = AverageMeter('Iter loss')
         iter_code_loss = AverageMeter('Code loss')
+        iter_anchor_loss = AverageMeter('Anchor loss')
+        iter_code_reg_loss = AverageMeter('Code reg loss')
         iter_recon_loss = AverageMeter('Recon loss')
         iter_time = AverageMeter('Iter time')
         time_tmp = time.time()
@@ -140,12 +175,37 @@ class Trainer:
 
             # Code-space distillation loss (training only, when teacher codes available)
             code_loss = torch.tensor(0., device=self.device)
+            code_pred = None
             if self.model.training and self.teacher_codes is not None:
                 indices = batch[1]
                 code_pred = self.model.encode(sparse_gt)  # code after adapter
                 teacher_code = self.teacher_codes[indices]
                 code_loss = self.criterion(code_pred, teacher_code)
                 total_loss = total_loss + self.lambda_code * code_loss
+
+            anchor_loss = torch.tensor(0., device=self.device)
+            if self.model.training and self.anchor_target is not None:
+                if code_pred is None:
+                    code_pred = self.model.encode(sparse_gt)
+                anchor_code = self.anchor_target(sparse_gt)
+                if self.anchor_loss == 'cosine':
+                    anchor_loss = (
+                        1.0 - F.cosine_similarity(
+                            F.layer_norm(code_pred, code_pred.shape[1:]),
+                            F.layer_norm(anchor_code, anchor_code.shape[1:]),
+                            dim=1)).mean()
+                else:
+                    anchor_loss = self.criterion(
+                        F.layer_norm(code_pred, code_pred.shape[1:]),
+                        F.layer_norm(anchor_code, anchor_code.shape[1:]))
+                total_loss = total_loss + self.lambda_anchor * anchor_loss
+
+            code_reg_loss = torch.tensor(0., device=self.device)
+            if self.model.training and self._has_code_regularization():
+                if code_pred is None:
+                    code_pred = self.model.encode(sparse_gt)
+                code_reg_loss = self._code_regularization_loss(code_pred)
+                total_loss = total_loss + code_reg_loss
 
             # Scheduler update, backward pass and optimization
             if self.model.training:
@@ -159,6 +219,10 @@ class Trainer:
             iter_recon_loss.update(recon_loss)
             if self.model.training and self.teacher_codes is not None:
                 iter_code_loss.update(code_loss)
+            if self.model.training and self.anchor_target is not None:
+                iter_anchor_loss.update(anchor_loss)
+            if self.model.training and self._has_code_regularization():
+                iter_code_reg_loss.update(code_reg_loss)
             iter_time.update(time.time() - time_tmp)
             time_tmp = time.time()
 
@@ -170,6 +234,10 @@ class Trainer:
                          f'recon: {iter_recon_loss.avg:.4e}']
                 if self.model.training and self.teacher_codes is not None:
                     parts.append(f'code: {iter_code_loss.avg:.4e}')
+                if self.model.training and self.anchor_target is not None:
+                    parts.append(f'anchor: {iter_anchor_loss.avg:.4e}')
+                if self.model.training and self._has_code_regularization():
+                    parts.append(f'code_reg: {iter_code_reg_loss.avg:.4e}')
                 parts.append(f'total: {iter_loss.avg:.4e}'
                              f' | time: {iter_time.avg:.3f}')
                 logger.info(' '.join(parts))
@@ -182,12 +250,20 @@ class Trainer:
         parts = [f'=> {mode}  Recon loss: {iter_recon_loss.avg:.4e}']
         if self.model.training and self.teacher_codes is not None:
             parts.append(f'Code loss: {iter_code_loss.avg:.4e}')
+        if self.model.training and self.anchor_target is not None:
+            parts.append(f'Anchor loss: {iter_anchor_loss.avg:.4e}')
+        if self.model.training and self._has_code_regularization():
+            parts.append(f'Code reg loss: {iter_code_reg_loss.avg:.4e}')
         parts.append(f'Total: {iter_loss.avg:.4e}')
         msg = ' | '.join(parts)
         metrics = {"loss": self._as_float(iter_loss.avg),
                    "recon_loss": self._as_float(iter_recon_loss.avg)}
         if self.model.training and self.teacher_codes is not None:
             metrics["code_loss"] = self._as_float(iter_code_loss.avg)
+        if self.model.training and self.anchor_target is not None:
+            metrics["anchor_loss"] = self._as_float(iter_anchor_loss.avg)
+        if self.model.training and self._has_code_regularization():
+            metrics["code_reg_loss"] = self._as_float(iter_code_reg_loss.avg)
         adapter_metrics = self._get_adapter_metrics()
         if adapter_metrics:
             parts = [f"{k}={v:.4e}" for k, v in adapter_metrics.items()]
@@ -199,6 +275,35 @@ class Trainer:
             self.last_val_metrics = metrics
 
         return iter_loss.avg
+
+    def _has_code_regularization(self):
+        return any([
+            self.lambda_code_mean,
+            self.lambda_code_var,
+            self.lambda_code_cov,
+            self.lambda_code_l1,
+        ])
+
+    def _code_regularization_loss(self, code):
+        total = code.new_zeros(())
+        if self.lambda_code_mean:
+            total = total + self.lambda_code_mean * code.mean(dim=0).pow(2).mean()
+
+        if self.lambda_code_var or self.lambda_code_cov:
+            centered = code - code.mean(dim=0, keepdim=True)
+            denom = max(code.size(0) - 1, 1)
+            cov = centered.t().matmul(centered) / denom
+            diag = cov.diag()
+            if self.lambda_code_var:
+                target = self.code_target_var.to(code.device, code.dtype)
+                total = total + self.lambda_code_var * (diag - target).pow(2).mean()
+            if self.lambda_code_cov:
+                offdiag = cov - torch.diag_embed(diag)
+                total = total + self.lambda_code_cov * offdiag.pow(2).mean()
+
+        if self.lambda_code_l1:
+            total = total + self.lambda_code_l1 * code.abs().mean()
+        return total
 
     def _load_teacher_codes(self, path):
         r"""Load precomputed teacher codewords from disk."""
@@ -287,52 +392,52 @@ class Trainer:
             return self.model.adapter_metrics()
         return {}
 
-    def save_encoder_outputs(self, data_loader, output_path):
+    def save_codewords(self, data_loader, output_path):
         if output_path is None:
-            logger.warning('No path to save encoder outputs.')
+            logger.warning('No path to save codewords.')
             return
         output_dir = os.path.dirname(output_path)
         if output_dir:
             os.makedirs(output_dir, exist_ok=True)
 
         self.model.eval()
-        encoder_outputs = []
+        codewords = []
         sample_indices = []
         with torch.no_grad():
             for batch in data_loader:
                 sparse_gt = batch[0]
                 indices = batch[1] if len(batch) > 1 else None
                 sparse_gt = sparse_gt.to(self.device)
-                encoder_output = self.model.encoder(sparse_gt)
-                encoder_outputs.append(encoder_output.cpu())
+                codeword = self.model.encode(sparse_gt)
+                codewords.append(codeword.cpu())
                 if indices is not None:
                     sample_indices.append(indices.cpu())
 
-        encoder_outputs_tensor = torch.cat(encoder_outputs, dim=0)
+        codewords_tensor = torch.cat(codewords, dim=0)
         index_aligned = len(sample_indices) > 0
         if index_aligned:
             indices_tensor = torch.cat(sample_indices, dim=0).to(torch.long)
-            if indices_tensor.numel() != encoder_outputs_tensor.size(0):
+            if indices_tensor.numel() != codewords_tensor.size(0):
                 raise ValueError(
-                    'number of encoder outputs does not match number of '
-                    f'indices: {encoder_outputs_tensor.size(0)} vs '
+                    'number of codewords does not match number of '
+                    f'indices: {codewords_tensor.size(0)} vs '
                     f'{indices_tensor.numel()}')
             if indices_tensor.numel() == 0:
-                raise ValueError('cannot save empty indexed encoder outputs')
+                raise ValueError('cannot save empty indexed codewords')
             expected = torch.arange(indices_tensor.numel(), dtype=torch.long)
             sorted_indices = torch.sort(indices_tensor).values
             if not torch.equal(sorted_indices, expected):
                 raise ValueError(
-                    'encoder output indices must cover each sample exactly '
+                    'codeword indices must cover each sample exactly '
                     'once from 0 to N-1')
-            aligned_outputs = torch.empty_like(encoder_outputs_tensor)
-            aligned_outputs[indices_tensor] = encoder_outputs_tensor
-            encoder_outputs_tensor = aligned_outputs
+            aligned_codewords = torch.empty_like(codewords_tensor)
+            aligned_codewords[indices_tensor] = codewords_tensor
+            codewords_tensor = aligned_codewords
 
-        torch.save(encoder_outputs_tensor, output_path)
+        torch.save(codewords_tensor, output_path)
         order_msg = 'index-aligned' if index_aligned else 'loader-order'
-        logger.info(f'=> Saved {order_msg} encoder outputs '
-                    f'{tuple(encoder_outputs_tensor.shape)} to {output_path}')
+        logger.info(f'=> Saved {order_msg} codewords '
+                    f'{tuple(codewords_tensor.shape)} to {output_path}')
 
 
 

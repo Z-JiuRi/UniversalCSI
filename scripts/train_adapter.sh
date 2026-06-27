@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# 运行命令 (一行复制即可):
+# 运行命令:
 #   adapter=mlp gpu=6 seed=3407 lambda_recon=0.0 lambda_code=1.0 bash scripts/train_adapter.sh
 #   adapter=transformer adapter_hidden_dim=256 gpu=2 seed=3407 bash scripts/train_adapter.sh
+
 
 # ==============================================================================
 # 1. 基础路径与实验名称（环境变量传参，带默认值）

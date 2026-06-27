@@ -63,7 +63,7 @@ def main():
                           scheduler=None,
                           save_path=checkpoint_dir,
                           tensorboard_dir=tensorboard_dir)
-        trainer.save_encoder_outputs(
+        trainer.save_codewords(
             train_loader,
             os.path.join(exp_dir, "codewords", "train_code.pt"))
         return
@@ -113,12 +113,25 @@ def main():
                       test_every_epoch=False,
                       teacher_code_path=args.teacher_code,
                       lambda_recon=args.lambda_recon,
-                      lambda_code=args.lambda_code)
+                      lambda_code=args.lambda_code,
+                      anchor_target=args.anchor_target,
+                      lambda_anchor=args.lambda_anchor,
+                      anchor_loss=args.anchor_loss,
+                      train_path=args.train_path,
+                      channel=args.channel,
+                      nt=args.nt,
+                      nc=args.nc,
+                      cr=args.cr,
+                      lambda_code_mean=args.lambda_code_mean,
+                      lambda_code_var=args.lambda_code_var,
+                      lambda_code_cov=args.lambda_code_cov,
+                      lambda_code_l1=args.lambda_code_l1,
+                      code_var_tau=args.code_var_tau)
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)
 
-    trainer.save_encoder_outputs(
+    trainer.save_codewords(
         train_loader,
         os.path.join(exp_dir, "codewords", "train_code.pt"))
 

@@ -1,5 +1,43 @@
 # UniversalCSI
 
+
+
+#### WAIRD adapter
+
+```bash
+train_path=/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/train.pt \
+val_path=/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/test.pt \
+test_path=/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/test.pt \
+nt=64 nc=64 encoder=transnet decoder=transnet gpu=1 seed=3407 lr_init=3e-4 weight_decay=0 \
+pretrained_encoder=exps/WAIRD/seed3407/transnet_transnet/checkpoints/best_nmse.pth \
+pretrained_decoder=exps/WAIRD/seed42/transnet_transnet/checkpoints/best_nmse.pth \
+teacher_code=exps/WAIRD/seed42/transnet_transnet/codewords/train_code.pt \
+lambda_recon=1.0 \
+lambda_code=0.0 \
+exp_name=WAIRD/adapter/${adapter}/seed${seed}_lambda_recon${lambda_recon}_lambda_code${lambda_code}_lr${lr_init} \
+bash scripts/train_adapter.sh
+```
+
+#### COST2100 adapter
+
+```bash
+train_path=/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/train.pt \
+val_path=/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/test.pt \
+test_path=/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/test.pt \
+nt=64 nc=64 encoder=transnet decoder=transnet gpu=1 seed=3407 lr_init=3e-4 weight_decay=0 \
+pretrained_encoder=exps/WAIRD/seed3407/transnet_transnet/checkpoints/best_nmse.pth \
+pretrained_decoder=exps/WAIRD/seed42/transnet_transnet/checkpoints/best_nmse.pth \
+teacher_code=exps/WAIRD/seed42/transnet_transnet/codewords/train_code.pt \
+lambda_recon=1.0 \
+lambda_code=0.0 \
+exp_name=WAIRD/adapter/${adapter}/seed${seed}_recon${lambda_recon}_code${lambda_code}_lr${lr_init} \
+bash scripts/train_adapter.sh
+```
+
+
+
+
+
 UniversalCSI 是一个用于 CSI 反馈压缩与重建的 PyTorch 实验框架。当前代码只保留端到端自编码训练路径：
 
 ```text

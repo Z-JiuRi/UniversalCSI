@@ -111,7 +111,13 @@ def init_model(args):
                           hidden=args.hidden,
                           num_blocks=args.num_blocks,
                           adapter=args.adapter,
-                          adapter_hidden_dim=args.adapter_hidden_dim)
+                          adapter_hidden_dim=args.adapter_hidden_dim,
+                          canonical_head=args.canonical_head,
+                          canonical_anchor_seed=args.canonical_anchor_seed,
+                          canonical_lowrank_rank=args.canonical_lowrank_rank,
+                          canonical_lowrank_scale=args.canonical_lowrank_scale,
+                          canonical_codebook_size=args.canonical_codebook_size,
+                          canonical_codebook_temperature=args.canonical_codebook_temperature)
 
     if args.pretrained is not None:
         state_dict = _load_clean_state_dict(args.pretrained)
@@ -123,16 +129,14 @@ def init_model(args):
         model.decoder.load_state_dict(decoder_state)
         for param in model.decoder.parameters():
             param.requires_grad = False
-        logger.info("pretrained decoder loaded and frozen from {}".format(
-            args.pretrained_decoder))
+        logger.info("pretrained decoder loaded and frozen from {}".format(args.pretrained_decoder))
 
     if args.pretrained_encoder is not None:
         encoder_state = _load_encoder_state_dict(args.pretrained_encoder)
         model.encoder.load_state_dict(encoder_state)
         for param in model.encoder.parameters():
             param.requires_grad = False
-        logger.info("pretrained encoder loaded and frozen from {}".format(
-            args.pretrained_encoder))
+        logger.info("pretrained encoder loaded and frozen from {}".format(args.pretrained_encoder))
 
     # Model flops and params counting
     H_a = torch.randn([1, args.channel, args.nt, args.nc])
@@ -149,7 +153,9 @@ def init_model(args):
                 f'pretrained_decoder: {args.pretrained_decoder}; '
                 f'pretrained_encoder: {args.pretrained_encoder}; '
                 f'adapter: {args.adapter}; '
-                f'adapter_hidden_dim: {args.adapter_hidden_dim}]')
+                f'adapter_hidden_dim: {args.adapter_hidden_dim}; '
+                f'canonical_head: {args.canonical_head}; '
+                f'canonical_anchor_seed: {args.canonical_anchor_seed}]')
     logger.info(f'=> Model Config: compression ratio=1/{args.cr}; '
                 f'encoder={args.encoder}; '
                 f'decoder={args.decoder}; '

@@ -1,23 +1,22 @@
 #!/bin/bash
 
-# encoder=transnet decoder=hybrid batch_size=256 epochs=400 gpu=2 seed=0 bash scripts/train.sh
-
+# encoder=transnet decoder=transnet batch_size=256 epochs=400 gpu=6 seed=42 bash scripts/train_waird.sh
 
 
 
 # ==============================================================================
 # 1. 基础路径与实验名称（环境变量传参，带默认值）
 # ==============================================================================
-train_path=${train_path:-/storage/hujiacong/zxd/datasets/cost2100/in_train.pt}
-val_path=${val_path:-/storage/hujiacong/zxd/datasets/cost2100/in_val.pt}
-test_path=${test_path:-/storage/hujiacong/zxd/datasets/cost2100/in_test.pt}
+train_path=${train_path:-/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/train.pt}
+val_path=${val_path:-/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/test.pt}
+test_path=${test_path:-/storage/hujiacong/zxd/datasets/WAIRD/data/UniversalCSI/test.pt}
 
 # ==============================================================================
 # 2. 模型结构与数据维度参数
 # ==============================================================================
 d_model=${d_model:-64}
-nt=${nt:-32}
-nc=${nc:-32}
+nt=${nt:-64}
+nc=${nc:-64}
 dim_feedforward=${dim_feedforward:-2048}
 hidden=${hidden:-16}
 num_blocks=${num_blocks:-2}
@@ -35,21 +34,13 @@ scheduler=${scheduler:-cosine}
 lr_init=${lr_init:-2e-4}
 weight_decay=${weight_decay:-1e-3}
 gpu=${gpu:-0}
-seed=${seed:-3407}
-pretrained_encoder=${pretrained_encoder:-}
-pretrained_decoder=${pretrained_decoder:-}
-exp_name=${exp_name:-COST2100/in/unfreeze_decoder/seed${seed}/${encoder}_${decoder}}
-
-extra_args=()
-add_arg() { local flag=$1 val=$2; [ -n "$val" ] && extra_args+=("$flag" "$val"); }
-
-add_arg --pretrained_encoder  "$pretrained_encoder"
-add_arg --pretrained_decoder  "$pretrained_decoder"
+seed=${seed:-42}
+exp_name=${exp_name:-WAIRD/seed${seed}/${encoder}_${decoder}}
 
 # ==============================================================================
 # 4. 运行 Python 脚本
 # ==============================================================================
-/home/hujiacong/zxd/.envs/miniconda3/envs/torch/bin/python ./main.py \
+python -u main.py \
   --exp_name "${exp_name}" \
   --train_path "${train_path}" \
   --val_path "${val_path}" \
@@ -71,5 +62,4 @@ add_arg --pretrained_decoder  "$pretrained_decoder"
   --weight_decay "${weight_decay}" \
   --gpu "${gpu}" \
   --seed "${seed}" \
-  "${extra_args[@]}" \
   > /dev/null 2>&1 &

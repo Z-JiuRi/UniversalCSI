@@ -39,6 +39,19 @@ parser.add_argument('--adapter', type=str, default=None,
                          'transformer (self-attention)')
 parser.add_argument('--adapter_hidden_dim', default=2048, type=int,
                     help='hidden dimension of the adapter MLP (default: 4 * adapter_dim)')
+parser.add_argument('--canonical_head', type=str, default='none',
+                    choices=['none', 'fixed_q_lowrank', 'codebook'],
+                    help='canonical encoder head for transnet encoder')
+parser.add_argument('--canonical_anchor_seed', type=int, default=0,
+                    help='seed for fixed Q/codebook anchors, independent of training seed')
+parser.add_argument('--canonical_lowrank_rank', type=int, default=0,
+                    help='rank for fixed_q_lowrank residual branch')
+parser.add_argument('--canonical_lowrank_scale', type=float, default=0.0,
+                    help='initial scale for fixed_q_lowrank residual branch')
+parser.add_argument('--canonical_codebook_size', type=int, default=1024,
+                    help='number of fixed codebook entries')
+parser.add_argument('--canonical_codebook_temperature', type=float, default=1.0,
+                    help='initial softmax temperature for fixed codebook head')
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
 parser.add_argument('--cpu', action='store_true', default=False,
@@ -91,4 +104,22 @@ parser.add_argument('--lambda_recon', type=float, default=1.0,
                     help='weight for reconstruction MSE loss (default: 1.0)')
 parser.add_argument('--lambda_code', type=float, default=0.0,
                     help='weight for code-space MSE loss against teacher (default: 0.0)')
+parser.add_argument('--anchor_target', type=str, default='none',
+                    choices=['none', 'pca', 'dct'],
+                    help='raw CSI auxiliary target for encoder code')
+parser.add_argument('--lambda_anchor', type=float, default=0.0,
+                    help='weight for raw CSI auxiliary target loss')
+parser.add_argument('--anchor_loss', type=str, default='mse',
+                    choices=['mse', 'cosine'],
+                    help='distance for raw CSI auxiliary target')
+parser.add_argument('--lambda_code_mean', type=float, default=0.0,
+                    help='weight for code mean regularization')
+parser.add_argument('--lambda_code_var', type=float, default=0.0,
+                    help='weight for fixed decreasing code variance regularization')
+parser.add_argument('--lambda_code_cov', type=float, default=0.0,
+                    help='weight for off-diagonal code covariance regularization')
+parser.add_argument('--lambda_code_l1', type=float, default=0.0,
+                    help='weight for code L1 regularization')
+parser.add_argument('--code_var_tau', type=float, default=256.0,
+                    help='decay constant for fixed decreasing code variance target')
 args = parser.parse_args()
