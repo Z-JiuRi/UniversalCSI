@@ -46,6 +46,22 @@
 #   adapter=transformer adapter_hidden_dim=256 seed=2026 decoder_seed=42 gpu=0 \
 #     bash scripts/train_canonical_adapter.sh
 #
+#   adapter=diag_affine seed=2026 decoder_seed=42 gpu=0 \
+#     bash scripts/train_canonical_adapter.sh
+#
+#   adapter=lowrank_affine adapter_rank=32 seed=2026 decoder_seed=42 gpu=0 \
+#     bash scripts/train_canonical_adapter.sh
+#
+#   adapter=lowrank_affine_mlp adapter_rank=32 adapter_hidden_dim=2048 \
+#     seed=2026 decoder_seed=42 gpu=0 bash scripts/train_canonical_adapter.sh
+#
+#   adapter=gated_lowrank_affine_mlp adapter_rank=32 adapter_hidden_dim=2048 \
+#     adapter_gate_init=0.1 seed=2026 decoder_seed=42 gpu=0 \
+#     bash scripts/train_canonical_adapter.sh
+#
+#   adapter=gated_lowrank_affine_linear adapter_rank=32 adapter_gate_init=0.1 \
+#     seed=2026 decoder_seed=42 gpu=0 bash scripts/train_canonical_adapter.sh
+#
 # 6. 使用 aux_dct_1e-3 规范化 checkpoint：
 #   canonical_scheme=aux_dct_1e-3 seed=2026 decoder_seed=42 gpu=0 \
 #     bash scripts/train_canonical_adapter.sh
@@ -157,6 +173,8 @@ decoder_seed=${decoder_seed:-42}
 
 adapter=${adapter:-mlp}
 adapter_hidden_dim=${adapter_hidden_dim:-2048}
+adapter_rank=${adapter_rank:-32}
+adapter_gate_init=${adapter_gate_init:-0.1}
 lambda_recon=${lambda_recon:-1.0}
 lambda_code=${lambda_code:-0.0}
 lambda_fc=${lambda_fc:-0.0}
@@ -214,6 +232,8 @@ add_arg() { local flag=$1 val=$2; [ -n "${val}" ] && extra_args+=("${flag}" "${v
 
 add_arg --adapter "${adapter}"
 add_arg --adapter_hidden_dim "${adapter_hidden_dim}"
+add_arg --adapter_rank "${adapter_rank}"
+add_arg --adapter_gate_init "${adapter_gate_init}"
 add_arg --pretrained_encoder "${pretrained_encoder}"
 add_arg --pretrained_decoder "${pretrained_decoder}"
 add_arg --lambda_recon "${lambda_recon}"

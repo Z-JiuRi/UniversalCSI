@@ -112,6 +112,8 @@ def init_model(args):
                           num_blocks=args.num_blocks,
                           adapter=args.adapter,
                           adapter_hidden_dim=args.adapter_hidden_dim,
+                          adapter_rank=args.adapter_rank,
+                          adapter_gate_init=args.adapter_gate_init,
                           canonical_head=args.canonical_head,
                           canonical_anchor_seed=args.canonical_anchor_seed,
                           canonical_lowrank_rank=args.canonical_lowrank_rank,

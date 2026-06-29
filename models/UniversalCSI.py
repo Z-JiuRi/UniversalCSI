@@ -213,6 +213,7 @@ def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
                   channel=2, nt=32, nc=32, dim_feedforward=None,
                   decoder_name="transnet", hidden=16, num_blocks=2,
                   adapter=None, adapter_hidden_dim=None,
+                  adapter_rank=32, adapter_gate_init=0.1,
                   canonical_head=None, canonical_anchor_seed=0,
                   canonical_lowrank_rank=0, canonical_lowrank_scale=0.0,
                   canonical_codebook_size=1024,
@@ -245,6 +246,35 @@ def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
         code_dim = input_dim // reduction
         from .adapters import TransformerAdapter
         code_adapter = TransformerAdapter(code_dim, d_model=d_model, dim_feedforward=adapter_hidden_dim)
+    elif adapter == "diag_affine":
+        input_dim = channel * nt * nc
+        code_dim = input_dim // reduction
+        from .adapters import DiagonalAffineAdapter
+        code_adapter = DiagonalAffineAdapter(code_dim)
+    elif adapter == "lowrank_affine":
+        input_dim = channel * nt * nc
+        code_dim = input_dim // reduction
+        from .adapters import LowRankAffineAdapter
+        code_adapter = LowRankAffineAdapter(code_dim, rank=adapter_rank)
+    elif adapter == "lowrank_affine_mlp":
+        input_dim = channel * nt * nc
+        code_dim = input_dim // reduction
+        from .adapters import LowRankAffineMLPAdapter
+        code_adapter = LowRankAffineMLPAdapter(
+            code_dim, adapter_hidden_dim, rank=adapter_rank)
+    elif adapter == "gated_lowrank_affine_mlp":
+        input_dim = channel * nt * nc
+        code_dim = input_dim // reduction
+        from .adapters import GatedLowRankAffineMLPAdapter
+        code_adapter = GatedLowRankAffineMLPAdapter(
+            code_dim, adapter_hidden_dim, rank=adapter_rank,
+            gate_init=adapter_gate_init)
+    elif adapter == "gated_lowrank_affine_linear":
+        input_dim = channel * nt * nc
+        code_dim = input_dim // reduction
+        from .adapters import GatedLowRankAffineLinearAdapter
+        code_adapter = GatedLowRankAffineLinearAdapter(
+            code_dim, rank=adapter_rank, gate_init=adapter_gate_init)
     elif adapter is not None:
         raise ValueError(f"Unknown adapter: {adapter}")
     return UniversalCSIModel(encoder, decoder, init_strategy,

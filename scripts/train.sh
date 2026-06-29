@@ -49,7 +49,7 @@ add_arg --pretrained_decoder  "$pretrained_decoder"
 # ==============================================================================
 # 4. 运行 Python 脚本
 # ==============================================================================
-/home/hujiacong/zxd/.envs/miniconda3/envs/torch/bin/python ./main.py \
+python -u main.py \
   --exp_name "${exp_name}" \
   --train_path "${train_path}" \
   --val_path "${val_path}" \

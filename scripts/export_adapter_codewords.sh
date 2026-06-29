@@ -95,6 +95,8 @@ def build_model(args):
         num_blocks=args.get("num_blocks", 2),
         adapter=args.get("adapter"),
         adapter_hidden_dim=args.get("adapter_hidden_dim"),
+        adapter_rank=args.get("adapter_rank", 32),
+        adapter_gate_init=args.get("adapter_gate_init", 0.1),
         canonical_head=args.get("canonical_head"),
         canonical_anchor_seed=args.get("canonical_anchor_seed", 0),
         canonical_lowrank_rank=args.get("canonical_lowrank_rank", 0),

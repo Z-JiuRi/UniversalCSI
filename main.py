@@ -6,7 +6,28 @@ import torch.nn as nn
 from utils.parser import args
 from utils import logger, setup_logging, Trainer, Tester
 from utils import init_device, init_model, FakeLR, WarmUpCosineAnnealingLR
+from utils.init import _load_clean_state_dict
 from dataloader import MyDataLoader
+
+
+def load_checkpoint_ignoring_thop_stats(model, checkpoint_path):
+    result = model.load_state_dict(
+        _load_clean_state_dict(checkpoint_path),
+        strict=False)
+    ignored_suffixes = ("total_ops", "total_params")
+    missing_keys = [
+        key for key in result.missing_keys
+        if not key.endswith(ignored_suffixes)
+    ]
+    unexpected_keys = [
+        key for key in result.unexpected_keys
+        if not key.endswith(ignored_suffixes)
+    ]
+    if missing_keys or unexpected_keys:
+        raise RuntimeError(
+            "Checkpoint state_dict mismatch after ignoring THOP stats: "
+            f"missing={missing_keys}, unexpected={unexpected_keys}")
+    return result
 
 
 def main():
@@ -132,6 +153,20 @@ def main():
 
     # Start training
     trainer.loop(args.epochs, train_loader, val_loader, test_loader)
+
+    best_checkpoint = os.path.join(checkpoint_dir, "best_nmse.pth")
+    if os.path.isfile(best_checkpoint):
+        logger.info(f'=> Loading best checkpoint before codeword export: '
+                    f'{best_checkpoint}')
+        result = load_checkpoint_ignoring_thop_stats(model, best_checkpoint)
+        if result.missing_keys or result.unexpected_keys:
+            logger.info(
+                '=> Ignored THOP statistic keys while loading best checkpoint: '
+                f'missing={len(result.missing_keys)}, '
+                f'unexpected={len(result.unexpected_keys)}')
+    else:
+        logger.warning('=> No best_nmse.pth found before codeword export; '
+                       'using current model state')
 
     trainer.save_codewords(
         train_loader,

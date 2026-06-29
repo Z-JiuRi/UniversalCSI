@@ -33,12 +33,26 @@ parser.add_argument('--resume', type=str, metavar='PATH', default=None,
 parser.add_argument('--seed', default=None, type=int,
                     help='seed for initializing training. ')
 parser.add_argument('--adapter', type=str, default=None,
-                    choices=['mlp', 'mlp_direct', 'transformer'],
+                    choices=['mlp', 'mlp_direct', 'transformer',
+                             'diag_affine', 'lowrank_affine',
+                             'lowrank_affine_mlp',
+                             'gated_lowrank_affine_mlp',
+                             'gated_lowrank_affine_linear'],
                     help='adapter type: mlp (residual MLP), '
                          'mlp_direct (MLP w/o residual), '
-                         'transformer (self-attention)')
+                         'transformer (self-attention), '
+                         'diag_affine (scheme A), '
+                         'lowrank_affine (scheme B), '
+                         'lowrank_affine_mlp (scheme C), '
+                         'gated_lowrank_affine_mlp (scheme D), '
+                         'gated_lowrank_affine_linear '
+                         '(scheme D with linear residual)')
 parser.add_argument('--adapter_hidden_dim', default=2048, type=int,
                     help='hidden dimension of the adapter MLP (default: 4 * adapter_dim)')
+parser.add_argument('--adapter_rank', default=32, type=int,
+                    help='low-rank adapter rank for schemes B/C/D')
+parser.add_argument('--adapter_gate_init', default=0.1, type=float,
+                    help='initial learnable gate value for scheme D')
 parser.add_argument('--canonical_head', type=str, default='none',
                     choices=['none', 'fixed_q_lowrank', 'codebook'],
                     help='canonical encoder head for transnet encoder')

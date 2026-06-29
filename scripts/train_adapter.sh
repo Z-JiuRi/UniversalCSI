@@ -3,6 +3,9 @@
 # 运行命令:
 #   adapter=mlp gpu=6 seed=3407 lambda_recon=0.0 lambda_code=1.0 bash scripts/train_adapter.sh
 #   adapter=transformer adapter_hidden_dim=256 gpu=2 seed=3407 bash scripts/train_adapter.sh
+#   adapter=lowrank_affine adapter_rank=32 gpu=2 seed=3407 bash scripts/train_adapter.sh
+#   adapter=gated_lowrank_affine_mlp adapter_rank=32 adapter_gate_init=0.1 gpu=2 seed=3407 bash scripts/train_adapter.sh
+#   adapter=gated_lowrank_affine_linear adapter_rank=32 adapter_gate_init=0.1 gpu=2 seed=3407 bash scripts/train_adapter.sh
 
 
 # ==============================================================================
@@ -39,6 +42,8 @@ seed=${seed:-42}
 
 adapter=${adapter:-mlp}
 adapter_hidden_dim=${adapter_hidden_dim:-2048}
+adapter_rank=${adapter_rank:-32}
+adapter_gate_init=${adapter_gate_init:-0.1}
 pretrained_encoder=${pretrained_encoder:-exps/COST2100/in/seed${seed}/${encoder}_${decoder}/checkpoints/best_nmse.pth}
 pretrained_decoder=${pretrained_decoder:-exps/COST2100/in/seed42/${encoder}_${decoder}/checkpoints/best_nmse.pth}
 
@@ -60,6 +65,8 @@ add_arg() { local flag=$1 val=$2; [ -n "$val" ] && extra_args+=("$flag" "$val");
 
 add_arg --adapter             "$adapter"
 add_arg --adapter_hidden_dim  "$adapter_hidden_dim"
+add_arg --adapter_rank        "$adapter_rank"
+add_arg --adapter_gate_init   "$adapter_gate_init"
 add_arg --pretrained_encoder  "$pretrained_encoder"
 add_arg --pretrained_decoder  "$pretrained_decoder"
 add_arg --lambda_recon        "$lambda_recon"
