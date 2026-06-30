@@ -19,6 +19,11 @@ class CodewordPairDataset(Dataset):
             source = source[:max_samples].contiguous()
             target = target[:max_samples].contiguous()
         n = source.size(0)
+        if val_ratio <= 0:
+            sl = slice(0, n)
+            self.source = source[sl].contiguous()
+            self.target = target[sl].contiguous()
+            return
         n_val = int(round(n * val_ratio))
         n_val = max(1, min(n_val, n - 1)) if n > 1 else 0
         if split == "train":
@@ -37,4 +42,3 @@ class CodewordPairDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.source[idx], self.target[idx], idx
-

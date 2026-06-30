@@ -116,7 +116,7 @@ python main.py \
 
 ## Commit 与 Pull Request 规范
 
-每个 commit 聚焦单一改动，提交信息简短直接，并说明受影响组件，例如 `Update README for base training` 或 `Fix NMSE calculation`。
+每个 commit 聚焦单一改动，提交信息简短直接，注意用中文，并说明受影响组件，例如 `Update README for base training` 或 `Fix NMSE calculation`。
 
 Pull Request 应包含改动摘要、验证命令和关键结果。实验相关 PR 需要注明数据集/场景、encoder、decoder、压缩率、epoch 数、seed、checkpoint 和 NMSE 变化。不要把数据集、checkpoint 或大体积分析产物加入提交，日志和分析报告等产物应当提交。
 

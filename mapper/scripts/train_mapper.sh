@@ -15,6 +15,7 @@
 #   mapper=flow source_name=seed2026_transnet gpu=1 bash mapper/scripts/train_mapper.sh
 #   mapper=hybrid_flow_mlp epochs=400 gpu=1 bash mapper/scripts/train_mapper.sh
 #   lambda_cos=1e-3 lambda_cov=1e-5 bash mapper/scripts/train_mapper.sh
+#   lambda_smoothl1=0.5 lambda_sample_tail=0.1 lambda_dim_tail=0.05 lambda_whiten=1e-4 bash mapper/scripts/train_mapper.sh
 
 set -euo pipefail
 
@@ -36,13 +37,23 @@ flow_clamp=${flow_clamp:-0.1}
 dropout=${dropout:-0.0}
 val_ratio=${val_ratio:-0.1}
 max_samples=${max_samples:-0}
+save_last=${save_last:-0}
 lambda_cos=${lambda_cos:-0.0}
 lambda_cov=${lambda_cov:-0.0}
+lambda_smoothl1=${lambda_smoothl1:-0.0}
+smoothl1_beta=${smoothl1_beta:-0.05}
+lambda_sample_tail=${lambda_sample_tail:-0.0}
+sample_tail_ratio=${sample_tail_ratio:-0.2}
+lambda_dim_tail=${lambda_dim_tail:-0.0}
+dim_tail_ratio=${dim_tail_ratio:-0.05}
+lambda_whiten=${lambda_whiten:-0.0}
+whiten_eps_ratio=${whiten_eps_ratio:-1e-3}
 gpu=${gpu:-0}
 seed=${seed:-2026}
 cpu=${cpu:-0}
 
-exp_dir=${exp_dir:-mapper/exps/${mapper}/${source_name}_to_seed42_transnet_code_mse${lambda_cos}_cov${lambda_cov}_lr${lr}_ep${epochs}}
+loss_tag="sl1${lambda_smoothl1}_st${lambda_sample_tail}r${sample_tail_ratio}_dt${lambda_dim_tail}r${dim_tail_ratio}_white${lambda_whiten}_cos${lambda_cos}_cov${lambda_cov}"
+exp_dir=${exp_dir:-mapper/exps/${mapper}/${source_name}_to_seed42_transnet_${loss_tag}_lr${lr}_ep${epochs}}
 
 mkdir -p "${exp_dir}"
 
@@ -58,6 +69,9 @@ fi
 extra_args=()
 if [ "${cpu}" = "1" ]; then
   extra_args+=(--cpu)
+fi
+if [ "${save_last}" = "1" ]; then
+  extra_args+=(--save_last)
 fi
 
 python -u mapper/train_mapper.py \
@@ -80,7 +94,15 @@ python -u mapper/train_mapper.py \
   --max_samples "${max_samples}" \
   --lambda_cos "${lambda_cos}" \
   --lambda_cov "${lambda_cov}" \
+  --lambda_smoothl1 "${lambda_smoothl1}" \
+  --smoothl1_beta "${smoothl1_beta}" \
+  --lambda_sample_tail "${lambda_sample_tail}" \
+  --sample_tail_ratio "${sample_tail_ratio}" \
+  --lambda_dim_tail "${lambda_dim_tail}" \
+  --dim_tail_ratio "${dim_tail_ratio}" \
+  --lambda_whiten "${lambda_whiten}" \
+  --whiten_eps_ratio "${whiten_eps_ratio}" \
   --gpu "${gpu}" \
   --seed "${seed}" \
   "${extra_args[@]}" \
-  2>&1 | tee "${exp_dir}/run.log"
+   > /dev/null 2>&1 &

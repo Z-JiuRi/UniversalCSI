@@ -57,9 +57,23 @@ mapper/exps/<mapper>/<source>_to_seed42_transnet_...
 - `args.json`
 - `history.json`
 - `metrics.json`
-- `best_mapper.pth`
-- `mapped_code.pt`
-- 对应 `.log`
+- `run.log`
+- `checkpoints/best_mapper.pth`
+- `codewords/mapped_code.pt`
+- `tensorboard/events.*`
+- `mapped_code.pt`：兼容旧分析脚本保留的一份副本
+
+训练脚本内部会写 `run.log`，因此可以后台静默运行：
+
+```bash
+mapper=mlp gpu=0 bash mapper/scripts/train_mapper.sh > /dev/null 2>&1 &
+```
+
+批量脚本内部已经对子任务使用静默后台方式：
+
+```bash
+mapper=mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper.sh
+```
 
 ## 分析
 
@@ -95,6 +109,35 @@ MSE(mapper(z_source), z_teacher)
 - `lambda_cov`：加入残差 covariance offdiag 正则。
 
 建议先用纯 MSE 判断 mapper 表达力。如果 MSE 无法降到 `1e-4` 级别，再考虑换模型结构，而不是先堆 loss。
+
+### 第一阶段 code-only loss
+
+当前第一阶段不引入 decoder 信息，只优化 `mapper(z_source) -> z_teacher`。除基础 MSE 外，训练脚本还支持以下可选项：
+
+- `lambda_smoothl1` / `smoothl1_beta`：加入 `SmoothL1(z_a, z_t)`，用于稳定重尾 residual。
+- `lambda_sample_tail` / `sample_tail_ratio`：对 batch 内 code MSE 最大的一部分样本加权，例如 top 20%。
+- `lambda_dim_tail` / `dim_tail_ratio`：对 code 维度上 MSE 最大的一部分维度加权，例如 top 5%。
+- `lambda_whiten` / `whiten_eps_ratio`：teacher PCA whitened pair loss，强调 teacher 低方差方向的 pairwise 对齐。
+
+示例：
+
+```bash
+mapper=mlp lambda_smoothl1=0.5 lambda_sample_tail=0.1 \
+lambda_dim_tail=0.05 lambda_whiten=1e-4 gpu=0 \
+bash mapper/scripts/train_mapper.sh
+```
+
+批量跑多组 code-only loss，并在 `0,4,6,7` 上循环分配：
+
+```bash
+mapper=mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper.sh
+```
+
+先看将要启动哪些任务：
+
+```bash
+dry_run=1 bash mapper/scripts/run_mapper.sh
+```
 
 ## 固定 decoder NMSE 测试
 
