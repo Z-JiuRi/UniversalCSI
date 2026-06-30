@@ -164,11 +164,25 @@ gpu=0 bash mapper/scripts/train_mapper.sh
 bash mapper/scripts/run_mapper_decoder_aware.sh
 ```
 
+批量跑 code-only 约束和 decoder-aware 约束的组合实验：
+
+```bash
+bash mapper/scripts/run_mapper_combined_losses.sh
+```
+
+这个组合脚本会把 `SmoothL1`、sample tail、dim tail、teacher whitening 等 code-only 约束，与 `recT`、`rec`、`fc`、decoder tail 等固定 decoder 约束一起测试。默认输出到：
+
+```text
+mapper/exps_combined_losses/<mapper>/<config>/<source>_to_seed42_transnet_...
+```
+
 常用覆盖：
 
 ```bash
 mapper=mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper_decoder_aware.sh
+mapper=mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper_combined_losses.sh
 dry_run=1 bash mapper/scripts/run_mapper_decoder_aware.sh
+dry_run=1 bash mapper/scripts/run_mapper_combined_losses.sh
 overwrite=1 bash mapper/scripts/run_mapper_decoder_aware.sh
 ```
 

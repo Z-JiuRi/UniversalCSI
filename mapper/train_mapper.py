@@ -441,12 +441,15 @@ def main():
         split="train",
         val_ratio=args.val_ratio,
         max_samples=args.max_samples)
-    val_set = CodewordPairDataset(
-        args.source_code,
-        args.target_code,
-        split="val",
-        val_ratio=args.val_ratio,
-        max_samples=args.max_samples)
+    use_val = args.val_ratio > 0
+    val_set = None
+    if use_val:
+        val_set = CodewordPairDataset(
+            args.source_code,
+            args.target_code,
+            split="val",
+            val_ratio=args.val_ratio,
+            max_samples=args.max_samples)
     all_set = CodewordPairDataset(
         args.source_code,
         args.target_code,
@@ -470,12 +473,14 @@ def main():
         shuffle=True,
         num_workers=args.workers,
         pin_memory=device.type == "cuda")
-    val_loader = DataLoader(
-        val_set,
-        batch_size=args.batch_size,
-        shuffle=False,
-        num_workers=args.workers,
-        pin_memory=device.type == "cuda")
+    val_loader = None
+    if use_val:
+        val_loader = DataLoader(
+            val_set,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=args.workers,
+            pin_memory=device.type == "cuda")
     all_loader = DataLoader(
         all_set,
         batch_size=args.batch_size,
@@ -518,7 +523,11 @@ def main():
 
     logger.info(f"device={device}")
     logger.info(f"mapper={args.mapper}, params={count_parameters(model)}")
-    logger.info(f"train={len(train_set)}, val={len(val_set)}, code_dim={code_dim}")
+    val_len = len(val_set) if use_val else 0
+    logger.info(f"train={len(train_set)}, val={val_len}, code_dim={code_dim}")
+    if not use_val:
+        logger.info("val_ratio<=0: skip per-epoch validation; "
+                    "select best checkpoint by train loss")
     logger.info(
         "loss="
         f"mse + smoothl1*{args.lambda_smoothl1} "
@@ -530,7 +539,13 @@ def main():
         f"+ fc*{args.lambda_fc} "
         f"+ decoder_tail*{args.lambda_decoder_tail} "
         f"+ cos*{args.lambda_cos} + cov*{args.lambda_cov}")
-    best = {"mse": math.inf, "epoch": 0}
+    best = {
+        "metric": math.inf,
+        "mse": math.inf,
+        "loss": math.inf,
+        "epoch": 0,
+        "selection": "val_mse" if use_val else "train_loss",
+    }
     history = []
     for epoch in range(1, args.epochs + 1):
         train_metrics = run_epoch(
@@ -555,45 +570,73 @@ def main():
             lambda_fc=args.lambda_fc,
             lambda_decoder_tail=args.lambda_decoder_tail,
             decoder_tail_ratio=args.decoder_tail_ratio)
-        val_metrics = run_epoch(
-            model,
-            val_loader,
-            device,
-            lambda_smoothl1=args.lambda_smoothl1,
-            smoothl1_beta=args.smoothl1_beta,
-            lambda_sample_tail=args.lambda_sample_tail,
-            sample_tail_ratio=args.sample_tail_ratio,
-            lambda_dim_tail=args.lambda_dim_tail,
-            dim_tail_ratio=args.dim_tail_ratio,
-            lambda_whiten=args.lambda_whiten,
-            whiten_stats=whiten_stats,
-            decoder=decoder,
-            csi_tensor=csi_tensor,
-            lambda_rec=args.lambda_rec,
-            lambda_recT=args.lambda_recT,
-            lambda_fc=args.lambda_fc,
-            lambda_decoder_tail=args.lambda_decoder_tail,
-            decoder_tail_ratio=args.decoder_tail_ratio)
+        val_metrics = None
+        if use_val:
+            val_metrics = run_epoch(
+                model,
+                val_loader,
+                device,
+                lambda_smoothl1=args.lambda_smoothl1,
+                smoothl1_beta=args.smoothl1_beta,
+                lambda_sample_tail=args.lambda_sample_tail,
+                sample_tail_ratio=args.sample_tail_ratio,
+                lambda_dim_tail=args.lambda_dim_tail,
+                dim_tail_ratio=args.dim_tail_ratio,
+                lambda_whiten=args.lambda_whiten,
+                whiten_stats=whiten_stats,
+                decoder=decoder,
+                csi_tensor=csi_tensor,
+                lambda_rec=args.lambda_rec,
+                lambda_recT=args.lambda_recT,
+                lambda_fc=args.lambda_fc,
+                lambda_decoder_tail=args.lambda_decoder_tail,
+                decoder_tail_ratio=args.decoder_tail_ratio)
         row = {"epoch": epoch}
         row.update({f"train_{k}": v for k, v in train_metrics.items()})
-        row.update({f"val_{k}": v for k, v in val_metrics.items()})
+        if val_metrics is not None:
+            row.update({f"val_{k}": v for k, v in val_metrics.items()})
         history.append(row)
         log_metrics_to_tensorboard(writer, "train", train_metrics, epoch)
-        log_metrics_to_tensorboard(writer, "val", val_metrics, epoch)
-        logger.info(
-            f"epoch={epoch:04d} "
-            f"train_loss={train_metrics['loss']:.6e} "
-            f"train_mse={train_metrics['mse']:.6e} "
-            f"train_rec={train_metrics['rec']:.6e} "
-            f"train_recT={train_metrics['recT']:.6e} "
-            f"val_mse={val_metrics['mse']:.6e} "
-            f"val_rec={val_metrics['rec']:.6e} "
-            f"val_cos={val_metrics['cos']:.6f} "
-            f"val_nmse={val_metrics['nmse']:.3f}dB")
-        save_last = args.save_last or args.val_ratio <= 0
-        save_metric = train_metrics["mse"] if save_last else val_metrics["mse"]
-        if save_last or save_metric < best["mse"]:
-            best = {"mse": save_metric, "epoch": epoch}
+        if val_metrics is not None:
+            log_metrics_to_tensorboard(writer, "val", val_metrics, epoch)
+            logger.info(
+                f"epoch={epoch:04d} "
+                f"train_loss={train_metrics['loss']:.6e} "
+                f"train_mse={train_metrics['mse']:.6e} "
+                f"train_cos={train_metrics['cos']:.6f} "
+                f"train_nmse={train_metrics['nmse']:.3f}dB "
+                f"train_rec={train_metrics['rec']:.6e} "
+                f"train_recT={train_metrics['recT']:.6e} "
+                f"val_mse={val_metrics['mse']:.6e} "
+                f"val_rec={val_metrics['rec']:.6e} "
+                f"val_cos={val_metrics['cos']:.6f} "
+                f"val_nmse={val_metrics['nmse']:.3f}dB")
+        else:
+            logger.info(
+                f"epoch={epoch:04d} "
+                f"train_loss={train_metrics['loss']:.6e} "
+                f"train_mse={train_metrics['mse']:.6e} "
+                f"train_cos={train_metrics['cos']:.6f} "
+                f"train_nmse={train_metrics['nmse']:.3f}dB "
+                f"train_rec={train_metrics['rec']:.6e} "
+                f"train_recT={train_metrics['recT']:.6e} "
+                f"train_fc={train_metrics['fc']:.6e} "
+                f"train_decoder_tail={train_metrics['decoder_tail']:.6e}")
+        if args.save_last:
+            save_metric = -float(epoch)
+        elif use_val:
+            save_metric = val_metrics["mse"]
+        else:
+            save_metric = train_metrics["loss"]
+        if save_metric < best["metric"]:
+            best = {
+                "metric": save_metric,
+                "mse": train_metrics["mse"] if not use_val else val_metrics["mse"],
+                "loss": train_metrics["loss"] if not use_val else val_metrics["loss"],
+                "epoch": epoch,
+                "selection": "last" if args.save_last
+                else ("val_mse" if use_val else "train_loss"),
+            }
             torch.save({
                 "epoch": epoch,
                 "state_dict": model.state_dict(),
@@ -637,7 +680,11 @@ def main():
     ])
     writer.flush()
     writer.close()
-    logger.info(f"best_epoch={best['epoch']} best_mse={best['mse']:.6e}")
+    logger.info(f"best_epoch={best['epoch']} "
+                f"best_selection={best['selection']} "
+                f"best_metric={best['metric']:.6e} "
+                f"best_mse={best['mse']:.6e} "
+                f"best_loss={best['loss']:.6e}")
     logger.info(f"all_mse={final_metrics['mse']:.6e} "
                 f"all_cos={final_metrics['cos']:.6f} "
                 f"all_nmse={final_metrics['nmse']:.3f}dB")

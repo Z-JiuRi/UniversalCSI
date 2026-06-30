@@ -1,35 +1,40 @@
 #!/bin/bash
 
-# 批量跑第二阶段 decoder-aware mapper 实验。
-# 在 code loss 基础上引入固定 seed42 decoder 的 recT / rec / fc / tail loss。
+# 批量跑 code-only 约束 + decoder-aware 约束的组合 mapper 实验。
+# 这个脚本用于第二阶段加强版：
+#   mapper(z_source) 同时对齐 teacher code、teacher decoder 输出、原始 CSI 重建空间。
 #
-# 默认 fixed decoder:
-#   exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth
+# 默认 teacher / fixed decoder:
+#   exps/COST2100/in/seed42/transnet_transnet
 #
-# 默认 teacher code:
-#   exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt
+# 默认 source:
+#   seed2026/seed3407 transnet_transnet
+#   seed2026 clnet/crnet/csinet -> seed42 transnet
 #
 # GPU 调度：
 #   默认在 0,4,6,7 四张卡上循环分配，每 4 个任务并发一批。
 #
 # 用法：
-#   bash mapper/scripts/run_mapper_decoder_aware.sh
+#   bash mapper/scripts/run_mapper_combined_losses.sh
 #
 # 常用覆盖：
-#   mapper=mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper_decoder_aware.sh
-#   mapper=hybrid_flow_mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper_decoder_aware.sh
-#   dry_run=1 bash mapper/scripts/run_mapper_decoder_aware.sh
-#   overwrite=1 bash mapper/scripts/run_mapper_decoder_aware.sh
-#   wait_by_source=1 bash mapper/scripts/run_mapper_decoder_aware.sh
+#   mapper=mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper_combined_losses.sh
+#   mapper=hybrid_flow_mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper_combined_losses.sh
+#   dry_run=1 bash mapper/scripts/run_mapper_combined_losses.sh
+#   overwrite=1 bash mapper/scripts/run_mapper_combined_losses.sh
+#   wait_by_source=1 bash mapper/scripts/run_mapper_combined_losses.sh
 #
 # 启动前等待：
-#   默认如果还有 "python -u mapper/train_mapper.py" 进程，就每 10 分钟检查一次。
-#   设置 wait_existing=0 可跳过启动前等待。
+#   如果当前还有 "python -u mapper/train_mapper.py" 进程，脚本会每 10 分钟检查一次；
+#   等所有旧 mapper 训练进程结束后，再一次性开始本脚本内的任务调度。
 #
 # 内部等待：
 #   默认按 config 优先顺序调度，每 len(gpus) 个任务并发一批。
 #   设置 wait_by_source=1 后，按 source 优先顺序调度：
 #   每个 source 跑完所有 config 后，再进入下一个 source。
+#
+# 每条 CONFIG 字段：
+#   tag|lambda_smoothl1|lambda_sample_tail|sample_tail_ratio|lambda_dim_tail|dim_tail_ratio|lambda_whiten|lambda_rec|lambda_recT|lambda_fc|lambda_decoder_tail|decoder_tail_ratio
 
 set -euo pipefail
 
@@ -54,7 +59,6 @@ max_samples=${max_samples:-0}
 val_ratio=${val_ratio:-0}
 smoothl1_beta=${smoothl1_beta:-0.05}
 whiten_eps_ratio=${whiten_eps_ratio:-1e-3}
-decoder_tail_ratio=${decoder_tail_ratio:-0.2}
 gpus=${gpus:-0,4,6,7}
 dry_run=${dry_run:-0}
 overwrite=${overwrite:-0}
@@ -83,15 +87,18 @@ SOURCES=(
   "seed2026_csinet_transnet|exps/COST2100/in/seed2026/csinet_transnet/codewords/train_code.pt"
 )
 
-# 字段：
-# tag|lambda_smoothl1|lambda_sample_tail|lambda_dim_tail|lambda_whiten|lambda_rec|lambda_recT|lambda_fc|lambda_decoder_tail
 CONFIGS=(
-  "recT|0.0|0.0|0.0|0.0|0.0|1.0|0.0|0.0"
-  "recT_rec|0.0|0.0|0.0|0.0|1.0|1.0|0.0|0.0"
-  "recT_fc|0.0|0.0|0.0|0.0|0.0|1.0|1e-2|0.0"
-  "recT_rec_fc|0.0|0.0|0.0|0.0|1.0|1.0|1e-2|0.0"
-  "recT_rec_fc_tail|0.0|0.0|0.0|0.0|1.0|1.0|1e-2|0.1"
-  "smooth_tail_white_recT_rec_fc|0.5|0.1|0.05|1e-4|1.0|1.0|1e-2|0.1"
+  "mse_recT|0.0|0.0|0.2|0.0|0.05|0.0|0.0|1.0|0.0|0.0|0.2"
+  "mse_recT_fc|0.0|0.0|0.2|0.0|0.05|0.0|0.0|1.0|1e-2|0.0|0.2"
+  "mse_recT_rec_fc|0.0|0.0|0.2|0.0|0.05|0.0|1.0|1.0|1e-2|0.0|0.2"
+  "tail_recT_fc|0.0|0.1|0.2|0.05|0.05|0.0|0.0|1.0|1e-2|0.0|0.2"
+  "tail_white_recT_fc|0.0|0.1|0.2|0.05|0.05|1e-4|0.0|1.0|1e-2|0.0|0.2"
+  "smooth_tail_recT_fc|0.5|0.1|0.2|0.05|0.05|0.0|0.0|1.0|1e-2|0.0|0.2"
+  "smooth_tail_white_recT|0.5|0.1|0.2|0.05|0.05|1e-4|0.0|1.0|0.0|0.0|0.2"
+  "smooth_tail_white_recT_fc|0.5|0.1|0.2|0.05|0.05|1e-4|0.0|1.0|1e-2|0.0|0.2"
+  "smooth_tail_white_recT_rec_fc|0.5|0.1|0.2|0.05|0.05|1e-4|1.0|1.0|1e-2|0.0|0.2"
+  "smooth_tail_white_recT_rec_fc_decTail|0.5|0.1|0.2|0.05|0.05|1e-4|1.0|1.0|1e-2|0.1|0.2"
+  "smooth_tail_white_recT_rec_fc_decTail_strong|0.5|0.2|0.2|0.1|0.05|1e-4|1.0|1.0|1e-2|0.2|0.2"
 )
 
 task_id=0
@@ -99,7 +106,7 @@ running=0
 
 launch_job() {
   gpu="${GPU_LIST[$((task_id % ${#GPU_LIST[@]}))]}"
-  exp_dir="mapper/exps_decoder_aware/${mapper}/${config_tag}/${source_name}_to_seed42_transnet_lr${lr}_ep${epochs}"
+  exp_dir="mapper/exps_combined_losses/${mapper}/${config_tag}/${source_name}_to_seed42_transnet_lr${lr}_ep${epochs}"
 
   if [ "${overwrite}" != "1" ] && [ -f "${exp_dir}/metrics.json" ]; then
     echo "[skip] ${exp_dir}"
@@ -139,9 +146,9 @@ launch_job() {
   lambda_smoothl1="${lambda_smoothl1}" \
   smoothl1_beta="${smoothl1_beta}" \
   lambda_sample_tail="${lambda_sample_tail}" \
-  sample_tail_ratio=0.2 \
+  sample_tail_ratio="${sample_tail_ratio}" \
   lambda_dim_tail="${lambda_dim_tail}" \
-  dim_tail_ratio=0.05 \
+  dim_tail_ratio="${dim_tail_ratio}" \
   lambda_whiten="${lambda_whiten}" \
   whiten_eps_ratio="${whiten_eps_ratio}" \
   lambda_rec="${lambda_rec}" \
@@ -165,7 +172,7 @@ if [ "${wait_by_source}" = "1" ]; then
   for source in "${SOURCES[@]}"; do
     IFS='|' read -r source_name source_code <<< "${source}"
     for config in "${CONFIGS[@]}"; do
-      IFS='|' read -r config_tag lambda_smoothl1 lambda_sample_tail lambda_dim_tail lambda_whiten lambda_rec lambda_recT lambda_fc lambda_decoder_tail <<< "${config}"
+      IFS='|' read -r config_tag lambda_smoothl1 lambda_sample_tail sample_tail_ratio lambda_dim_tail dim_tail_ratio lambda_whiten lambda_rec lambda_recT lambda_fc lambda_decoder_tail decoder_tail_ratio <<< "${config}"
       launch_job
     done
     wait
@@ -173,7 +180,7 @@ if [ "${wait_by_source}" = "1" ]; then
   done
 else
   for config in "${CONFIGS[@]}"; do
-    IFS='|' read -r config_tag lambda_smoothl1 lambda_sample_tail lambda_dim_tail lambda_whiten lambda_rec lambda_recT lambda_fc lambda_decoder_tail <<< "${config}"
+    IFS='|' read -r config_tag lambda_smoothl1 lambda_sample_tail sample_tail_ratio lambda_dim_tail dim_tail_ratio lambda_whiten lambda_rec lambda_recT lambda_fc lambda_decoder_tail decoder_tail_ratio <<< "${config}"
     for source in "${SOURCES[@]}"; do
       IFS='|' read -r source_name source_code <<< "${source}"
       launch_job
@@ -182,4 +189,4 @@ else
 fi
 
 wait
-echo "All decoder-aware mapper jobs finished."
+echo "All combined-loss mapper jobs finished."
