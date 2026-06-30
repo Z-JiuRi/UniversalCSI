@@ -122,6 +122,12 @@ parser.add_argument('--lambda_fc', type=float, default=0.0,
                     help='weight for decoder fc feature MSE loss against teacher code')
 parser.add_argument('--lambda_recT', type=float, default=0.0,
                     help='weight for teacher reconstruction consistency loss')
+parser.add_argument('--lambda_teacher_pca', type=float, default=0.0,
+                    help='weight for PCA-projected teacher code loss')
+parser.add_argument('--lambda_teacher_whiten', type=float, default=0.0,
+                    help='weight for whitened teacher code loss')
+parser.add_argument('--teacher_pca_dim', type=int, default=0,
+                    help='number of teacher-code PCA dims; 0 means full code dim')
 parser.add_argument('--anchor_target', type=str, default='none',
                     choices=['none', 'pca', 'dct'],
                     help='raw CSI auxiliary target for encoder code')

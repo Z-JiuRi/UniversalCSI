@@ -71,8 +71,11 @@ def main():
 
     # Before-train evaluation (adapter mode only)
     if args.adapter:
-        logger.info("=> Before-train evaluation (frozen encoder + decoder + untrained adapter):")
-        Tester(model, device, criterion)(test_loader)
+        logger.info("=> Before-adapter-train evaluation "
+                    "(frozen encoder + frozen decoder + identity adapter):")
+        before_loss, before_nmse = Tester(model, device, criterion)(test_loader)
+        logger.info(f"=> Before adapter train loss: {before_loss:.4e}"
+                    f"    NMSE: {before_nmse:.4e}\n")
 
     # Inference mode
     if args.evaluate:
@@ -137,6 +140,9 @@ def main():
                       lambda_code=args.lambda_code,
                       lambda_fc=args.lambda_fc,
                       lambda_recT=args.lambda_recT,
+                      lambda_teacher_pca=args.lambda_teacher_pca,
+                      lambda_teacher_whiten=args.lambda_teacher_whiten,
+                      teacher_pca_dim=args.teacher_pca_dim,
                       anchor_target=args.anchor_target,
                       lambda_anchor=args.lambda_anchor,
                       anchor_loss=args.anchor_loss,

@@ -18,6 +18,8 @@ class Trainer:
                  val_freq=10, test_freq=10, test_every_epoch=False,
                  teacher_code_path=None, lambda_recon=1.0, lambda_code=0.0,
                  lambda_fc=0.0, lambda_recT=0.0,
+                 lambda_teacher_pca=0.0, lambda_teacher_whiten=0.0,
+                 teacher_pca_dim=0,
                  anchor_target='none', lambda_anchor=0.0, anchor_loss='mse',
                  train_path=None, channel=2, nt=32, nc=32, cr=4,
                  lambda_code_mean=0.0, lambda_code_var=0.0,
@@ -62,13 +64,23 @@ class Trainer:
         self.lambda_code = lambda_code
         self.lambda_fc = lambda_fc
         self.lambda_recT = lambda_recT
+        self.lambda_teacher_pca = lambda_teacher_pca
+        self.lambda_teacher_whiten = lambda_teacher_whiten
+        self.teacher_pca_dim = teacher_pca_dim
         self.teacher_codes = None
-        if (lambda_code or lambda_fc or lambda_recT) and teacher_code_path is None:
+        self.teacher_code_mean = None
+        self.teacher_pca_basis = None
+        self.teacher_pca_inv_std = None
+        if (lambda_code or lambda_fc or lambda_recT
+                or lambda_teacher_pca or lambda_teacher_whiten) and teacher_code_path is None:
             raise ValueError(
                 "teacher_code is required when lambda_code, lambda_fc, "
-                "or lambda_recT is non-zero")
+                "lambda_recT, lambda_teacher_pca, or "
+                "lambda_teacher_whiten is non-zero")
         if teacher_code_path is not None:
             self._load_teacher_codes(teacher_code_path)
+            if lambda_teacher_pca or lambda_teacher_whiten:
+                self._fit_teacher_code_pca()
             self._move_teacher_codes_to_device()
         self.lambda_anchor = lambda_anchor
         self.anchor_loss = anchor_loss
@@ -167,6 +179,8 @@ class Trainer:
         iter_code_loss = AverageMeter('Code loss')
         iter_fc_loss = AverageMeter('FC loss')
         iter_recT_loss = AverageMeter('Teacher recon loss')
+        iter_teacher_pca_loss = AverageMeter('Teacher PCA loss')
+        iter_teacher_whiten_loss = AverageMeter('Teacher whiten loss')
         iter_anchor_loss = AverageMeter('Anchor loss')
         iter_code_reg_loss = AverageMeter('Code reg loss')
         iter_recon_loss = AverageMeter('Recon loss')
@@ -198,6 +212,8 @@ class Trainer:
             code_loss = torch.tensor(0., device=self.device)
             fc_loss = torch.tensor(0., device=self.device)
             recT_loss = torch.tensor(0., device=self.device)
+            teacher_pca_loss = torch.tensor(0., device=self.device)
+            teacher_whiten_loss = torch.tensor(0., device=self.device)
             if self.model.training and self.teacher_codes is not None:
                 indices = batch[1]
                 teacher_code = self.teacher_codes[indices]
@@ -219,6 +235,22 @@ class Trainer:
                         teacher_recon = self.model.decoder(teacher_code)
                     recT_loss = self.criterion(sparse_pred, teacher_recon)
                     total_loss = total_loss + self.lambda_recT * recT_loss
+                if self.lambda_teacher_pca or self.lambda_teacher_whiten:
+                    pred_pca, teacher_pca = self._teacher_code_pca_projection(
+                        code_pred, teacher_code, whiten=False)
+                    teacher_pca_loss = self.criterion(pred_pca, teacher_pca)
+                    if self.lambda_teacher_pca:
+                        total_loss = (
+                            total_loss
+                            + self.lambda_teacher_pca * teacher_pca_loss)
+                if self.lambda_teacher_whiten:
+                    pred_white, teacher_white = self._teacher_code_pca_projection(
+                        code_pred, teacher_code, whiten=True)
+                    teacher_whiten_loss = self.criterion(pred_white,
+                                                         teacher_white)
+                    total_loss = (
+                        total_loss
+                        + self.lambda_teacher_whiten * teacher_whiten_loss)
 
             anchor_loss = torch.tensor(0., device=self.device)
             if self.model.training and self.anchor_target is not None:
@@ -254,6 +286,10 @@ class Trainer:
                 iter_code_loss.update(code_loss)
                 iter_fc_loss.update(fc_loss)
                 iter_recT_loss.update(recT_loss)
+                if self.lambda_teacher_pca:
+                    iter_teacher_pca_loss.update(teacher_pca_loss)
+                if self.lambda_teacher_whiten:
+                    iter_teacher_whiten_loss.update(teacher_whiten_loss)
             if self.model.training and self.anchor_target is not None:
                 iter_anchor_loss.update(anchor_loss)
             if self.model.training and self._has_code_regularization():
@@ -273,6 +309,12 @@ class Trainer:
                         parts.append(f'fc: {iter_fc_loss.avg:.4e}')
                     if self.lambda_recT:
                         parts.append(f'recT: {iter_recT_loss.avg:.4e}')
+                    if self.lambda_teacher_pca:
+                        parts.append(f'teacher_pca: '
+                                     f'{iter_teacher_pca_loss.avg:.4e}')
+                    if self.lambda_teacher_whiten:
+                        parts.append(f'teacher_white: '
+                                     f'{iter_teacher_whiten_loss.avg:.4e}')
                 if self.model.training and self.anchor_target is not None:
                     parts.append(f'anchor: {iter_anchor_loss.avg:.4e}')
                 if self.model.training and self._has_code_regularization():
@@ -293,6 +335,12 @@ class Trainer:
                 parts.append(f'FC loss: {iter_fc_loss.avg:.4e}')
             if self.lambda_recT:
                 parts.append(f'Teacher recon loss: {iter_recT_loss.avg:.4e}')
+            if self.lambda_teacher_pca:
+                parts.append(f'Teacher PCA loss: '
+                             f'{iter_teacher_pca_loss.avg:.4e}')
+            if self.lambda_teacher_whiten:
+                parts.append(f'Teacher whiten loss: '
+                             f'{iter_teacher_whiten_loss.avg:.4e}')
         if self.model.training and self.anchor_target is not None:
             parts.append(f'Anchor loss: {iter_anchor_loss.avg:.4e}')
         if self.model.training and self._has_code_regularization():
@@ -307,6 +355,12 @@ class Trainer:
                 metrics["fc_loss"] = self._as_float(iter_fc_loss.avg)
             if self.lambda_recT:
                 metrics["teacher_recon_loss"] = self._as_float(iter_recT_loss.avg)
+            if self.lambda_teacher_pca:
+                metrics["teacher_pca_loss"] = self._as_float(
+                    iter_teacher_pca_loss.avg)
+            if self.lambda_teacher_whiten:
+                metrics["teacher_whiten_loss"] = self._as_float(
+                    iter_teacher_whiten_loss.avg)
         if self.model.training and self.anchor_target is not None:
             metrics["anchor_loss"] = self._as_float(iter_anchor_loss.avg)
         if self.model.training and self._has_code_regularization():
@@ -364,10 +418,64 @@ class Trainer:
                 f'got shape {self.teacher_codes.shape}')
         logger.info(f'=> Loaded teacher codewords: {self.teacher_codes.shape}')
 
+    def _fit_teacher_code_pca(self):
+        r"""Fit PCA/whitening statistics on teacher codewords."""
+        if self.teacher_codes is None:
+            raise ValueError("teacher_codes must be loaded before PCA fitting")
+        codes = self.teacher_codes.float().to(self.device)
+        code_dim = codes.size(1)
+        pca_dim = int(self.teacher_pca_dim or code_dim)
+        if pca_dim <= 0 or pca_dim > code_dim:
+            raise ValueError(
+                f"teacher_pca_dim must be in [1, {code_dim}], got {pca_dim}")
+        mean = codes.mean(dim=0, keepdim=True)
+        centered = codes - mean
+        logger.info(f'=> Fitting teacher-code PCA: '
+                    f'n={codes.size(0)}, code_dim={code_dim}, '
+                    f'pca_dim={pca_dim}')
+        denom = max(codes.size(0) - 1, 1)
+        cov = centered.t().matmul(centered) / denom
+        eigvals, eigvecs = torch.linalg.eigh(cov)
+        order = torch.argsort(eigvals, descending=True)
+        eigvals = eigvals[order]
+        eigvecs = eigvecs[:, order]
+        basis = eigvecs[:, :pca_dim].t().contiguous()
+        var = eigvals[:pca_dim].clamp_min(0)
+        inv_std = var.clamp_min(1e-12).rsqrt()
+        self.teacher_code_mean = mean
+        self.teacher_pca_basis = basis
+        self.teacher_pca_inv_std = inv_std.view(1, -1)
+        logger.info(
+            f'=> Teacher-code PCA fitted: basis={tuple(basis.shape)}, '
+            f'var_min={var.min().item():.4e}, '
+            f'var_max={var.max().item():.4e}')
+
     def _move_teacher_codes_to_device(self):
         r"""Move teacher codes to the compute device for efficient indexing."""
         if self.teacher_codes is not None:
             self.teacher_codes = self.teacher_codes.to(self.device)
+        if self.teacher_code_mean is not None:
+            self.teacher_code_mean = self.teacher_code_mean.to(self.device)
+        if self.teacher_pca_basis is not None:
+            self.teacher_pca_basis = self.teacher_pca_basis.to(self.device)
+        if self.teacher_pca_inv_std is not None:
+            self.teacher_pca_inv_std = self.teacher_pca_inv_std.to(self.device)
+
+    def _teacher_code_pca_projection(self, pred_code, teacher_code,
+                                     whiten=False):
+        if self.teacher_code_mean is None or self.teacher_pca_basis is None:
+            raise ValueError("teacher-code PCA statistics are not initialized")
+        mean = self.teacher_code_mean.to(pred_code.device, pred_code.dtype)
+        basis = self.teacher_pca_basis.to(pred_code.device, pred_code.dtype)
+        pred_proj = (pred_code - mean).matmul(basis.t())
+        teacher_proj = (teacher_code - mean).matmul(basis.t())
+        if whiten:
+            inv_std = self.teacher_pca_inv_std.to(pred_code.device,
+                                                  pred_code.dtype)
+            pred_proj = pred_proj * inv_std
+            teacher_proj = teacher_proj * inv_std
+        return pred_proj, teacher_proj
+
 
     def _save(self, state, name):
         if self.save_path is None:
