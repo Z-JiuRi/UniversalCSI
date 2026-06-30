@@ -1,0 +1,11 @@
+{
+  "target_code": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "source_code": [
+    "exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt",
+    "exps/COST2100/in/seed3407/transnet_transnet/codewords/train_code.pt",
+    "exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt",
+    "exps/COST2100/in/seed2026/crnet_transnet/codewords/train_code.pt",
+    "exps/COST2100/in/seed2026/csinet_transnet/codewords/train_code.pt"
+  ],
+  "sample_size": 20000
+}

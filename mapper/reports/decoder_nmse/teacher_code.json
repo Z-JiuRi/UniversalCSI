@@ -1,0 +1,14 @@
+{
+  "code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "decoder_checkpoint": "exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth",
+  "data_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+  "n": 100000,
+  "code_dim": 512,
+  "decoder": "transnet",
+  "cr": 4,
+  "mse_loss": 5.549547074406291e-07,
+  "error_sum": 113.65473937988281,
+  "power_sum": 92451.21875,
+  "nmse_linear": 0.00122934824321419,
+  "nmse_db": -29.10325050354004
+}
