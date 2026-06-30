@@ -8,7 +8,8 @@ z_teacher = E_seed42_transnet(x)
 mapper(z_source) -> z_teacher
 ```
 
-这里暂时不接 decoder，只训练 mapper 让不同 seed/架构的码字对齐到基准 teacher code。
+第一阶段可以不接 decoder，只训练 mapper 让不同 seed/架构的码字对齐到基准 teacher code。
+第二阶段支持接入固定 seed42 decoder，把码字误差和 decoder 输出误差一起优化。
 
 ## 默认基准
 
@@ -138,6 +139,52 @@ mapper=mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper.sh
 ```bash
 dry_run=1 bash mapper/scripts/run_mapper.sh
 ```
+
+### 第二阶段 decoder-aware loss
+
+第二阶段仍然以 `mapper(z_source) -> z_teacher` 的 code MSE 为主，同时把固定 seed42 decoder 接入 loss。目标是让 mapper 不只在欧氏码字空间接近 teacher code，也在固定 decoder 真正敏感的重建空间接近。
+
+训练脚本新增以下可选项：
+
+- `lambda_recT`：`MSE(D_teacher(z_a), D_teacher(z_t))`，约束 adapter 后 code 经过固定 decoder 的输出接近 teacher code 的 decoder 输出。
+- `lambda_rec`：`MSE(D_teacher(z_a), x)`，直接约束固定 decoder 重建结果接近原始 CSI。
+- `lambda_fc`：`MSE(fc_decoder(z_a), fc_decoder(z_t))`，约束固定 decoder 第一层后的隐空间，通常比只看 code 更贴近 decoder 的有效坐标。
+- `lambda_decoder_tail` / `decoder_tail_ratio`：对 batch 内重建误差最大的样本加权，处理 code MSE 平均值不大但少数样本重建很差的问题。
+
+单个实验示例：
+
+```bash
+lambda_recT=1.0 lambda_rec=1.0 lambda_fc=1e-2 lambda_decoder_tail=0.1 \
+gpu=0 bash mapper/scripts/train_mapper.sh
+```
+
+批量跑第二阶段实验，默认在 `0,4,6,7` 四张 GPU 上循环分配：
+
+```bash
+bash mapper/scripts/run_mapper_decoder_aware.sh
+```
+
+常用覆盖：
+
+```bash
+mapper=mlp epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper_decoder_aware.sh
+dry_run=1 bash mapper/scripts/run_mapper_decoder_aware.sh
+overwrite=1 bash mapper/scripts/run_mapper_decoder_aware.sh
+```
+
+默认固定 decoder 和 teacher code 都来自：
+
+```text
+exps/COST2100/in/seed42/transnet_transnet
+```
+
+第二阶段结果默认保存到：
+
+```text
+mapper/exps_decoder_aware/<mapper>/<config>/<source>_to_seed42_transnet_...
+```
+
+每个实验同样包含 `run.log`、`tensorboard/events.*`、`checkpoints/best_mapper.pth`、`codewords/mapped_code.pt` 和 `metrics.json`，可以直接后台静默运行。
 
 ## 固定 decoder NMSE 测试
 

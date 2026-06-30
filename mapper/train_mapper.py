@@ -3,6 +3,7 @@ import argparse
 import json
 import math
 import os
+import uuid
 from pathlib import Path
 
 import torch
@@ -43,6 +44,99 @@ def resolve_device(gpu=None, cpu=False):
     return torch.device("cpu")
 
 
+def load_main_models_package():
+    package_name = f"main_project_models_{uuid.uuid4().hex}"
+    spec = importlib.util.spec_from_file_location(
+        package_name,
+        ROOT / "models" / "__init__.py",
+        submodule_search_locations=[str(ROOT / "models")])
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[package_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def clean_state_dict(checkpoint_path):
+    checkpoint = torch.load(
+        checkpoint_path,
+        weights_only=True,
+        map_location=torch.device("cpu"))
+    state_dict = checkpoint.get("state_dict", checkpoint)
+    for key in list(state_dict.keys()):
+        if key.endswith("total_ops") or key.endswith("total_params"):
+            del state_dict[key]
+    return state_dict
+
+
+def load_decoder_from_checkpoint(args, device):
+    cfg = {}
+    if args.decoder_args_json:
+        cfg = json.loads(Path(args.decoder_args_json).read_text())
+    main_models = load_main_models_package()
+    decoder_name = args.decoder_name or cfg.get("decoder", "transnet")
+    cr = args.decoder_cr or cfg.get("cr", 4)
+    d_model = args.decoder_d_model or cfg.get("d_model", 64)
+    channel = args.decoder_channel or cfg.get("channel", 2)
+    nt = args.decoder_nt or cfg.get("nt", 32)
+    nc = args.decoder_nc or cfg.get("nc", 32)
+    dim_feedforward = (
+        args.decoder_dim_feedforward
+        or cfg.get("dim_feedforward", 2048))
+    hidden = args.decoder_hidden or cfg.get("hidden", 16)
+    num_blocks = args.decoder_num_blocks or cfg.get("num_blocks", 2)
+    model = main_models.universal_csi(
+        encoder_name="transnet",
+        decoder_name=decoder_name,
+        reduction=cr,
+        d_model=d_model,
+        channel=channel,
+        nt=nt,
+        nc=nc,
+        dim_feedforward=dim_feedforward,
+        hidden=hidden,
+        num_blocks=num_blocks)
+    state_dict = clean_state_dict(args.decoder_checkpoint)
+    decoder_state = {
+        key[len("decoder."):]: value
+        for key, value in state_dict.items()
+        if key.startswith("decoder.")
+    }
+    if not decoder_state:
+        decoder_state = state_dict
+    missing, unexpected = model.decoder.load_state_dict(
+        decoder_state,
+        strict=False)
+    if missing or unexpected:
+        raise ValueError(
+            f"decoder checkpoint mismatch: missing={missing}, "
+            f"unexpected={unexpected}")
+    decoder = model.decoder.to(device).eval()
+    for param in decoder.parameters():
+        param.requires_grad_(False)
+    return decoder, {
+        "channel": channel,
+        "nt": nt,
+        "nc": nc,
+        "train_path": args.csi_path or cfg.get("train_path"),
+    }
+
+
+def load_csi_tensor(path, channel, nt, nc, max_samples=0):
+    if not path:
+        raise ValueError("csi_path is required for decoder-aware losses")
+    data = torch.load(path, weights_only=True,
+                      map_location=torch.device("cpu")).float()
+    if data.ndim == 2:
+        data = data.view(-1, channel, nt, nc)
+    if data.ndim != 4 or tuple(data.shape[1:]) != (channel, nt, nc):
+        raise ValueError(
+            f"{path} should have shape (N, {channel}, {nt}, {nc}), "
+            f"got {tuple(data.shape)}")
+    if max_samples and data.size(0) > max_samples:
+        data = data[:max_samples].contiguous()
+    return data
+
+
 def nmse_db(pred, target):
     err = (pred - target).pow(2).sum()
     power = target.pow(2).sum().clamp_min(1e-12)
@@ -78,6 +172,14 @@ def dim_tail_mse_loss(pred, target, ratio):
     k = max(1, int(math.ceil(per_dim.numel() * ratio)))
     k = min(k, per_dim.numel())
     return torch.topk(per_dim, k=k, largest=True).values.mean()
+
+
+def sample_tail_from_values(values, ratio):
+    if ratio <= 0:
+        return values.new_tensor(0.0)
+    k = max(1, int(math.ceil(values.numel() * ratio)))
+    k = min(k, values.numel())
+    return torch.topk(values, k=k, largest=True).values.mean()
 
 
 def fit_teacher_whiten_stats(target_codes, eps_ratio):
@@ -122,7 +224,10 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
               lambda_cov=0.0, lambda_smoothl1=0.0, smoothl1_beta=0.05,
               lambda_sample_tail=0.0, sample_tail_ratio=0.2,
               lambda_dim_tail=0.0, dim_tail_ratio=0.05,
-              lambda_whiten=0.0, whiten_stats=None):
+              lambda_whiten=0.0, whiten_stats=None, decoder=None,
+              csi_tensor=None, lambda_rec=0.0, lambda_recT=0.0,
+              lambda_fc=0.0, lambda_decoder_tail=0.0,
+              decoder_tail_ratio=0.2):
     train = optimizer is not None
     model.train(train)
     total = {
@@ -132,11 +237,25 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
         "sample_tail": 0.0,
         "dim_tail": 0.0,
         "whiten": 0.0,
+        "rec": 0.0,
+        "recT": 0.0,
+        "fc": 0.0,
+        "decoder_tail": 0.0,
         "cos": 0.0,
         "nmse": 0.0,
         "n": 0,
     }
-    for source, target, _ in loader:
+    decoder_aware = any([
+        lambda_rec,
+        lambda_recT,
+        lambda_fc,
+        lambda_decoder_tail,
+    ])
+    if decoder_aware and decoder is None:
+        raise ValueError("decoder-aware losses require decoder")
+    if (lambda_rec or lambda_decoder_tail) and csi_tensor is None:
+        raise ValueError("lambda_rec/lambda_decoder_tail require csi_tensor")
+    for source, target, indices in loader:
         source = source.to(device, non_blocking=True)
         target = target.to(device, non_blocking=True)
         pred = model(source)
@@ -146,6 +265,10 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
         sample_tail = pred.new_tensor(0.0)
         dim_tail = pred.new_tensor(0.0)
         whiten = pred.new_tensor(0.0)
+        rec = pred.new_tensor(0.0)
+        recT = pred.new_tensor(0.0)
+        fc = pred.new_tensor(0.0)
+        decoder_tail = pred.new_tensor(0.0)
         if lambda_smoothl1:
             smoothl1 = F.smooth_l1_loss(pred, target, beta=smoothl1_beta)
             loss = loss + lambda_smoothl1 * smoothl1
@@ -167,6 +290,33 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
                 1.0 - F.cosine_similarity(pred, target, dim=1).mean())
         if lambda_cov:
             loss = loss + lambda_cov * offdiag_cov_loss(pred - target)
+        y_pred = None
+        if lambda_rec or lambda_recT or lambda_decoder_tail:
+            y_pred = decoder(pred)
+        if lambda_rec:
+            gt = csi_tensor[indices].to(device, non_blocking=True)
+            rec = F.mse_loss(y_pred, gt)
+            loss = loss + lambda_rec * rec
+        if lambda_recT:
+            with torch.no_grad():
+                y_teacher = decoder(target)
+            recT = F.mse_loss(y_pred, y_teacher)
+            loss = loss + lambda_recT * recT
+        if lambda_fc:
+            if not hasattr(decoder, "fc_decoder"):
+                raise ValueError("lambda_fc requires decoder.fc_decoder")
+            fc_pred = decoder.fc_decoder(pred)
+            with torch.no_grad():
+                fc_teacher = decoder.fc_decoder(target)
+            fc = F.mse_loss(fc_pred, fc_teacher)
+            loss = loss + lambda_fc * fc
+        if lambda_decoder_tail:
+            gt = csi_tensor[indices].to(device, non_blocking=True)
+            per_sample = (y_pred - gt).pow(2).flatten(1).mean(dim=1)
+            decoder_tail = sample_tail_from_values(
+                per_sample,
+                decoder_tail_ratio)
+            loss = loss + lambda_decoder_tail * decoder_tail
         if train:
             optimizer.zero_grad()
             loss.backward()
@@ -178,6 +328,10 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
         total["sample_tail"] += float(sample_tail.detach().cpu()) * batch_n
         total["dim_tail"] += float(dim_tail.detach().cpu()) * batch_n
         total["whiten"] += float(whiten.detach().cpu()) * batch_n
+        total["rec"] += float(rec.detach().cpu()) * batch_n
+        total["recT"] += float(recT.detach().cpu()) * batch_n
+        total["fc"] += float(fc.detach().cpu()) * batch_n
+        total["decoder_tail"] += float(decoder_tail.detach().cpu()) * batch_n
         total["cos"] += float(cosine_mean(pred, target).detach().cpu()) * batch_n
         total["nmse"] += float(nmse_db(pred, target).detach().cpu()) * batch_n
         total["n"] += batch_n
@@ -238,6 +392,23 @@ def main():
     parser.add_argument("--dim_tail_ratio", type=float, default=0.05)
     parser.add_argument("--lambda_whiten", type=float, default=0.0)
     parser.add_argument("--whiten_eps_ratio", type=float, default=1e-3)
+    parser.add_argument("--lambda_rec", type=float, default=0.0)
+    parser.add_argument("--lambda_recT", type=float, default=0.0)
+    parser.add_argument("--lambda_fc", type=float, default=0.0)
+    parser.add_argument("--lambda_decoder_tail", type=float, default=0.0)
+    parser.add_argument("--decoder_tail_ratio", type=float, default=0.2)
+    parser.add_argument("--decoder_checkpoint", default=None)
+    parser.add_argument("--decoder_args_json", default=None)
+    parser.add_argument("--csi_path", default=None)
+    parser.add_argument("--decoder_name", default=None)
+    parser.add_argument("--decoder_cr", type=int, default=None)
+    parser.add_argument("--decoder_d_model", type=int, default=None)
+    parser.add_argument("--decoder_dim_feedforward", type=int, default=None)
+    parser.add_argument("--decoder_channel", type=int, default=None)
+    parser.add_argument("--decoder_nt", type=int, default=None)
+    parser.add_argument("--decoder_nc", type=int, default=None)
+    parser.add_argument("--decoder_hidden", type=int, default=None)
+    parser.add_argument("--decoder_num_blocks", type=int, default=None)
     parser.add_argument("--save_last", action="store_true",
                         help="save the last epoch instead of selecting by val MSE")
     parser.add_argument("--gpu", type=int, default=None)
@@ -317,6 +488,33 @@ def main():
             all_set.target,
             eps_ratio=args.whiten_eps_ratio)
         whiten_stats = (eigvecs.to(device), inv_eig.to(device))
+    decoder = None
+    csi_tensor = None
+    decoder_aware = any([
+        args.lambda_rec,
+        args.lambda_recT,
+        args.lambda_fc,
+        args.lambda_decoder_tail,
+    ])
+    if decoder_aware:
+        if args.decoder_checkpoint is None:
+            raise ValueError("decoder-aware loss requires --decoder_checkpoint")
+        decoder, decoder_cfg = load_decoder_from_checkpoint(args, device)
+        if args.lambda_rec or args.lambda_decoder_tail:
+            csi_tensor = load_csi_tensor(
+                decoder_cfg["train_path"],
+                decoder_cfg["channel"],
+                decoder_cfg["nt"],
+                decoder_cfg["nc"],
+                max_samples=args.max_samples)
+            if csi_tensor.size(0) < all_set.source.size(0):
+                raise ValueError(
+                    f"CSI tensor has fewer samples than codewords: "
+                    f"{csi_tensor.size(0)} vs {all_set.source.size(0)}")
+        logger.info(f"=> Loaded fixed decoder from {args.decoder_checkpoint}")
+        if csi_tensor is not None:
+            logger.info(f"=> Loaded CSI tensor {tuple(csi_tensor.shape)} "
+                        f"from {decoder_cfg['train_path']}")
 
     logger.info(f"device={device}")
     logger.info(f"mapper={args.mapper}, params={count_parameters(model)}")
@@ -327,6 +525,10 @@ def main():
         f"+ sample_tail*{args.lambda_sample_tail} "
         f"+ dim_tail*{args.lambda_dim_tail} "
         f"+ whiten*{args.lambda_whiten} "
+        f"+ rec*{args.lambda_rec} "
+        f"+ recT*{args.lambda_recT} "
+        f"+ fc*{args.lambda_fc} "
+        f"+ decoder_tail*{args.lambda_decoder_tail} "
         f"+ cos*{args.lambda_cos} + cov*{args.lambda_cov}")
     best = {"mse": math.inf, "epoch": 0}
     history = []
@@ -345,7 +547,14 @@ def main():
             lambda_dim_tail=args.lambda_dim_tail,
             dim_tail_ratio=args.dim_tail_ratio,
             lambda_whiten=args.lambda_whiten,
-            whiten_stats=whiten_stats)
+            whiten_stats=whiten_stats,
+            decoder=decoder,
+            csi_tensor=csi_tensor,
+            lambda_rec=args.lambda_rec,
+            lambda_recT=args.lambda_recT,
+            lambda_fc=args.lambda_fc,
+            lambda_decoder_tail=args.lambda_decoder_tail,
+            decoder_tail_ratio=args.decoder_tail_ratio)
         val_metrics = run_epoch(
             model,
             val_loader,
@@ -357,7 +566,14 @@ def main():
             lambda_dim_tail=args.lambda_dim_tail,
             dim_tail_ratio=args.dim_tail_ratio,
             lambda_whiten=args.lambda_whiten,
-            whiten_stats=whiten_stats)
+            whiten_stats=whiten_stats,
+            decoder=decoder,
+            csi_tensor=csi_tensor,
+            lambda_rec=args.lambda_rec,
+            lambda_recT=args.lambda_recT,
+            lambda_fc=args.lambda_fc,
+            lambda_decoder_tail=args.lambda_decoder_tail,
+            decoder_tail_ratio=args.decoder_tail_ratio)
         row = {"epoch": epoch}
         row.update({f"train_{k}": v for k, v in train_metrics.items()})
         row.update({f"val_{k}": v for k, v in val_metrics.items()})
@@ -368,7 +584,10 @@ def main():
             f"epoch={epoch:04d} "
             f"train_loss={train_metrics['loss']:.6e} "
             f"train_mse={train_metrics['mse']:.6e} "
+            f"train_rec={train_metrics['rec']:.6e} "
+            f"train_recT={train_metrics['recT']:.6e} "
             f"val_mse={val_metrics['mse']:.6e} "
+            f"val_rec={val_metrics['rec']:.6e} "
             f"val_cos={val_metrics['cos']:.6f} "
             f"val_nmse={val_metrics['nmse']:.3f}dB")
         save_last = args.save_last or args.val_ratio <= 0
@@ -399,7 +618,14 @@ def main():
         lambda_dim_tail=args.lambda_dim_tail,
         dim_tail_ratio=args.dim_tail_ratio,
         lambda_whiten=args.lambda_whiten,
-        whiten_stats=whiten_stats)
+        whiten_stats=whiten_stats,
+        decoder=decoder,
+        csi_tensor=csi_tensor,
+        lambda_rec=args.lambda_rec,
+        lambda_recT=args.lambda_recT,
+        lambda_fc=args.lambda_fc,
+        lambda_decoder_tail=args.lambda_decoder_tail,
+        decoder_tail_ratio=args.decoder_tail_ratio)
     log_metrics_to_tensorboard(writer, "all", final_metrics, args.epochs)
     (exp_dir / "metrics.json").write_text(
         json.dumps({"best": best, "all": final_metrics}, indent=2),

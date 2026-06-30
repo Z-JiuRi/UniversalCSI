@@ -16,12 +16,16 @@
 #   mapper=hybrid_flow_mlp epochs=400 gpu=1 bash mapper/scripts/train_mapper.sh
 #   lambda_cos=1e-3 lambda_cov=1e-5 bash mapper/scripts/train_mapper.sh
 #   lambda_smoothl1=0.5 lambda_sample_tail=0.1 lambda_dim_tail=0.05 lambda_whiten=1e-4 bash mapper/scripts/train_mapper.sh
+#   lambda_recT=1.0 lambda_rec=1.0 lambda_fc=1e-2 lambda_decoder_tail=0.1 bash mapper/scripts/train_mapper.sh
 
 set -euo pipefail
 
 target_code=${target_code:-exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt}
 source_code=${source_code:-exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt}
 source_name=${source_name:-seed2026_transnet_transnet}
+decoder_checkpoint=${decoder_checkpoint:-exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth}
+decoder_args_json=${decoder_args_json:-exps/COST2100/in/seed42/transnet_transnet/args.json}
+csi_path=${csi_path:-/storage/hujiacong/zxd/datasets/cost2100/in_train.pt}
 
 mapper=${mapper:-flow}
 epochs=${epochs:-400}
@@ -35,7 +39,7 @@ flow_hidden_dim=${flow_hidden_dim:-1024}
 flow_blocks=${flow_blocks:-8}
 flow_clamp=${flow_clamp:-0.1}
 dropout=${dropout:-0.0}
-val_ratio=${val_ratio:-0.1}
+val_ratio=${val_ratio:-0}
 max_samples=${max_samples:-0}
 save_last=${save_last:-0}
 lambda_cos=${lambda_cos:-0.0}
@@ -48,11 +52,16 @@ lambda_dim_tail=${lambda_dim_tail:-0.0}
 dim_tail_ratio=${dim_tail_ratio:-0.05}
 lambda_whiten=${lambda_whiten:-0.0}
 whiten_eps_ratio=${whiten_eps_ratio:-1e-3}
+lambda_rec=${lambda_rec:-0.0}
+lambda_recT=${lambda_recT:-0.0}
+lambda_fc=${lambda_fc:-0.0}
+lambda_decoder_tail=${lambda_decoder_tail:-0.0}
+decoder_tail_ratio=${decoder_tail_ratio:-0.2}
 gpu=${gpu:-0}
 seed=${seed:-2026}
 cpu=${cpu:-0}
 
-loss_tag="sl1${lambda_smoothl1}_st${lambda_sample_tail}r${sample_tail_ratio}_dt${lambda_dim_tail}r${dim_tail_ratio}_white${lambda_whiten}_cos${lambda_cos}_cov${lambda_cov}"
+loss_tag="sl1${lambda_smoothl1}_st${lambda_sample_tail}r${sample_tail_ratio}_dt${lambda_dim_tail}r${dim_tail_ratio}_white${lambda_whiten}_rec${lambda_rec}_recT${lambda_recT}_fc${lambda_fc}_decTail${lambda_decoder_tail}r${decoder_tail_ratio}_cos${lambda_cos}_cov${lambda_cov}"
 exp_dir=${exp_dir:-mapper/exps/${mapper}/${source_name}_to_seed42_transnet_${loss_tag}_lr${lr}_ep${epochs}}
 
 mkdir -p "${exp_dir}"
@@ -64,6 +73,21 @@ fi
 if [ ! -f "${target_code}" ]; then
   echo "Missing target_code: ${target_code}" >&2
   exit 1
+fi
+if [ "${lambda_rec}" != "0.0" ] || [ "${lambda_recT}" != "0.0" ] || \
+   [ "${lambda_fc}" != "0.0" ] || [ "${lambda_decoder_tail}" != "0.0" ]; then
+  if [ ! -f "${decoder_checkpoint}" ]; then
+    echo "Missing decoder_checkpoint: ${decoder_checkpoint}" >&2
+    exit 1
+  fi
+  if [ ! -f "${decoder_args_json}" ]; then
+    echo "Missing decoder_args_json: ${decoder_args_json}" >&2
+    exit 1
+  fi
+  if [ ! -f "${csi_path}" ]; then
+    echo "Missing csi_path: ${csi_path}" >&2
+    exit 1
+  fi
 fi
 
 extra_args=()
@@ -102,7 +126,15 @@ python -u mapper/train_mapper.py \
   --dim_tail_ratio "${dim_tail_ratio}" \
   --lambda_whiten "${lambda_whiten}" \
   --whiten_eps_ratio "${whiten_eps_ratio}" \
+  --lambda_rec "${lambda_rec}" \
+  --lambda_recT "${lambda_recT}" \
+  --lambda_fc "${lambda_fc}" \
+  --lambda_decoder_tail "${lambda_decoder_tail}" \
+  --decoder_tail_ratio "${decoder_tail_ratio}" \
+  --decoder_checkpoint "${decoder_checkpoint}" \
+  --decoder_args_json "${decoder_args_json}" \
+  --csi_path "${csi_path}" \
   --gpu "${gpu}" \
   --seed "${seed}" \
   "${extra_args[@]}" \
-   > /dev/null 2>&1 &
+  > /dev/null 2>&1 &

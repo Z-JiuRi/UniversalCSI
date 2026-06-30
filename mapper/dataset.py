@@ -23,6 +23,7 @@ class CodewordPairDataset(Dataset):
             sl = slice(0, n)
             self.source = source[sl].contiguous()
             self.target = target[sl].contiguous()
+            self.indices = torch.arange(n, dtype=torch.long)[sl].contiguous()
             return
         n_val = int(round(n * val_ratio))
         n_val = max(1, min(n_val, n - 1)) if n > 1 else 0
@@ -36,9 +37,10 @@ class CodewordPairDataset(Dataset):
             raise ValueError(f"Unknown split: {split}")
         self.source = source[sl].contiguous()
         self.target = target[sl].contiguous()
+        self.indices = torch.arange(n, dtype=torch.long)[sl].contiguous()
 
     def __len__(self):
         return self.source.size(0)
 
     def __getitem__(self, idx):
-        return self.source[idx], self.target[idx], idx
+        return self.source[idx], self.target[idx], self.indices[idx]
