@@ -8,6 +8,7 @@
 # 默认配置：
 #   fc rank=8/16
 #   fc_ffn rank=8/16
+#   fc_ffn fc_rank=128/256 + ffn_rank=8/16
 #
 # 用法：
 #   bash decoder_lora/scripts/run_decoder_lora.sh
@@ -85,12 +86,13 @@ if [ "${sources:-}" != "" ]; then
   done
 fi
 
-# tag|lora_target|lora_rank|lambda_recT|lambda_fc|lambda_code
+# tag|lora_target|lora_rank|fc_lora_rank|ffn_lora_rank|lambda_recT|lambda_fc|lambda_code
 CONFIGS=(
-  "fc_r8|fc|8|0.0|0.0|0.0"
-  "fc_r16|fc|16|0.0|0.0|0.0"
-  "fc_ffn_r8|fc_ffn|8|0.0|0.0|0.0"
-  "fc_ffn_r16|fc_ffn|16|0.0|0.0|0.0"
+  "fc_r128|fc|8|128|0|0.0|0.0|0.0"
+  "fc_r256|fc|8|256|0|0.0|0.0|0.0"
+  "fc128_ffn8|fc_ffn|8|128|8|0.0|0.0|0.0"
+  "fc128_ffn16|fc_ffn|8|128|16|0.0|0.0|0.0"
+  "fc256_ffn8|fc_ffn|8|256|8|0.0|0.0|0.0"
 )
 
 task_id=0
@@ -126,6 +128,8 @@ launch_job() {
   align_ridge="${align_ridge}" \
   lora_target="${cfg_target}" \
   lora_rank="${cfg_rank}" \
+  fc_lora_rank="${cfg_fc_rank}" \
+  ffn_lora_rank="${cfg_ffn_rank}" \
   epochs="${epochs}" \
   batch_size="${batch_size}" \
   workers="${workers}" \
@@ -156,7 +160,7 @@ if [ "${wait_by_source}" = "1" ]; then
   for source in "${SOURCES[@]}"; do
     IFS='|' read -r source_name source_code <<< "${source}"
     for config in "${CONFIGS[@]}"; do
-      IFS='|' read -r config_tag cfg_target cfg_rank cfg_recT cfg_fc cfg_code <<< "${config}"
+      IFS='|' read -r config_tag cfg_target cfg_rank cfg_fc_rank cfg_ffn_rank cfg_recT cfg_fc cfg_code <<< "${config}"
       launch_job
     done
     wait
@@ -164,7 +168,7 @@ if [ "${wait_by_source}" = "1" ]; then
   done
 else
   for config in "${CONFIGS[@]}"; do
-    IFS='|' read -r config_tag cfg_target cfg_rank cfg_recT cfg_fc cfg_code <<< "${config}"
+    IFS='|' read -r config_tag cfg_target cfg_rank cfg_fc_rank cfg_ffn_rank cfg_recT cfg_fc cfg_code <<< "${config}"
     for source in "${SOURCES[@]}"; do
       IFS='|' read -r source_name source_code <<< "${source}"
       launch_job

@@ -41,24 +41,38 @@ def _set_submodule(root, path, module):
 
 
 def inject_decoder_lora(decoder, target="fc_ffn", rank=8, alpha=None,
-                        dropout=0.0):
+                        dropout=0.0, fc_rank=None, ffn_rank=None,
+                        fc_alpha=None, ffn_alpha=None):
     target = target.lower()
     if target not in ("fc", "ffn", "fc_ffn"):
         raise ValueError("target must be one of: fc, ffn, fc_ffn")
 
     injected = []
     if target in ("fc", "fc_ffn"):
-        base = decoder.fc_decoder
-        device = base.weight.device
-        dtype = base.weight.dtype
-        decoder.fc_decoder = LoRALinear(
-            decoder.fc_decoder,
-            rank=rank,
-            alpha=alpha,
-            dropout=dropout).to(device=device, dtype=dtype)
-        injected.append("fc_decoder")
+        cur_rank = rank if fc_rank is None else fc_rank
+        if cur_rank <= 0:
+            pass
+        else:
+            cur_alpha = alpha if fc_alpha is None else fc_alpha
+            if cur_alpha is None:
+                cur_alpha = cur_rank
+            base = decoder.fc_decoder
+            device = base.weight.device
+            dtype = base.weight.dtype
+            decoder.fc_decoder = LoRALinear(
+                decoder.fc_decoder,
+                rank=cur_rank,
+                alpha=cur_alpha,
+                dropout=dropout).to(device=device, dtype=dtype)
+            injected.append(f"fc_decoder:r{cur_rank}")
 
     if target in ("ffn", "fc_ffn"):
+        cur_rank = rank if ffn_rank is None else ffn_rank
+        if cur_rank <= 0:
+            return injected
+        cur_alpha = alpha if ffn_alpha is None else ffn_alpha
+        if cur_alpha is None:
+            cur_alpha = cur_rank
         for idx, layer in enumerate(decoder.decoder.layers):
             for name in ("linear1", "linear2"):
                 path = f"decoder.layers.{idx}.{name}"
@@ -70,10 +84,10 @@ def inject_decoder_lora(decoder, target="fc_ffn", rank=8, alpha=None,
                     path,
                     LoRALinear(
                         base,
-                        rank=rank,
-                        alpha=alpha,
+                        rank=cur_rank,
+                        alpha=cur_alpha,
                         dropout=dropout).to(device=device, dtype=dtype))
-                injected.append(path)
+                injected.append(f"{path}:r{cur_rank}")
 
     return injected
 

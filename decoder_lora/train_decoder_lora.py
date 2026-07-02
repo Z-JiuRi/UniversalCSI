@@ -420,6 +420,10 @@ def main():
                         choices=["fc", "ffn", "fc_ffn"])
     parser.add_argument("--lora_rank", type=int, default=8)
     parser.add_argument("--lora_alpha", type=float, default=None)
+    parser.add_argument("--fc_lora_rank", type=int, default=None)
+    parser.add_argument("--ffn_lora_rank", type=int, default=None)
+    parser.add_argument("--fc_lora_alpha", type=float, default=None)
+    parser.add_argument("--ffn_lora_alpha", type=float, default=None)
     parser.add_argument("--lora_dropout", type=float, default=0.0)
     parser.add_argument("--epochs", type=int, default=400)
     parser.add_argument("--batch_size", type=int, default=1024)
@@ -473,7 +477,11 @@ def main():
         target=args.lora_target,
         rank=args.lora_rank,
         alpha=args.lora_alpha,
-        dropout=args.lora_dropout)
+        dropout=args.lora_dropout,
+        fc_rank=args.fc_lora_rank,
+        ffn_rank=args.ffn_lora_rank,
+        fc_alpha=args.fc_lora_alpha,
+        ffn_alpha=args.ffn_lora_alpha)
     mark_only_lora_trainable(base_decoder)
     source_fit, target_fit = load_code_pair(
         args.source_code,
@@ -574,10 +582,15 @@ def main():
         tuple(bias.shape),
         weight.numel() + bias.numel())
     logger.info(
-        "=> LoRA: target=%s rank=%d alpha=%s dropout=%s injected=%s",
+        "=> LoRA: target=%s rank=%d fc_rank=%s ffn_rank=%s "
+        "alpha=%s fc_alpha=%s ffn_alpha=%s dropout=%s injected=%s",
         args.lora_target,
         args.lora_rank,
+        args.fc_lora_rank if args.fc_lora_rank is not None else args.lora_rank,
+        args.ffn_lora_rank if args.ffn_lora_rank is not None else args.lora_rank,
         args.lora_alpha if args.lora_alpha is not None else args.lora_rank,
+        args.fc_lora_alpha,
+        args.ffn_lora_alpha,
         args.lora_dropout,
         ",".join(injected))
     logger.info(
@@ -732,7 +745,11 @@ def main():
             target=args.lora_target,
             rank=args.lora_rank,
             alpha=args.lora_alpha,
-            dropout=args.lora_dropout)
+            dropout=args.lora_dropout,
+            fc_rank=args.fc_lora_rank,
+            ffn_rank=args.ffn_lora_rank,
+            fc_alpha=args.fc_lora_alpha,
+            ffn_alpha=args.ffn_lora_alpha)
         load_lora_state(base_decoder, path, device)
         final_metrics = evaluate_decoder(base_decoder, all_loader, device)
         metrics[tag]["all"] = final_metrics

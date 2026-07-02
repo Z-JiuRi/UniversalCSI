@@ -15,6 +15,7 @@
 #   align_mode=identity|procrustes|affine
 #   lora_target=fc|ffn|fc_ffn
 #   lora_rank=8|16|32
+#   fc_lora_rank=128 ffn_lora_rank=8
 #   lambda_recT=0.0 lambda_fc=0.0 lambda_code=0.0
 
 set -euo pipefail
@@ -30,7 +31,11 @@ align_mode=${align_mode:-affine}
 align_ridge=${align_ridge:-1e-4}
 lora_target=${lora_target:-fc_ffn}
 lora_rank=${lora_rank:-8}
+fc_lora_rank=${fc_lora_rank:-}
+ffn_lora_rank=${ffn_lora_rank:-}
 lora_alpha=${lora_alpha:-}
+fc_lora_alpha=${fc_lora_alpha:-}
+ffn_lora_alpha=${ffn_lora_alpha:-}
 lora_dropout=${lora_dropout:-0.0}
 epochs=${epochs:-400}
 batch_size=${batch_size:-1024}
@@ -51,7 +56,11 @@ gpu=${gpu:-0}
 seed=${seed:-2026}
 cpu=${cpu:-0}
 
-tag="align${align_mode}_${lora_target}_r${lora_rank}_recT${lambda_recT}_fc${lambda_fc}_code${lambda_code}"
+rank_tag="r${lora_rank}"
+if [ -n "${fc_lora_rank}" ] || [ -n "${ffn_lora_rank}" ]; then
+  rank_tag="fcr${fc_lora_rank:-${fc_lora_rank}}a${fc_lora_alpha:-${fc_lora_alpha}}_ffnr${ffn_lora_rank:-${ffn_lora_rank}}a${ffn_lora_alpha:-${ffn_lora_alpha}}"
+fi
+tag="align${align_mode}_${lora_target}_${rank_tag}_recT${lambda_recT}_fc${lambda_fc}_code${lambda_code}"
 exp_dir=${exp_dir:-decoder_lora/exps/${tag}/${source_name}_to_seed42_lr${lr}_eta_${eta_min}_ep${epochs}}
 
 if [ ! -f "${source_code}" ]; then
@@ -86,6 +95,18 @@ if [ "${save_last}" = "1" ]; then
 fi
 if [ -n "${lora_alpha}" ]; then
   extra_args+=(--lora_alpha "${lora_alpha}")
+fi
+if [ -n "${fc_lora_rank}" ]; then
+  extra_args+=(--fc_lora_rank "${fc_lora_rank}")
+fi
+if [ -n "${ffn_lora_rank}" ]; then
+  extra_args+=(--ffn_lora_rank "${ffn_lora_rank}")
+fi
+if [ -n "${fc_lora_alpha}" ]; then
+  extra_args+=(--fc_lora_alpha "${fc_lora_alpha}")
+fi
+if [ -n "${ffn_lora_alpha}" ]; then
+  extra_args+=(--ffn_lora_alpha "${ffn_lora_alpha}")
 fi
 
 mkdir -p "${exp_dir}"
