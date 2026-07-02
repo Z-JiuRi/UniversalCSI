@@ -4,7 +4,13 @@ import os
 import torch
 import torch.nn as nn
 from utils.parser import args
-from utils import logger, setup_logging, Trainer, Tester
+from utils import (
+    logger,
+    setup_logging,
+    Trainer,
+    Tester,
+    log_experiment_header,
+)
 from utils import init_device, init_model, FakeLR, WarmUpCosineAnnealingLR
 from utils.init import _load_clean_state_dict
 from dataloader import MyDataLoader
@@ -41,7 +47,9 @@ def main():
     with open(os.path.join(exp_dir, "args.json"), "w") as f:
         json.dump(vars(args), f, indent=2, sort_keys=True)
 
-    logger.info(f'=> Experiment directory: {exp_dir}')
+    log_experiment_header(args, exp_dir=exp_dir, target_logger=logger)
+    logger.info(f'=> Checkpoint directory: {checkpoint_dir}')
+    logger.info(f'=> TensorBoard directory: {tensorboard_dir}')
     logger.info('=> PyTorch Version: {}'.format(torch.__version__))
 
     # Environment initialization
@@ -61,6 +69,16 @@ def main():
         nc=args.nc,
         return_indices=True)
     train_loader, val_loader, test_loader = data_builder()
+    logger.info(
+        "=> Dataset sizes: train=%d, val=%d, test=%d",
+        len(train_loader.dataset),
+        len(val_loader.dataset),
+        len(test_loader.dataset))
+    logger.info(
+        "=> Loader config: batch_size=%d, workers=%d, pin_memory=%s",
+        args.batch_size,
+        args.workers,
+        pin_memory)
 
     # Define model
 
@@ -114,15 +132,28 @@ def main():
         ],
         lr=args.lr_init,
     )
+    logger.info(
+        "=> Optimizer: AdamW lr=%s weight_decay=%s "
+        "decay_params=%d no_decay_params=%d",
+        args.lr_init,
+        args.weight_decay,
+        sum(param.numel() for param in decay_params),
+        sum(param.numel() for param in no_decay_params))
 
     if args.scheduler == 'const':
         scheduler = FakeLR(optimizer=optimizer)
+        logger.info("=> Scheduler: const")
 
     else:
         scheduler = WarmUpCosineAnnealingLR(optimizer=optimizer,
                                             T_max=args.epochs * len(train_loader),
                                             T_warmup=0.1 * args.epochs * len(train_loader),
                                             eta_min=5e-5)
+        logger.info(
+            "=> Scheduler: cosine T_max=%s T_warmup=%s eta_min=%s",
+            args.epochs * len(train_loader),
+            0.1 * args.epochs * len(train_loader),
+            5e-5)
 
     # Define the training pipeline
 

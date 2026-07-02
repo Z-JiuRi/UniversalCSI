@@ -26,6 +26,8 @@ _logger_module = importlib.util.module_from_spec(_logger_spec)
 _logger_spec.loader.exec_module(_logger_module)
 logger = _logger_module.logger
 setup_logging = _logger_module.setup_logging
+log_experiment_header = _logger_module.log_experiment_header
+log_parameter_table = _logger_module.log_parameter_table
 _scheduler_spec = importlib.util.spec_from_file_location(
     "flow_matching_project_scheduler",
     ROOT / "utils" / "scheduler.py")
@@ -272,6 +274,10 @@ def main():
     setup_logging(exp_dir)
     writer = SummaryWriter(log_dir=str(tensorboard_dir))
     write_json(exp_dir / "args.json", vars(args))
+    log_experiment_header(args, exp_dir=exp_dir, target_logger=logger)
+    logger.info(f"=> Checkpoint directory: {checkpoint_dir}")
+    logger.info(f"=> Codeword directory: {codeword_dir}")
+    logger.info(f"=> TensorBoard directory: {tensorboard_dir}")
 
     set_seed(args.seed)
     device = resolve_device(args.gpu, args.cpu)
@@ -313,6 +319,12 @@ def main():
         ridge=args.align_ridge)
     model.alignment.set_transform(weight, bias)
     model.to(device)
+    log_parameter_table(model, logger)
+    logger.info(
+        "=> Alignment buffers: weight=%s bias=%s numel=%d",
+        tuple(model.alignment.weight.shape),
+        tuple(model.alignment.bias.shape),
+        model.alignment.weight.numel() + model.alignment.bias.numel())
     optimizer = build_optimizer(model, args.lr, args.weight_decay)
 
     train_loader = DataLoader(
@@ -342,13 +354,40 @@ def main():
         len(train_loader),
         args.eta_min)
 
-    logger.info(f"=> Experiment directory: {exp_dir}")
     logger.info(f"=> Device: {device}")
     logger.info(f"=> Source code: {args.source_code}")
     logger.info(f"=> Target code: {args.target_code}")
     logger.info(f"=> Code shape: {tuple(all_set.source.shape)}")
     logger.info(f"=> Align mode: {args.align_mode}")
     logger.info(f"=> Parameters: {count_parameters(model):,}")
+    logger.info(
+        "=> Dataset sizes: train=%d, val=%d, all=%d, code_dim=%d",
+        len(train_set),
+        len(val_set) if use_val else 0,
+        len(all_set),
+        code_dim)
+    logger.info(
+        "=> Loader config: batch_size=%d, workers=%d, pin_memory=%s",
+        args.batch_size,
+        args.workers,
+        device.type == "cuda")
+    logger.info(
+        "=> Optimizer: AdamW lr=%s weight_decay=%s",
+        args.lr,
+        args.weight_decay)
+    logger.info(
+        "=> Scheduler: %s eta_min=%s steps_per_epoch=%d total_steps=%d",
+        args.scheduler,
+        args.eta_min,
+        len(train_loader),
+        args.epochs * len(train_loader))
+    logger.info(
+        "=> Flow objective: velocity_mse + endpoint*%s; "
+        "ode_steps=%s ode_method=%s eval_ode_every=%s",
+        args.lambda_endpoint,
+        args.ode_steps,
+        args.ode_method,
+        args.eval_ode_every)
 
     history = []
     best_loss = float("inf")

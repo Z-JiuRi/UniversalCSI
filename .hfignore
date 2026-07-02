@@ -1,0 +1,5 @@
+models/__pycahche__/
+__pycache__/
+*.pyc
+exps_old/
+.vscode/

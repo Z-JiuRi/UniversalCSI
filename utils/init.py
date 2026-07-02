@@ -4,7 +4,7 @@ import thop
 import torch
 
 from models import universal_csi
-from utils import logger, line_seg
+from utils import logger, line_seg, log_parameter_table
 
 __all__ = ["seed_everything", "init_device", "init_model", "show_parameter"]
 
@@ -19,18 +19,7 @@ def seed_everything(seed):
 
 
 def show_parameter(model):
-    params = [
-        (name, str(param.requires_grad), str(tuple(param.shape)))
-        for name, param in model.named_parameters()
-    ]
-    shape_width = max([len(shape) for _, _, shape in params] or [0])
-    fmt_str = "{:<65} {:<8} {:>{shape_width}}"
-    lines = [
-        fmt_str.format(name, requires_grad, shape, shape_width=shape_width)
-        for name, requires_grad, shape in params
-    ]
-    lines.append(line_seg)
-    logger.info("\n" + "\n".join(lines))
+    log_parameter_table(model, logger)
 
 
 def _load_clean_state_dict(checkpoint_path):

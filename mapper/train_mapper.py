@@ -24,6 +24,8 @@ _logger_module = importlib.util.module_from_spec(_logger_spec)
 _logger_spec.loader.exec_module(_logger_module)
 logger = _logger_module.logger
 setup_logging = _logger_module.setup_logging
+log_experiment_header = _logger_module.log_experiment_header
+log_parameter_table = _logger_module.log_parameter_table
 
 from dataset import CodewordPairDataset
 from models import build_mapper, count_parameters
@@ -428,7 +430,7 @@ def main():
     writer = SummaryWriter(log_dir=str(tensorboard_dir))
     with (exp_dir / "args.json").open("w") as f:
         json.dump(vars(args), f, indent=2, sort_keys=True)
-    logger.info(f"=> Experiment directory: {exp_dir}")
+    log_experiment_header(args, exp_dir=exp_dir, target_logger=logger)
     logger.info(f"=> Checkpoint directory: {checkpoint_dir}")
     logger.info(f"=> Codeword directory: {codeword_dir}")
     logger.info(f"=> TensorBoard directory: {tensorboard_dir}")
@@ -466,6 +468,7 @@ def main():
         flow_blocks=args.flow_blocks,
         clamp=args.flow_clamp,
         dropout=args.dropout).to(device)
+    log_parameter_table(model, logger)
     optimizer = build_optimizer(model, args.lr, args.weight_decay)
     train_loader = DataLoader(
         train_set,
@@ -522,9 +525,16 @@ def main():
                         f"from {decoder_cfg['train_path']}")
 
     logger.info(f"device={device}")
-    logger.info(f"mapper={args.mapper}, params={count_parameters(model)}")
+    logger.info(f"mapper={args.mapper}, trainable_params={count_parameters(model):,}")
     val_len = len(val_set) if use_val else 0
-    logger.info(f"train={len(train_set)}, val={val_len}, code_dim={code_dim}")
+    logger.info(
+        f"dataset=train:{len(train_set)}, val:{val_len}, "
+        f"all:{len(all_set)}, code_dim:{code_dim}")
+    logger.info(
+        f"dataloader=batch_size:{args.batch_size}, workers:{args.workers}, "
+        f"pin_memory:{device.type == 'cuda'}")
+    logger.info(
+        f"optimizer=AdamW lr:{args.lr}, weight_decay:{args.weight_decay}")
     if not use_val:
         logger.info("val_ratio<=0: skip per-epoch validation; "
                     "select best checkpoint by train loss")
