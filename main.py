@@ -47,13 +47,16 @@ def main():
     with open(os.path.join(exp_dir, "args.json"), "w") as f:
         json.dump(vars(args), f, indent=2, sort_keys=True)
 
+    # Set CUDA_VISIBLE_DEVICES before logging CUDA runtime details.
+    device, pin_memory = init_device(
+        args.seed,
+        args.cpu,
+        args.gpu,
+        args.cpu_affinity)
     log_experiment_header(args, exp_dir=exp_dir, target_logger=logger)
     logger.info(f'=> Checkpoint directory: {checkpoint_dir}')
     logger.info(f'=> TensorBoard directory: {tensorboard_dir}')
     logger.info('=> PyTorch Version: {}'.format(torch.__version__))
-
-    # Environment initialization
-    device, pin_memory = init_device(args.seed, args.cpu, args.gpu, args.cpu_affinity)
 
     # Create the data loader
 

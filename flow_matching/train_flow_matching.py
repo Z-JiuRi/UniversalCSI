@@ -3,11 +3,12 @@ import argparse
 import json
 import os
 import sys
+import uuid
 from pathlib import Path
 
 import torch
 import torch.nn.functional as F
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from torch.utils.tensorboard.writer import SummaryWriter
 
 FLOW_DIR = Path(__file__).resolve().parent
@@ -53,6 +54,98 @@ def resolve_device(gpu=None, cpu=False):
     if not cpu and torch.cuda.is_available():
         return torch.device("cuda")
     return torch.device("cpu")
+
+
+def load_main_models_package():
+    package_name = f"main_project_models_{uuid.uuid4().hex}"
+    spec = importlib.util.spec_from_file_location(
+        package_name,
+        ROOT / "models" / "__init__.py",
+        submodule_search_locations=[str(ROOT / "models")])
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[package_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def clean_state_dict(checkpoint_path):
+    checkpoint = torch.load(
+        checkpoint_path,
+        weights_only=True,
+        map_location=torch.device("cpu"))
+    state_dict = checkpoint.get("state_dict", checkpoint)
+    for key in list(state_dict.keys()):
+        if key.endswith("total_ops") or key.endswith("total_params"):
+            del state_dict[key]
+    return state_dict
+
+
+def load_decoder_from_checkpoint(args, device):
+    cfg = {}
+    if args.decoder_args_json:
+        cfg = json.loads(Path(args.decoder_args_json).read_text())
+    decoder_name = args.decoder_name or cfg.get("decoder", "transnet")
+    cr = args.decoder_cr or cfg.get("cr", 4)
+    d_model = args.decoder_d_model or cfg.get("d_model", 64)
+    channel = args.decoder_channel or cfg.get("channel", 2)
+    nt = args.decoder_nt or cfg.get("nt", 32)
+    nc = args.decoder_nc or cfg.get("nc", 32)
+    dim_feedforward = (
+        args.decoder_dim_feedforward
+        or cfg.get("dim_feedforward", 2048))
+    hidden = args.decoder_hidden or cfg.get("hidden", 16)
+    num_blocks = args.decoder_num_blocks or cfg.get("num_blocks", 2)
+    main_models = load_main_models_package()
+    model = main_models.universal_csi(
+        encoder_name="transnet",
+        decoder_name=decoder_name,
+        reduction=cr,
+        d_model=d_model,
+        channel=channel,
+        nt=nt,
+        nc=nc,
+        dim_feedforward=dim_feedforward,
+        hidden=hidden,
+        num_blocks=num_blocks)
+    state_dict = clean_state_dict(args.decoder_checkpoint)
+    decoder_state = {
+        key[len("decoder."):]: value
+        for key, value in state_dict.items()
+        if key.startswith("decoder.")
+    }
+    if not decoder_state:
+        decoder_state = state_dict
+    missing, unexpected = model.decoder.load_state_dict(
+        decoder_state,
+        strict=False)
+    if missing or unexpected:
+        raise ValueError(
+            f"decoder checkpoint mismatch: missing={missing}, "
+            f"unexpected={unexpected}")
+    decoder = model.decoder.to(device).eval()
+    for param in decoder.parameters():
+        param.requires_grad_(False)
+    return decoder, {
+        "channel": channel,
+        "nt": nt,
+        "nc": nc,
+        "cr": cr,
+        "decoder": decoder_name,
+    }
+
+
+def load_csi_tensor(path, channel, nt, nc, max_samples=0):
+    data = torch.load(path, weights_only=True,
+                      map_location=torch.device("cpu")).float()
+    if data.ndim == 2:
+        data = data.view(-1, channel, nt, nc)
+    if data.ndim != 4 or tuple(data.shape[1:]) != (channel, nt, nc):
+        raise ValueError(
+            f"{path} should have shape (N, {channel}, {nt}, {nc}), "
+            f"got {tuple(data.shape)}")
+    if max_samples and data.size(0) > max_samples:
+        data = data[:max_samples].contiguous()
+    return data
 
 
 def nmse_db(pred, target):
@@ -106,6 +199,16 @@ def code_metrics(pred, target):
         "cos": float(cosine_mean(pred, target).detach().cpu()),
         "nmse": float(nmse_db(pred, target).detach().cpu()),
     }
+
+
+def decoder_nmse_db(pred, target):
+    err = (pred - target).pow(2).sum()
+    power = target.pow(2).sum().clamp_min(1e-12)
+    return 10.0 * torch.log10(err / power)
+
+
+def nmse_db_from_sums(error_sum, power_sum):
+    return 10.0 * torch.log10(error_sum / power_sum.clamp_min(1e-12))
 
 
 def build_optimizer(model, lr, weight_decay):
@@ -200,6 +303,44 @@ def evaluate_ode(model, loader, device, ode_steps=16, ode_method="euler"):
 
 
 @torch.no_grad()
+def evaluate_decoder_ode(model, loader, decoder, csi_tensor, device,
+                         ode_steps=16, ode_method="euler"):
+    model.eval()
+    decoder.eval()
+    total_error = torch.tensor(0.0, device=device)
+    total_power = torch.tensor(0.0, device=device)
+    total_mse = 0.0
+    total_n = 0
+    code_preds = []
+    code_targets = []
+    for source, target, indices in loader:
+        source = source.to(device, non_blocking=True)
+        target = target.to(device, non_blocking=True)
+        gt = csi_tensor[indices].to(device, non_blocking=True)
+        mapped = model.sample(source, steps=ode_steps, method=ode_method)
+        recon = decoder(mapped)
+        mse = F.mse_loss(recon, gt)
+        total_error += (recon - gt).pow(2).sum()
+        total_power += gt.pow(2).sum()
+        total_mse += float(mse.detach().cpu()) * source.size(0)
+        total_n += source.size(0)
+        code_preds.append(mapped.cpu())
+        code_targets.append(target.cpu())
+    code_pred = torch.cat(code_preds, dim=0)
+    code_target = torch.cat(code_targets, dim=0)
+    metrics = code_metrics(code_pred, code_target)
+    metrics = {f"code_{key}": value for key, value in metrics.items()}
+    metrics.update({
+        "decoder_mse": total_mse / max(total_n, 1),
+        "decoder_nmse": float(nmse_db_from_sums(
+            total_error,
+            total_power).detach().cpu()),
+        "n": total_n,
+    })
+    return metrics
+
+
+@torch.no_grad()
 def save_outputs(model, loader, device, output_paths, ode_steps=16,
                  ode_method="euler"):
     if isinstance(output_paths, (str, Path)):
@@ -258,6 +399,22 @@ def main():
     parser.add_argument("--ode_method", default="euler",
                         choices=["euler", "heun"])
     parser.add_argument("--eval_ode_every", type=int, default=0)
+    parser.add_argument("--eval_decoder_every", type=int, default=0,
+                        help="compute true fixed-decoder NMSE every N epochs; 0 disables it")
+    parser.add_argument("--eval_decoder_max_samples", type=int, default=0,
+                        help="limit samples for periodic decoder NMSE; 0 means full set")
+    parser.add_argument("--decoder_checkpoint", default=None)
+    parser.add_argument("--decoder_args_json", default=None)
+    parser.add_argument("--csi_path", default=None)
+    parser.add_argument("--decoder_name", default=None)
+    parser.add_argument("--decoder_cr", type=int, default=None)
+    parser.add_argument("--decoder_d_model", type=int, default=None)
+    parser.add_argument("--decoder_dim_feedforward", type=int, default=None)
+    parser.add_argument("--decoder_channel", type=int, default=None)
+    parser.add_argument("--decoder_nt", type=int, default=None)
+    parser.add_argument("--decoder_nc", type=int, default=None)
+    parser.add_argument("--decoder_hidden", type=int, default=None)
+    parser.add_argument("--decoder_num_blocks", type=int, default=None)
     parser.add_argument("--save_last", action="store_true")
     parser.add_argument("--gpu", type=int, default=None)
     parser.add_argument("--cpu", action="store_true")
@@ -274,13 +431,13 @@ def main():
     setup_logging(exp_dir)
     writer = SummaryWriter(log_dir=str(tensorboard_dir))
     write_json(exp_dir / "args.json", vars(args))
+
+    device = resolve_device(args.gpu, args.cpu)
+    set_seed(args.seed)
     log_experiment_header(args, exp_dir=exp_dir, target_logger=logger)
     logger.info(f"=> Checkpoint directory: {checkpoint_dir}")
     logger.info(f"=> Codeword directory: {codeword_dir}")
     logger.info(f"=> TensorBoard directory: {tensorboard_dir}")
-
-    set_seed(args.seed)
-    device = resolve_device(args.gpu, args.cpu)
 
     train_set = CodewordPairDataset(
         args.source_code,
@@ -347,6 +504,35 @@ def main():
         shuffle=False,
         num_workers=args.workers,
         pin_memory=device.type == "cuda")
+    decoder = None
+    csi_tensor = None
+    decoder_eval_loader = None
+    if args.eval_decoder_every:
+        if not args.decoder_checkpoint:
+            raise ValueError("--eval_decoder_every requires --decoder_checkpoint")
+        if not args.csi_path:
+            raise ValueError("--eval_decoder_every requires --csi_path")
+        decoder, decoder_cfg = load_decoder_from_checkpoint(args, device)
+        csi_tensor = load_csi_tensor(
+            args.csi_path,
+            decoder_cfg["channel"],
+            decoder_cfg["nt"],
+            decoder_cfg["nc"],
+            max_samples=args.max_samples)
+        if csi_tensor.size(0) < len(all_set):
+            raise ValueError(
+                f"CSI tensor has fewer samples than codewords: "
+                f"{csi_tensor.size(0)} vs {len(all_set)}")
+        decoder_eval_set = all_set
+        if args.eval_decoder_max_samples:
+            n_eval = min(args.eval_decoder_max_samples, len(all_set))
+            decoder_eval_set = Subset(all_set, range(n_eval))
+        decoder_eval_loader = DataLoader(
+            decoder_eval_set,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=args.workers,
+            pin_memory=device.type == "cuda")
     scheduler = build_scheduler(
         optimizer,
         args.scheduler,
@@ -388,6 +574,14 @@ def main():
         args.ode_steps,
         args.ode_method,
         args.eval_ode_every)
+    if args.eval_decoder_every:
+        logger.info(
+            "=> Periodic decoder eval: every=%d max_samples=%s "
+            "decoder_checkpoint=%s csi_path=%s",
+            args.eval_decoder_every,
+            args.eval_decoder_max_samples or "full",
+            args.decoder_checkpoint,
+            args.csi_path)
 
     history = []
     best_loss = float("inf")
@@ -404,21 +598,31 @@ def main():
             t_eps=args.t_eps,
             lambda_endpoint=args.lambda_endpoint,
             scheduler=scheduler)
-        eval_loader = val_loader if use_val else train_loader
-        eval_prefix = "val" if use_val else "train"
-        eval_metrics = run_epoch(
-            model,
-            eval_loader,
-            device,
-            optimizer=None,
-            t_eps=args.t_eps,
-            lambda_endpoint=args.lambda_endpoint)
-        record = {
-            "epoch": epoch,
-            "train": train_metrics,
-            eval_prefix: eval_metrics,
-            "lr": scheduler.get_lr()[0],
-        }
+        if use_val:
+            eval_loader = val_loader
+            eval_prefix = "val"
+            eval_metrics = run_epoch(
+                model,
+                eval_loader,
+                device,
+                optimizer=None,
+                t_eps=args.t_eps,
+                lambda_endpoint=args.lambda_endpoint)
+            record = {
+                "epoch": epoch,
+                "train": train_metrics,
+                "val": eval_metrics,
+                "lr": scheduler.get_lr()[0],
+            }
+        else:
+            eval_loader = train_loader
+            eval_prefix = "train"
+            eval_metrics = train_metrics
+            record = {
+                "epoch": epoch,
+                "train": train_metrics,
+                "lr": scheduler.get_lr()[0],
+            }
         if args.eval_ode_every and epoch % args.eval_ode_every == 0:
             ode_metrics = evaluate_ode(
                 model,
@@ -428,6 +632,24 @@ def main():
                 ode_method=args.ode_method)
             record[f"{eval_prefix}_ode"] = ode_metrics
             log_metrics(writer, f"{eval_prefix}_ode", ode_metrics, epoch)
+        if args.eval_decoder_every and epoch % args.eval_decoder_every == 0:
+            decoder_metrics = evaluate_decoder_ode(
+                model,
+                decoder_eval_loader,
+                decoder,
+                csi_tensor,
+                device,
+                ode_steps=args.ode_steps,
+                ode_method=args.ode_method)
+            record["decoder_ode"] = decoder_metrics
+            log_metrics(writer, "decoder_ode", decoder_metrics, epoch)
+            logger.info(
+                f"Epoch [{epoch}/{args.epochs}] true_decoder_eval "
+                f"n={decoder_metrics['n']} "
+                f"code_mse={decoder_metrics['code_mse']:.6e} "
+                f"code_nmse={decoder_metrics['code_nmse']:.3f}dB "
+                f"decoder_mse={decoder_metrics['decoder_mse']:.6e} "
+                f"decoder_nmse={decoder_metrics['decoder_nmse']:.3f}dB")
         history.append(record)
         log_metrics(writer, "train", train_metrics, epoch)
         log_metrics(writer, eval_prefix, eval_metrics, epoch)
@@ -438,8 +660,8 @@ def main():
         logger.info(
             f"Epoch [{epoch}/{args.epochs}] "
             f"lr={scheduler.get_lr()[0]:.6e} "
-            f"train_loss={train_metrics['loss']:.6e} "
-            f"{eval_prefix}_loss={selected_loss:.6e} "
+            f"train_opt_loss={train_metrics['loss']:.6e} "
+            f"{eval_prefix}_select_loss={selected_loss:.6e} "
             f"{eval_prefix}_endpoint={selected_endpoint:.6e} "
             f"{eval_prefix}_start={eval_metrics['start_mse']:.6e}")
 

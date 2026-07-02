@@ -79,13 +79,17 @@ def log_runtime_context(target_logger=None):
         target_logger.info("   cuda_version: %s", torch.version.cuda)
         visible = os.environ.get("CUDA_VISIBLE_DEVICES")
         target_logger.info("   CUDA_VISIBLE_DEVICES: %s", visible)
-        try:
+        if torch.cuda.is_initialized():
+            try:
+                target_logger.info(
+                    "   current_device: %s (%s)",
+                    torch.cuda.current_device(),
+                    torch.cuda.get_device_name(torch.cuda.current_device()))
+            except Exception as exc:
+                target_logger.info("   current_device: unavailable (%s)", exc)
+        else:
             target_logger.info(
-                "   current_device: %s (%s)",
-                torch.cuda.current_device(),
-                torch.cuda.get_device_name(torch.cuda.current_device()))
-        except Exception as exc:
-            target_logger.info("   current_device: unavailable (%s)", exc)
+                "   current_device: not initialized yet")
 
 
 def count_parameters(model):

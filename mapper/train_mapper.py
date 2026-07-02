@@ -430,13 +430,13 @@ def main():
     writer = SummaryWriter(log_dir=str(tensorboard_dir))
     with (exp_dir / "args.json").open("w") as f:
         json.dump(vars(args), f, indent=2, sort_keys=True)
+
+    device = resolve_device(args.gpu, args.cpu)
+    set_seed(args.seed)
     log_experiment_header(args, exp_dir=exp_dir, target_logger=logger)
     logger.info(f"=> Checkpoint directory: {checkpoint_dir}")
     logger.info(f"=> Codeword directory: {codeword_dir}")
     logger.info(f"=> TensorBoard directory: {tensorboard_dir}")
-
-    set_seed(args.seed)
-    device = resolve_device(args.gpu, args.cpu)
     train_set = CodewordPairDataset(
         args.source_code,
         args.target_code,

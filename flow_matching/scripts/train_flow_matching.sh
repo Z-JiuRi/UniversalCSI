@@ -20,6 +20,7 @@
 #   lambda_endpoint=0 表示只训练速度 MSE；>0 额外约束单步终点。
 #   ode_steps 推理导出 mapped_code 时的 ODE 步数。
 #   scheduler=cosine 使用主项目同款 10% warmup + cosine annealing。
+#   eval_decoder_every=N 每 N 个 epoch 计算一次真实 fixed-decoder NMSE。
 
 set -euo pipefail
 
@@ -48,6 +49,11 @@ lambda_endpoint=${lambda_endpoint:-0.0}
 ode_steps=${ode_steps:-16}
 ode_method=${ode_method:-euler}
 eval_ode_every=${eval_ode_every:-0}
+eval_decoder_every=${eval_decoder_every:-0}
+eval_decoder_max_samples=${eval_decoder_max_samples:-0}
+decoder_checkpoint=${decoder_checkpoint:-exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth}
+decoder_args_json=${decoder_args_json:-exps/COST2100/in/seed42/transnet_transnet/args.json}
+csi_path=${csi_path:-/storage/hujiacong/zxd/datasets/cost2100/in_train.pt}
 save_last=${save_last:-0}
 gpu=${gpu:-0}
 seed=${seed:-2026}
@@ -65,6 +71,20 @@ if [ ! -f "${target_code}" ]; then
   echo "Missing target_code: ${target_code}" >&2
   exit 1
 fi
+if [ "${eval_decoder_every}" != "0" ]; then
+  if [ ! -f "${decoder_checkpoint}" ]; then
+    echo "Missing decoder_checkpoint: ${decoder_checkpoint}" >&2
+    exit 1
+  fi
+  if [ ! -f "${decoder_args_json}" ]; then
+    echo "Missing decoder_args_json: ${decoder_args_json}" >&2
+    exit 1
+  fi
+  if [ ! -f "${csi_path}" ]; then
+    echo "Missing csi_path: ${csi_path}" >&2
+    exit 1
+  fi
+fi
 
 mkdir -p "${exp_dir}"
 extra_args=()
@@ -73,6 +93,10 @@ if [ "${cpu}" = "1" ]; then
 fi
 if [ "${save_last}" = "1" ]; then
   extra_args+=(--save_last)
+fi
+
+if [ "${cpu}" != "1" ]; then
+  export CUDA_VISIBLE_DEVICES="${gpu}"
 fi
 
 cmd=(
@@ -101,6 +125,11 @@ cmd=(
   --ode_steps "${ode_steps}"
   --ode_method "${ode_method}"
   --eval_ode_every "${eval_ode_every}"
+  --eval_decoder_every "${eval_decoder_every}"
+  --eval_decoder_max_samples "${eval_decoder_max_samples}"
+  --decoder_checkpoint "${decoder_checkpoint}"
+  --decoder_args_json "${decoder_args_json}"
+  --csi_path "${csi_path}"
   --gpu "${gpu}"
   --seed "${seed}"
   "${extra_args[@]}"

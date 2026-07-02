@@ -15,6 +15,7 @@
 #   bash flow_matching/scripts/run_flow_matching.sh
 #   gpus="0 4 6 7" epochs=400 background=1 bash flow_matching/scripts/run_flow_matching.sh
 #   lr=1e-4 eta_min=1e-5 bash flow_matching/scripts/run_flow_matching.sh
+#   eval_decoder_every=20 eval_decoder_max_samples=10000 bash flow_matching/scripts/run_flow_matching.sh
 
 set -euo pipefail
 
@@ -29,6 +30,12 @@ num_blocks=${num_blocks:-4}
 ode_steps=${ode_steps:-16}
 condition=${condition:-source_start}
 lambda_endpoint=${lambda_endpoint:-0.0}
+eval_ode_every=${eval_ode_every:-20}
+eval_decoder_every=${eval_decoder_every:-20}
+eval_decoder_max_samples=${eval_decoder_max_samples:-0}
+decoder_checkpoint=${decoder_checkpoint:-exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth}
+decoder_args_json=${decoder_args_json:-exps/COST2100/in/seed42/transnet_transnet/args.json}
+csi_path=${csi_path:-/storage/hujiacong/zxd/datasets/cost2100/in_train.pt}
 background=${background:-1}
 gpus=${gpus:-"0 1 4 6 7"}
 
@@ -65,6 +72,12 @@ for item in "${SOURCES[@]}"; do
     hidden_dim="${hidden_dim}" \
     num_blocks="${num_blocks}" \
     ode_steps="${ode_steps}" \
+    eval_ode_every="${eval_ode_every}" \
+    eval_decoder_every="${eval_decoder_every}" \
+    eval_decoder_max_samples="${eval_decoder_max_samples}" \
+    decoder_checkpoint="${decoder_checkpoint}" \
+    decoder_args_json="${decoder_args_json}" \
+    csi_path="${csi_path}" \
     gpu="${gpu}" \
     background="${background}" \
     bash flow_matching/scripts/train_flow_matching.sh
