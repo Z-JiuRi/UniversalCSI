@@ -1,0 +1,14 @@
+{
+  "code_path": "mapper/exps/hybrid/smooth_tail_white/seed2026_transnet_transnet_to_seed42_transnet_lr5e-4_ep400/codewords/mapped_code.pt",
+  "decoder_checkpoint": "exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth",
+  "data_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+  "n": 100000,
+  "code_dim": 512,
+  "decoder": "transnet",
+  "cr": 4,
+  "mse_loss": 1.0418606820167042e-06,
+  "error_sum": 213.37310791015625,
+  "power_sum": 92451.21875,
+  "nmse_linear": 0.0023079535458236933,
+  "nmse_db": -26.36772918701172
+}

@@ -1,0 +1,519 @@
+{
+  "device": "cuda",
+  "csi": {
+    "basic": {
+      "n": 100000,
+      "shape": [
+        100000,
+        2,
+        32,
+        32
+      ],
+      "global_mean": -3.3927168630043525e-08,
+      "global_std": 0.021246692165732384,
+      "global_rms": 0.021246692165732384,
+      "sample_power_mean": 0.9245120286941528,
+      "sample_power_std": 0.39864152669906616,
+      "sample_power_min": 0.2591854929924011,
+      "sample_power_max": 4.343883037567139,
+      "sample_power_p01": 0.35877248644828796,
+      "sample_power_p05": 0.43878427147865295,
+      "sample_power_p50": 0.8424676656723022,
+      "sample_power_p90": 1.4610166549682617,
+      "sample_power_p95": 1.696837306022644,
+      "sample_power_p99": 2.20351243019104
+    },
+    "sparsity": {
+      "top1pct_energy_frac_mean": 0.8451291918754578,
+      "top1pct_energy_frac_p50": 0.8523715138435364,
+      "top1pct_energy_frac_p95": 0.958842396736145,
+      "top5pct_energy_frac_mean": 0.9688898921012878,
+      "top5pct_energy_frac_p50": 0.9719244241714478,
+      "top5pct_energy_frac_p95": 0.9964753985404968,
+      "top10pct_energy_frac_mean": 0.9884034395217896,
+      "top10pct_energy_frac_p50": 0.9897059202194214,
+      "top10pct_energy_frac_p95": 0.9990043640136719,
+      "bins_for_90_mean": 18.897790908813477,
+      "bins_for_90_p50": 17.0,
+      "bins_for_90_p95": 38.0,
+      "bins_for_95_mean": 35.13637924194336,
+      "bins_for_95_p50": 33.0,
+      "bins_for_95_p95": 68.0,
+      "bins_for_99_mean": 104.7647705078125,
+      "bins_for_99_p50": 105.0,
+      "bins_for_99_p95": 180.0
+    },
+    "pca": {
+      "sample_size": 20000,
+      "dim": 2048,
+      "effective_rank": 96.06039428710938,
+      "top10_energy": 0.22031667828559875,
+      "top32_energy": 0.4630340039730072,
+      "top64_energy": 0.6663001179695129,
+      "top128_energy": 0.8572638034820557,
+      "top256_energy": 0.9565282464027405,
+      "top512_energy": 0.9988653063774109,
+      "rank_90": 162,
+      "rank_95": 242,
+      "rank_99": 374
+    }
+  },
+  "code": {
+    "code_stats": [
+      {
+        "name": "teacher",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": 0.0238847266882658,
+        "global_std": 0.800708532333374,
+        "norm_mean": 17.884859085083008,
+        "norm_p95": 23.13971519470215,
+        "dim_var_mean": 0.5501304864883423,
+        "dim_var_cv": 0.25034305453300476,
+        "effective_rank": 55.45928955078125,
+        "top10_energy": 0.28815943002700806,
+        "top50_energy": 0.627023458480835,
+        "top100_energy": 0.7996216416358948
+      },
+      {
+        "name": "seed2026_transnet",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": 0.0012613025028258562,
+        "global_std": 0.7612161636352539,
+        "norm_mean": 16.977014541625977,
+        "norm_p95": 22.160308837890625,
+        "dim_var_mean": 0.4941503703594208,
+        "dim_var_cv": 0.28687232732772827,
+        "effective_rank": 55.85919189453125,
+        "top10_energy": 0.29778337478637695,
+        "top50_energy": 0.6411033868789673,
+        "top100_energy": 0.8058515787124634
+      },
+      {
+        "name": "seed3407_transnet",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": 0.02823352813720703,
+        "global_std": 0.7318097949028015,
+        "norm_mean": 16.403553009033203,
+        "norm_p95": 20.548553466796875,
+        "dim_var_mean": 0.4452537000179291,
+        "dim_var_cv": 0.2840326130390167,
+        "effective_rank": 48.39470291137695,
+        "top10_energy": 0.31767207384109497,
+        "top50_energy": 0.6610215306282043,
+        "top100_energy": 0.8206684589385986
+      },
+      {
+        "name": "seed2026_clnet",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": -0.0003696854109875858,
+        "global_std": 0.562312662601471,
+        "norm_mean": 12.434632301330566,
+        "norm_p95": 17.426555633544922,
+        "dim_var_mean": 0.30625537037849426,
+        "dim_var_cv": 0.09768634289503098,
+        "effective_rank": 116.28853607177734,
+        "top10_energy": 0.19021382927894592,
+        "top50_energy": 0.5500368475914001,
+        "top100_energy": 0.7600169777870178
+      },
+      {
+        "name": "seed2026_crnet",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": -0.0018722487147897482,
+        "global_std": 0.46081557869911194,
+        "norm_mean": 10.181245803833008,
+        "norm_p95": 14.355995178222656,
+        "dim_var_mean": 0.20650270581245422,
+        "dim_var_cv": 0.11859505623579025,
+        "effective_rank": 109.70098876953125,
+        "top10_energy": 0.20259863138198853,
+        "top50_energy": 0.5566810369491577,
+        "top100_energy": 0.7646087408065796
+      },
+      {
+        "name": "seed2026_csinet",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": -0.00298998411744833,
+        "global_std": 1.1459743976593018,
+        "norm_mean": 25.30443000793457,
+        "norm_p95": 35.657474517822266,
+        "dim_var_mean": 1.2535721063613892,
+        "dim_var_cv": 0.16550810635089874,
+        "effective_rank": 69.6871109008789,
+        "top10_energy": 0.2842075526714325,
+        "top50_energy": 0.6257327795028687,
+        "top100_energy": 0.8057272434234619
+      },
+      {
+        "name": "old_hybrid_seed2026_transnet",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": 0.02492835931479931,
+        "global_std": 0.7972124814987183,
+        "norm_mean": 17.812965393066406,
+        "norm_p95": 22.964248657226562,
+        "dim_var_mean": 0.5446584224700928,
+        "dim_var_cv": 0.25405484437942505,
+        "effective_rank": 54.53823471069336,
+        "top10_energy": 0.2901163101196289,
+        "top50_energy": 0.6298756003379822,
+        "top100_energy": 0.8021625280380249
+      },
+      {
+        "name": "smooth_tail_white_seed2026_transnet",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": 0.024153491482138634,
+        "global_std": 0.7981943488121033,
+        "norm_mean": 17.832481384277344,
+        "norm_p95": 23.036617279052734,
+        "dim_var_mean": 0.5462263226509094,
+        "dim_var_cv": 0.25265851616859436,
+        "effective_rank": 54.95818328857422,
+        "top10_energy": 0.28926581144332886,
+        "top50_energy": 0.6286860108375549,
+        "top100_energy": 0.8012910485267639
+      },
+      {
+        "name": "smoothl1_seed2026_clnet",
+        "n": 100000,
+        "dim": 512,
+        "global_mean": 0.024093149229884148,
+        "global_std": 0.799240231513977,
+        "norm_mean": 17.855215072631836,
+        "norm_p95": 23.063928604125977,
+        "dim_var_mean": 0.5481752753257751,
+        "dim_var_cv": 0.25326257944107056,
+        "effective_rank": 55.41978454589844,
+        "top10_energy": 0.2887888550758362,
+        "top50_energy": 0.6288829445838928,
+        "top100_energy": 0.8017034530639648
+      }
+    ],
+    "pair_stats": [
+      {
+        "name": "seed2026_transnet",
+        "mse": 1.2165879011154175,
+        "rmse": 1.1029903888702393,
+        "mae": 0.8669793605804443,
+        "cos_mean": 0.0021765087731182575,
+        "sample_mse_p50": 1.149764060974121,
+        "sample_mse_p95": 1.9996143579483032,
+        "sample_mse_p99": 2.471411943435669,
+        "dim_rmse_mean": 1.0928983688354492,
+        "dim_rmse_max": 2.3612372875213623,
+        "residual_effective_rank": 54.7147216796875,
+        "residual_top10_energy": 0.2992081940174103,
+        "residual_top50_energy": 0.6582627892494202,
+        "residual_kurtosis": 0.34737610816955566,
+        "normal_nll": 1.5173306465148926,
+        "laplace_nll": 1.551093339920044
+      },
+      {
+        "name": "seed3407_transnet",
+        "mse": 1.1806293725967407,
+        "rmse": 1.086567759513855,
+        "mae": 0.8548324704170227,
+        "cos_mean": -0.002311381045728922,
+        "sample_mse_p50": 1.1241518259048462,
+        "sample_mse_p95": 1.8788756132125854,
+        "sample_mse_p99": 2.2872071266174316,
+        "dim_rmse_mean": 1.074774980545044,
+        "dim_rmse_max": 2.0556185245513916,
+        "residual_effective_rank": 49.11050796508789,
+        "residual_top10_energy": 0.30958932638168335,
+        "residual_top50_energy": 0.6635264158248901,
+        "residual_kurtosis": 0.3590245246887207,
+        "normal_nll": 1.5016136169433594,
+        "laplace_nll": 1.5358587503433228
+      },
+      {
+        "name": "seed2026_clnet",
+        "mse": 0.9598787426948547,
+        "rmse": 0.9797340035438538,
+        "mae": 0.7669872641563416,
+        "cos_mean": -0.0032197677064687014,
+        "sample_mse_p50": 0.8975574374198914,
+        "sample_mse_p95": 1.6294634342193604,
+        "sample_mse_p99": 2.047027111053467,
+        "dim_rmse_mean": 0.9710638523101807,
+        "dim_rmse_max": 2.282681465148926,
+        "residual_effective_rank": 77.6208267211914,
+        "residual_top10_energy": 0.25925272703170776,
+        "residual_top50_energy": 0.6071239709854126,
+        "residual_kurtosis": 0.4817636013031006,
+        "normal_nll": 1.3976778984069824,
+        "laplace_nll": 1.4271239042282104
+      },
+      {
+        "name": "seed2026_crnet",
+        "mse": 0.8518667221069336,
+        "rmse": 0.9229662418365479,
+        "mae": 0.7227771878242493,
+        "cos_mean": 0.0027862705755978823,
+        "sample_mse_p50": 0.7979012727737427,
+        "sample_mse_p95": 1.4393198490142822,
+        "sample_mse_p99": 1.801637887954712,
+        "dim_rmse_mean": 0.9138926267623901,
+        "dim_rmse_max": 2.067054510116577,
+        "residual_effective_rank": 71.91852569580078,
+        "residual_top10_energy": 0.2636732757091522,
+        "residual_top50_energy": 0.6088443994522095,
+        "residual_kurtosis": 0.4684624671936035,
+        "normal_nll": 1.3377494812011719,
+        "laplace_nll": 1.367309331893921
+      },
+      {
+        "name": "seed2026_csinet",
+        "mse": 1.966405987739563,
+        "rmse": 1.4022859334945679,
+        "mae": 1.096024990081787,
+        "cos_mean": -0.005492598284035921,
+        "sample_mse_p50": 1.8007253408432007,
+        "sample_mse_p95": 3.516162157058716,
+        "sample_mse_p99": 4.564660549163818,
+        "dim_rmse_mean": 1.3922834396362305,
+        "dim_rmse_max": 3.1051759719848633,
+        "residual_effective_rank": 77.73313903808594,
+        "residual_top10_energy": 0.2766187787055969,
+        "residual_top50_energy": 0.6263527870178223,
+        "residual_kurtosis": 0.5724523067474365,
+        "normal_nll": 1.755933165550232,
+        "laplace_nll": 1.7834248542785645
+      },
+      {
+        "name": "old_hybrid_seed2026_transnet",
+        "mse": 0.0031170579604804516,
+        "rmse": 0.05583062022924423,
+        "mae": 0.03633538633584976,
+        "cos_mean": 0.9976673126220703,
+        "sample_mse_p50": 0.0016152095049619675,
+        "sample_mse_p95": 0.010786681436002254,
+        "sample_mse_p99": 0.030665384605526924,
+        "dim_rmse_mean": 0.05319337546825409,
+        "dim_rmse_max": 0.32387280464172363,
+        "residual_effective_rank": 39.521278381347656,
+        "residual_top10_energy": 0.3268938362598419,
+        "residual_top50_energy": 0.5332214832305908,
+        "residual_kurtosis": 24.75051498413086,
+        "normal_nll": -1.4742932319641113,
+        "laplace_nll": -1.6280748844146729
+      },
+      {
+        "name": "smooth_tail_white_seed2026_transnet",
+        "mse": 0.0020932129118591547,
+        "rmse": 0.04575164243578911,
+        "mae": 0.03101123683154583,
+        "cos_mean": 0.998386561870575,
+        "sample_mse_p50": 0.001732891658321023,
+        "sample_mse_p95": 0.0044707958586514,
+        "sample_mse_p99": 0.007448870223015547,
+        "dim_rmse_mean": 0.04001662880182266,
+        "dim_rmse_max": 0.4704677164554596,
+        "residual_effective_rank": 13.827509880065918,
+        "residual_top10_energy": 0.4217708706855774,
+        "residual_top50_energy": 0.540235161781311,
+        "residual_kurtosis": 110.23094940185547,
+        "normal_nll": -1.6574196815490723,
+        "laplace_nll": -1.7788186073303223
+      },
+      {
+        "name": "smoothl1_seed2026_clnet",
+        "mse": 0.003046486061066389,
+        "rmse": 0.05519498139619827,
+        "mae": 0.03735017403960228,
+        "cos_mean": 0.9976008534431458,
+        "sample_mse_p50": 0.0025953082367777824,
+        "sample_mse_p95": 0.006078369449824095,
+        "sample_mse_p99": 0.009876196272671223,
+        "dim_rmse_mean": 0.04803338646888733,
+        "dim_rmse_max": 0.5275289416313171,
+        "residual_effective_rank": 18.321847915649414,
+        "residual_top10_energy": 0.39431777596473694,
+        "residual_top50_energy": 0.5187442302703857,
+        "residual_kurtosis": 85.15078735351562,
+        "normal_nll": -1.4797486066818237,
+        "laplace_nll": -1.5938677787780762
+      }
+    ],
+    "linear_alignment": [
+      {
+        "name": "seed2026_transnet",
+        "raw_mse": 1.2165879011154175,
+        "raw_cos": 0.0021765087731182575,
+        "procrustes_mse": 0.050993576645851135,
+        "procrustes_cos": 0.9621279239654541,
+        "affine_mse": 0.02558242343366146,
+        "affine_cos": 0.9811790585517883
+      },
+      {
+        "name": "seed3407_transnet",
+        "raw_mse": 1.1806293725967407,
+        "raw_cos": -0.002311381045728922,
+        "procrustes_mse": 0.07239177823066711,
+        "procrustes_cos": 0.9463678598403931,
+        "affine_mse": 0.03503270819783211,
+        "affine_cos": 0.9743770360946655
+      },
+      {
+        "name": "seed2026_clnet",
+        "raw_mse": 0.9598786234855652,
+        "raw_cos": -0.0032197677064687014,
+        "procrustes_mse": 0.19432148337364197,
+        "procrustes_cos": 0.8488786220550537,
+        "affine_mse": 0.09856420755386353,
+        "affine_cos": 0.9252848029136658
+      },
+      {
+        "name": "seed2026_crnet",
+        "raw_mse": 0.851866602897644,
+        "raw_cos": 0.0027862705755978823,
+        "procrustes_mse": 0.21639347076416016,
+        "procrustes_cos": 0.8388788104057312,
+        "affine_mse": 0.0964362695813179,
+        "affine_cos": 0.9268159866333008
+      },
+      {
+        "name": "seed2026_csinet",
+        "raw_mse": 1.966405987739563,
+        "raw_cos": -0.005492598284035921,
+        "procrustes_mse": 0.46246740221977234,
+        "procrustes_cos": 0.8304158449172974,
+        "affine_mse": 0.07539182901382446,
+        "affine_cos": 0.9449816346168518
+      }
+    ],
+    "correlations": {
+      "seed2026_transnet": {
+        "corr_with_csi_power": 0.9071906208992004,
+        "corr_with_top5_energy_frac": -0.7285758256912231
+      },
+      "seed3407_transnet": {
+        "corr_with_csi_power": 0.9087437391281128,
+        "corr_with_top5_energy_frac": -0.7197853326797485
+      },
+      "seed2026_clnet": {
+        "corr_with_csi_power": 0.9489150047302246,
+        "corr_with_top5_energy_frac": -0.7257046103477478
+      },
+      "seed2026_crnet": {
+        "corr_with_csi_power": 0.9370989203453064,
+        "corr_with_top5_energy_frac": -0.7252861857414246
+      },
+      "seed2026_csinet": {
+        "corr_with_csi_power": 0.9220238327980042,
+        "corr_with_top5_energy_frac": -0.6711582541465759
+      },
+      "old_hybrid_seed2026_transnet": {
+        "corr_with_csi_power": 0.21778516471385956,
+        "corr_with_top5_energy_frac": -0.20117183029651642
+      },
+      "smooth_tail_white_seed2026_transnet": {
+        "corr_with_csi_power": 0.49323803186416626,
+        "corr_with_top5_energy_frac": -0.44045916199684143
+      },
+      "smoothl1_seed2026_clnet": {
+        "corr_with_csi_power": 0.4688943326473236,
+        "corr_with_top5_energy_frac": -0.4070216417312622
+      }
+    }
+  },
+  "cluster_summary": [
+    {
+      "cluster": 0,
+      "n": 8587,
+      "power_mean": 0.9051935076713562,
+      "power_p95": 1.6569950580596924,
+      "top5_energy_frac_mean": 0.9679004549980164,
+      "raw_source_mse_mean": 1.2267379760742188,
+      "old_mapped_mse_mean": 0.0032093317713588476,
+      "new_mapped_mse_mean": 0.0021128342486917973
+    },
+    {
+      "cluster": 1,
+      "n": 1128,
+      "power_mean": 0.947546124458313,
+      "power_p95": 1.718050241470337,
+      "top5_energy_frac_mean": 0.9693648815155029,
+      "raw_source_mse_mean": 1.2299858331680298,
+      "old_mapped_mse_mean": 0.003304624930024147,
+      "new_mapped_mse_mean": 0.0020374690648168325
+    },
+    {
+      "cluster": 2,
+      "n": 1775,
+      "power_mean": 0.9396094679832458,
+      "power_p95": 1.7725399732589722,
+      "top5_energy_frac_mean": 0.9711623191833496,
+      "raw_source_mse_mean": 1.1915913820266724,
+      "old_mapped_mse_mean": 0.002971119247376919,
+      "new_mapped_mse_mean": 0.0021519544534385204
+    },
+    {
+      "cluster": 3,
+      "n": 2025,
+      "power_mean": 0.9731424450874329,
+      "power_p95": 1.8167670965194702,
+      "top5_energy_frac_mean": 0.9657320976257324,
+      "raw_source_mse_mean": 1.2667937278747559,
+      "old_mapped_mse_mean": 0.0032033692114055157,
+      "new_mapped_mse_mean": 0.0021514398977160454
+    },
+    {
+      "cluster": 4,
+      "n": 1171,
+      "power_mean": 0.9547777771949768,
+      "power_p95": 1.7447001934051514,
+      "top5_energy_frac_mean": 0.9687235355377197,
+      "raw_source_mse_mean": 1.2142425775527954,
+      "old_mapped_mse_mean": 0.003243017243221402,
+      "new_mapped_mse_mean": 0.002049658913165331
+    },
+    {
+      "cluster": 5,
+      "n": 1794,
+      "power_mean": 0.9147440195083618,
+      "power_p95": 1.6581332683563232,
+      "top5_energy_frac_mean": 0.971563458442688,
+      "raw_source_mse_mean": 1.1692628860473633,
+      "old_mapped_mse_mean": 0.002972259884700179,
+      "new_mapped_mse_mean": 0.0020175303798168898
+    },
+    {
+      "cluster": 6,
+      "n": 1748,
+      "power_mean": 0.9218107461929321,
+      "power_p95": 1.6856426000595093,
+      "top5_energy_frac_mean": 0.9710465669631958,
+      "raw_source_mse_mean": 1.2049365043640137,
+      "old_mapped_mse_mean": 0.002806526143103838,
+      "new_mapped_mse_mean": 0.001958513865247369
+    },
+    {
+      "cluster": 7,
+      "n": 1772,
+      "power_mean": 0.9153715372085571,
+      "power_p95": 1.6783705949783325,
+      "top5_energy_frac_mean": 0.9715420603752136,
+      "raw_source_mse_mean": 1.1915241479873657,
+      "old_mapped_mse_mean": 0.003063035663217306,
+      "new_mapped_mse_mean": 0.0020380537025630474
+    }
+  ],
+  "figures": [
+    "figures/code_linear_alignment.png",
+    "figures/code_pair_cosine.png",
+    "figures/code_pair_mse.png",
+    "figures/code_rank_summary.png",
+    "figures/csi_cluster_code_hardness.png",
+    "figures/csi_energy_concentration.png",
+    "figures/csi_pca_cumulative.png",
+    "figures/csi_power_distribution.png"
+  ]
+}

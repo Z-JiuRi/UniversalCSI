@@ -59,7 +59,8 @@ mapper/exps/<mapper>/<source>_to_seed42_transnet_...
 - `history.json`
 - `metrics.json`
 - `run.log`
-- `checkpoints/best_mapper.pth`
+- `checkpoints/best_loss.pth`
+- `checkpoints/best_mse.pth`
 - `codewords/mapped_code.pt`
 - `tensorboard/events.*`
 - `mapped_code.pt`：兼容旧分析脚本保留的一份副本
@@ -198,7 +199,7 @@ exps/COST2100/in/seed42/transnet_transnet
 mapper/exps_decoder_aware/<mapper>/<config>/<source>_to_seed42_transnet_...
 ```
 
-每个实验同样包含 `run.log`、`tensorboard/events.*`、`checkpoints/best_mapper.pth`、`codewords/mapped_code.pt` 和 `metrics.json`，可以直接后台静默运行。
+每个实验同样包含 `run.log`、`tensorboard/events.*`、`checkpoints/best_loss.pth`、`checkpoints/best_mse.pth`、`codewords/mapped_code_best_loss.pt`、`codewords/mapped_code_best_mse.pt` 和 `metrics.json`，可以直接后台静默运行。
 
 ## 固定 decoder NMSE 测试
 

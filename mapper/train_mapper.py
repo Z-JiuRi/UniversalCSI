@@ -539,12 +539,19 @@ def main():
         f"+ fc*{args.lambda_fc} "
         f"+ decoder_tail*{args.lambda_decoder_tail} "
         f"+ cos*{args.lambda_cos} + cov*{args.lambda_cov}")
-    best = {
+    best_loss = {
         "metric": math.inf,
         "mse": math.inf,
         "loss": math.inf,
         "epoch": 0,
-        "selection": "val_mse" if use_val else "train_loss",
+        "selection": "val_loss" if use_val else "train_loss",
+    }
+    best_mse = {
+        "metric": math.inf,
+        "mse": math.inf,
+        "loss": math.inf,
+        "epoch": 0,
+        "selection": "val_mse" if use_val else "train_mse",
     }
     history = []
     for epoch in range(1, args.epochs + 1):
@@ -622,72 +629,130 @@ def main():
                 f"train_recT={train_metrics['recT']:.6e} "
                 f"train_fc={train_metrics['fc']:.6e} "
                 f"train_decoder_tail={train_metrics['decoder_tail']:.6e}")
-        if args.save_last:
-            save_metric = -float(epoch)
-        elif use_val:
-            save_metric = val_metrics["mse"]
-        else:
-            save_metric = train_metrics["loss"]
-        if save_metric < best["metric"]:
-            best = {
-                "metric": save_metric,
-                "mse": train_metrics["mse"] if not use_val else val_metrics["mse"],
-                "loss": train_metrics["loss"] if not use_val else val_metrics["loss"],
+        select_metrics = val_metrics if use_val else train_metrics
+        loss_metric = -float(epoch) if args.save_last else select_metrics["loss"]
+        mse_metric = -float(epoch) if args.save_last else select_metrics["mse"]
+        if loss_metric < best_loss["metric"]:
+            best_loss = {
+                "metric": loss_metric,
+                "mse": select_metrics["mse"],
+                "loss": select_metrics["loss"],
                 "epoch": epoch,
                 "selection": "last" if args.save_last
-                else ("val_mse" if use_val else "train_loss"),
+                else ("val_loss" if use_val else "train_loss"),
             }
             torch.save({
                 "epoch": epoch,
                 "state_dict": model.state_dict(),
-                "best": best,
-            }, checkpoint_dir / "best_mapper.pth")
+                "best": best_loss,
+                "best_type": "loss",
+            }, checkpoint_dir / "best_loss.pth")
+        if mse_metric < best_mse["metric"]:
+            best_mse = {
+                "metric": mse_metric,
+                "mse": select_metrics["mse"],
+                "loss": select_metrics["loss"],
+                "epoch": epoch,
+                "selection": "last" if args.save_last
+                else ("val_mse" if use_val else "train_mse"),
+            }
+            torch.save({
+                "epoch": epoch,
+                "state_dict": model.state_dict(),
+                "best": best_mse,
+                "best_type": "mse",
+            }, checkpoint_dir / "best_mse.pth")
 
     (exp_dir / "history.json").write_text(
         json.dumps(history, indent=2), encoding="utf-8")
-    if (checkpoint_dir / "best_mapper.pth").exists():
-        ckpt = torch.load(checkpoint_dir / "best_mapper.pth",
+
+    def load_checkpoint_and_eval(checkpoint_path, output_paths):
+        ckpt = torch.load(checkpoint_path,
                           weights_only=True,
                           map_location=device)
         model.load_state_dict(ckpt["state_dict"])
-    final_metrics = run_epoch(
-        model,
-        all_loader,
-        device,
-        lambda_smoothl1=args.lambda_smoothl1,
-        smoothl1_beta=args.smoothl1_beta,
-        lambda_sample_tail=args.lambda_sample_tail,
-        sample_tail_ratio=args.sample_tail_ratio,
-        lambda_dim_tail=args.lambda_dim_tail,
-        dim_tail_ratio=args.dim_tail_ratio,
-        lambda_whiten=args.lambda_whiten,
-        whiten_stats=whiten_stats,
-        decoder=decoder,
-        csi_tensor=csi_tensor,
-        lambda_rec=args.lambda_rec,
-        lambda_recT=args.lambda_recT,
-        lambda_fc=args.lambda_fc,
-        lambda_decoder_tail=args.lambda_decoder_tail,
-        decoder_tail_ratio=args.decoder_tail_ratio)
-    log_metrics_to_tensorboard(writer, "all", final_metrics, args.epochs)
+        metrics = run_epoch(
+            model,
+            all_loader,
+            device,
+            lambda_smoothl1=args.lambda_smoothl1,
+            smoothl1_beta=args.smoothl1_beta,
+            lambda_sample_tail=args.lambda_sample_tail,
+            sample_tail_ratio=args.sample_tail_ratio,
+            lambda_dim_tail=args.lambda_dim_tail,
+            dim_tail_ratio=args.dim_tail_ratio,
+            lambda_whiten=args.lambda_whiten,
+            whiten_stats=whiten_stats,
+            decoder=decoder,
+            csi_tensor=csi_tensor,
+            lambda_rec=args.lambda_rec,
+            lambda_recT=args.lambda_recT,
+            lambda_fc=args.lambda_fc,
+            lambda_decoder_tail=args.lambda_decoder_tail,
+            decoder_tail_ratio=args.decoder_tail_ratio)
+        save_outputs(model, all_loader, device, output_paths)
+        return metrics
+
+    final_loss_metrics = None
+    final_mse_metrics = None
+    if (checkpoint_dir / "best_loss.pth").exists():
+        final_loss_metrics = load_checkpoint_and_eval(
+            checkpoint_dir / "best_loss.pth",
+            [
+                codeword_dir / "mapped_code_best_loss.pt",
+                codeword_dir / "mapped_code.pt",
+                exp_dir / "mapped_code_best_loss.pt",
+                # Keep the old location for compatibility.
+                exp_dir / "mapped_code.pt",
+            ])
+        log_metrics_to_tensorboard(
+            writer,
+            "all_best_loss",
+            final_loss_metrics,
+            args.epochs)
+    if (checkpoint_dir / "best_mse.pth").exists():
+        final_mse_metrics = load_checkpoint_and_eval(
+            checkpoint_dir / "best_mse.pth",
+            [
+                codeword_dir / "mapped_code_best_mse.pt",
+                exp_dir / "mapped_code_best_mse.pt",
+            ])
+        log_metrics_to_tensorboard(
+            writer,
+            "all_best_mse",
+            final_mse_metrics,
+            args.epochs)
+    final_metrics = final_loss_metrics or final_mse_metrics
     (exp_dir / "metrics.json").write_text(
-        json.dumps({"best": best, "all": final_metrics}, indent=2),
+        json.dumps({
+            "best": best_loss,
+            "best_loss": best_loss,
+            "best_mse": best_mse,
+            "all": final_metrics,
+            "all_best_loss": final_loss_metrics,
+            "all_best_mse": final_mse_metrics,
+        }, indent=2),
         encoding="utf-8")
-    # Keep the old location for compatibility with existing analysis scripts.
-    save_outputs(model, all_loader, device, [
-        codeword_dir / "mapped_code.pt",
-        exp_dir / "mapped_code.pt",
-    ])
     writer.flush()
     writer.close()
-    logger.info(f"best_epoch={best['epoch']} "
-                f"best_selection={best['selection']} "
-                f"best_metric={best['metric']:.6e} "
-                f"best_mse={best['mse']:.6e} "
-                f"best_loss={best['loss']:.6e}")
-    logger.info(f"all_mse={final_metrics['mse']:.6e} "
-                f"all_cos={final_metrics['cos']:.6f} "
-                f"all_nmse={final_metrics['nmse']:.3f}dB")
+    logger.info(f"best_loss_epoch={best_loss['epoch']} "
+                f"best_loss_selection={best_loss['selection']} "
+                f"best_loss_metric={best_loss['metric']:.6e} "
+                f"best_loss_mse={best_loss['mse']:.6e} "
+                f"best_loss_loss={best_loss['loss']:.6e}")
+    logger.info(f"best_mse_epoch={best_mse['epoch']} "
+                f"best_mse_selection={best_mse['selection']} "
+                f"best_mse_metric={best_mse['metric']:.6e} "
+                f"best_mse_mse={best_mse['mse']:.6e} "
+                f"best_mse_loss={best_mse['loss']:.6e}")
+    if final_loss_metrics is not None:
+        logger.info(f"all_best_loss_mse={final_loss_metrics['mse']:.6e} "
+                    f"all_best_loss_cos={final_loss_metrics['cos']:.6f} "
+                    f"all_best_loss_nmse={final_loss_metrics['nmse']:.3f}dB")
+    if final_mse_metrics is not None:
+        logger.info(f"all_best_mse_mse={final_mse_metrics['mse']:.6e} "
+                    f"all_best_mse_cos={final_mse_metrics['cos']:.6f} "
+                    f"all_best_mse_nmse={final_mse_metrics['nmse']:.3f}dB")
 
 
 if __name__ == "__main__":
