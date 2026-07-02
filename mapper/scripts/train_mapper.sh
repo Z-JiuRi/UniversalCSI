@@ -12,8 +12,8 @@
 #   bash mapper/scripts/train_mapper.sh
 #
 # 常用覆盖：
-#   mapper=flow source_name=seed2026_transnet gpu=1 bash mapper/scripts/train_mapper.sh
-#   mapper=hybrid_flow_mlp epochs=400 gpu=1 bash mapper/scripts/train_mapper.sh
+#   mapper=delta_mlp residual_mapping=1 align_mode=affine source_name=seed2026_transnet gpu=1 bash mapper/scripts/train_mapper.sh
+#   mapper=hybrid_flow_mlp residual_mapping=0 epochs=400 gpu=1 bash mapper/scripts/train_mapper.sh
 #   lambda_cos=1e-3 lambda_cov=1e-5 bash mapper/scripts/train_mapper.sh
 #   lambda_smoothl1=0.5 lambda_sample_tail=0.1 lambda_dim_tail=0.05 lambda_whiten=1e-4 bash mapper/scripts/train_mapper.sh
 #   lambda_recT=1.0 lambda_rec=1.0 lambda_fc=1e-2 lambda_decoder_tail=0.1 bash mapper/scripts/train_mapper.sh
@@ -27,18 +27,25 @@ decoder_checkpoint=${decoder_checkpoint:-exps/COST2100/in/seed42/transnet_transn
 decoder_args_json=${decoder_args_json:-exps/COST2100/in/seed42/transnet_transnet/args.json}
 csi_path=${csi_path:-/storage/hujiacong/zxd/datasets/cost2100/in_train.pt}
 
-mapper=${mapper:-flow}
+mapper=${mapper:-delta_mlp}
 epochs=${epochs:-400}
 batch_size=${batch_size:-512}
 workers=${workers:-0}
 lr=${lr:-5e-4}
 weight_decay=${weight_decay:-1e-4}
+scheduler=${scheduler:-cosine}
+eta_min=${eta_min:-5e-5}
 hidden_dim=${hidden_dim:-2048}
 num_blocks=${num_blocks:-4}
 flow_hidden_dim=${flow_hidden_dim:-1024}
 flow_blocks=${flow_blocks:-8}
 flow_clamp=${flow_clamp:-0.1}
 dropout=${dropout:-0.0}
+residual_mapping=${residual_mapping:-1}
+align_mode=${align_mode:-affine}
+align_ridge=${align_ridge:-1e-4}
+residual_condition=${residual_condition:-source_start}
+residual_scale=${residual_scale:-1.0}
 val_ratio=${val_ratio:-0}
 max_samples=${max_samples:-0}
 save_last=${save_last:-0}
@@ -61,8 +68,12 @@ gpu=${gpu:-0}
 seed=${seed:-2026}
 cpu=${cpu:-0}
 
+align_tag="direct"
+if [ "${residual_mapping}" = "1" ]; then
+  align_tag="align${align_mode}_cond${residual_condition}_scale${residual_scale}"
+fi
 loss_tag="sl1${lambda_smoothl1}_st${lambda_sample_tail}r${sample_tail_ratio}_dt${lambda_dim_tail}r${dim_tail_ratio}_white${lambda_whiten}_rec${lambda_rec}_recT${lambda_recT}_fc${lambda_fc}_decTail${lambda_decoder_tail}r${decoder_tail_ratio}_cos${lambda_cos}_cov${lambda_cov}"
-exp_dir=${exp_dir:-mapper/exps/${mapper}/${source_name}_to_seed42_transnet_${loss_tag}_lr${lr}_ep${epochs}}
+exp_dir=${exp_dir:-mapper/exps/${mapper}/${align_tag}/${source_name}_to_seed42_transnet_${loss_tag}_lr${lr}_ep${epochs}}
 
 mkdir -p "${exp_dir}"
 
@@ -97,6 +108,12 @@ fi
 if [ "${save_last}" = "1" ]; then
   extra_args+=(--save_last)
 fi
+if [ "${residual_mapping}" = "1" ]; then
+  extra_args+=(--residual_mapping)
+fi
+if [ "${cpu}" != "1" ]; then
+  export CUDA_VISIBLE_DEVICES="${gpu}"
+fi
 
 python -u mapper/train_mapper.py \
   --source_code "${source_code}" \
@@ -108,12 +125,18 @@ python -u mapper/train_mapper.py \
   --workers "${workers}" \
   --lr "${lr}" \
   --weight_decay "${weight_decay}" \
+  --scheduler "${scheduler}" \
+  --eta_min "${eta_min}" \
   --hidden_dim "${hidden_dim}" \
   --num_blocks "${num_blocks}" \
   --flow_hidden_dim "${flow_hidden_dim}" \
   --flow_blocks "${flow_blocks}" \
   --flow_clamp "${flow_clamp}" \
   --dropout "${dropout}" \
+  --align_mode "${align_mode}" \
+  --align_ridge "${align_ridge}" \
+  --residual_condition "${residual_condition}" \
+  --residual_scale "${residual_scale}" \
   --val_ratio "${val_ratio}" \
   --max_samples "${max_samples}" \
   --lambda_cos "${lambda_cos}" \

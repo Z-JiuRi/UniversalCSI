@@ -30,10 +30,25 @@ dz / dt = f_theta(z, t, z_s, z0)
 ## 训练
 
 ```bash
+exp_dir=flow_matching/exps/code_only_small/h512_b4_t128/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_transnet_transnet_to_seed42_transnet_lr5e-4_ep400 \
+source_name=seed2026_transnet_transnet \
+source_code=exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt \
+hidden_dim=512 \
+num_blocks=4 \
+time_dim=128 \
+align_mode=affine \
+condition=source_start \
+lambda_endpoint=0.0 \
+ode_steps=16 \
+ode_method=euler \
+scheduler=cosine \
+eta_min=1e-4 \
+lr=5e-4 \
+epochs=400 \
+batch_size=1024 \
+val_ratio=0 \
+gpu=6 \
 bash flow_matching/scripts/train_flow_matching.sh
-align_mode=affine gpu=4 bash flow_matching/scripts/train_flow_matching.sh
-lr=1e-4 eta_min=1e-5 align_mode=affine gpu=4 bash flow_matching/scripts/train_flow_matching.sh
-source_name=seed2026_clnet_transnet source_code=exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt gpu=4 bash flow_matching/scripts/train_flow_matching.sh
 ```
 
 默认学习率调度使用主项目同款 `10% warmup + cosine annealing`：

@@ -27,6 +27,14 @@ setup_logging = _logger_module.setup_logging
 log_experiment_header = _logger_module.log_experiment_header
 log_parameter_table = _logger_module.log_parameter_table
 
+_scheduler_spec = importlib.util.spec_from_file_location(
+    "mapper_project_scheduler",
+    ROOT / "utils" / "scheduler.py")
+_scheduler_module = importlib.util.module_from_spec(_scheduler_spec)
+_scheduler_spec.loader.exec_module(_scheduler_module)
+FakeLR = _scheduler_module.FakeLR
+WarmUpCosineAnnealingLR = _scheduler_module.WarmUpCosineAnnealingLR
+
 from dataset import CodewordPairDataset
 from models import build_mapper, count_parameters
 
@@ -149,6 +157,67 @@ def cosine_mean(pred, target):
     return F.cosine_similarity(pred, target, dim=1).mean()
 
 
+def fit_alignment(mode, source, target, ridge=1e-4):
+    mode = mode.lower()
+    dim = source.size(1)
+    if mode in ("identity", "source", "none"):
+        return torch.eye(dim), torch.zeros(dim)
+
+    src = source.to(torch.float64)
+    tgt = target.to(torch.float64)
+    src_mean = src.mean(dim=0, keepdim=True)
+    tgt_mean = tgt.mean(dim=0, keepdim=True)
+    src_c = src - src_mean
+    tgt_c = tgt - tgt_mean
+
+    if mode == "procrustes":
+        cross = src_c.t().matmul(tgt_c)
+        u, _, vh = torch.linalg.svd(cross, full_matrices=False)
+        weight = u.matmul(vh)
+        bias = (tgt_mean - src_mean.matmul(weight)).squeeze(0)
+        return weight.float(), bias.float()
+
+    if mode in ("affine", "full_affine"):
+        ones = torch.ones(src.size(0), 1, dtype=src.dtype)
+        aug = torch.cat([src, ones], dim=1)
+        reg = ridge * torch.eye(dim + 1, dtype=src.dtype)
+        reg[-1, -1] = 0.0
+        lhs = aug.t().matmul(aug) + reg
+        rhs = aug.t().matmul(tgt)
+        solution = torch.linalg.solve(lhs, rhs)
+        return solution[:-1].float(), solution[-1].float()
+
+    raise ValueError(f"Unknown align_mode: {mode}")
+
+
+class AlignedResidualMapper(torch.nn.Module):
+    def __init__(self, mapper, weight, bias, condition="source_start",
+                 residual_scale=1.0):
+        super().__init__()
+        if condition not in ("source", "start", "source_start"):
+            raise ValueError(f"Unknown residual_condition: {condition}")
+        self.mapper = mapper
+        self.condition = condition
+        self.residual_scale = residual_scale
+        self.register_buffer("alignment_weight", weight)
+        self.register_buffer("alignment_bias", bias)
+
+    def start(self, source):
+        return source.matmul(self.alignment_weight) + self.alignment_bias
+
+    def build_condition(self, source, start):
+        if self.condition == "source":
+            return source
+        if self.condition == "start":
+            return start
+        return torch.cat([source, start], dim=-1)
+
+    def forward(self, source):
+        start = self.start(source)
+        delta = self.mapper(self.build_condition(source, start))
+        return start + self.residual_scale * delta
+
+
 def offdiag_cov_loss(z):
     z = z - z.mean(dim=0, keepdim=True)
     denom = max(z.size(0) - 1, 1)
@@ -222,6 +291,19 @@ def build_optimizer(model, lr, weight_decay):
     ], lr=lr)
 
 
+def build_scheduler(optimizer, name, epochs, steps_per_epoch, eta_min):
+    if name == "const":
+        return FakeLR(optimizer=optimizer)
+    if name == "cosine":
+        total_steps = epochs * steps_per_epoch
+        return WarmUpCosineAnnealingLR(
+            optimizer=optimizer,
+            T_max=total_steps,
+            T_warmup=0.1 * total_steps,
+            eta_min=eta_min)
+    raise ValueError(f"Unknown scheduler: {name}")
+
+
 def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
               lambda_cov=0.0, lambda_smoothl1=0.0, smoothl1_beta=0.05,
               lambda_sample_tail=0.0, sample_tail_ratio=0.2,
@@ -229,7 +311,7 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
               lambda_whiten=0.0, whiten_stats=None, decoder=None,
               csi_tensor=None, lambda_rec=0.0, lambda_recT=0.0,
               lambda_fc=0.0, lambda_decoder_tail=0.0,
-              decoder_tail_ratio=0.2):
+              decoder_tail_ratio=0.2, scheduler=None):
     train = optimizer is not None
     model.train(train)
     total = {
@@ -245,6 +327,9 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
         "decoder_tail": 0.0,
         "cos": 0.0,
         "nmse": 0.0,
+        "start_mse": 0.0,
+        "start_nmse": 0.0,
+        "delta_mse": 0.0,
         "n": 0,
     }
     decoder_aware = any([
@@ -261,7 +346,14 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
         source = source.to(device, non_blocking=True)
         target = target.to(device, non_blocking=True)
         pred = model(source)
+        if hasattr(model, "start"):
+            with torch.no_grad():
+                start = model.start(source)
+        else:
+            start = source
         mse = F.mse_loss(pred, target)
+        start_mse = F.mse_loss(start, target)
+        delta_mse = F.mse_loss(pred - start, target - start)
         loss = mse
         smoothl1 = pred.new_tensor(0.0)
         sample_tail = pred.new_tensor(0.0)
@@ -323,6 +415,8 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            if scheduler is not None:
+                scheduler.step()
         batch_n = source.size(0)
         total["loss"] += float(loss.detach().cpu()) * batch_n
         total["mse"] += float(mse.detach().cpu()) * batch_n
@@ -336,6 +430,9 @@ def run_epoch(model, loader, device, optimizer=None, lambda_cos=0.0,
         total["decoder_tail"] += float(decoder_tail.detach().cpu()) * batch_n
         total["cos"] += float(cosine_mean(pred, target).detach().cpu()) * batch_n
         total["nmse"] += float(nmse_db(pred, target).detach().cpu()) * batch_n
+        total["start_mse"] += float(start_mse.detach().cpu()) * batch_n
+        total["start_nmse"] += float(nmse_db(start, target).detach().cpu()) * batch_n
+        total["delta_mse"] += float(delta_mse.detach().cpu()) * batch_n
         total["n"] += batch_n
     return {k: v / max(total["n"], 1) for k, v in total.items() if k != "n"}
 
@@ -370,18 +467,31 @@ def main():
     parser.add_argument("--mapper", default="flow",
                         choices=["identity", "mlp", "deep_mlp",
                                  "residual_mlp", "flow", "coupling_flow",
-                                 "hybrid", "hybrid_flow_mlp"])
+                                 "hybrid", "hybrid_flow_mlp",
+                                 "delta_mlp", "residual_delta_mlp",
+                                 "affine_residual_mlp"])
     parser.add_argument("--epochs", type=int, default=400)
     parser.add_argument("--batch_size", type=int, default=512)
     parser.add_argument("--workers", type=int, default=0)
     parser.add_argument("--lr", type=float, default=5e-4)
     parser.add_argument("--weight_decay", type=float, default=1e-4)
+    parser.add_argument("--scheduler", default="cosine",
+                        choices=["const", "cosine"])
+    parser.add_argument("--eta_min", type=float, default=5e-5)
     parser.add_argument("--hidden_dim", type=int, default=2048)
     parser.add_argument("--num_blocks", type=int, default=4)
     parser.add_argument("--flow_hidden_dim", type=int, default=1024)
     parser.add_argument("--flow_blocks", type=int, default=8)
     parser.add_argument("--flow_clamp", type=float, default=0.1)
     parser.add_argument("--dropout", type=float, default=0.0)
+    parser.add_argument("--residual_mapping", action="store_true",
+                        help="fit a fixed alignment and train mapper as residual predictor")
+    parser.add_argument("--align_mode", default="identity",
+                        choices=["identity", "procrustes", "affine"])
+    parser.add_argument("--align_ridge", type=float, default=1e-4)
+    parser.add_argument("--residual_condition", default="source_start",
+                        choices=["source", "start", "source_start"])
+    parser.add_argument("--residual_scale", type=float, default=1.0)
     parser.add_argument("--val_ratio", type=float, default=0.1)
     parser.add_argument("--max_samples", type=int, default=0)
     parser.add_argument("--lambda_cos", type=float, default=0.0)
@@ -459,7 +569,18 @@ def main():
         val_ratio=args.val_ratio,
         max_samples=args.max_samples)
     code_dim = train_set.source.size(1)
-    model = build_mapper(
+    residual_input_dim = code_dim
+    if args.residual_mapping and args.residual_condition == "source_start":
+        residual_input_dim = code_dim * 2
+        if args.mapper not in (
+                "delta_mlp",
+                "residual_delta_mlp",
+                "affine_residual_mlp"):
+            raise ValueError(
+                "residual_condition=source_start doubles the mapper input "
+                "dimension; use mapper=delta_mlp or set "
+                "residual_condition=source for legacy mappers.")
+    base_model = build_mapper(
         args.mapper,
         code_dim,
         hidden_dim=args.hidden_dim,
@@ -467,7 +588,22 @@ def main():
         flow_hidden_dim=args.flow_hidden_dim,
         flow_blocks=args.flow_blocks,
         clamp=args.flow_clamp,
-        dropout=args.dropout).to(device)
+        dropout=args.dropout,
+        input_dim=residual_input_dim)
+    if args.residual_mapping:
+        weight, bias = fit_alignment(
+            args.align_mode,
+            train_set.source,
+            train_set.target,
+            ridge=args.align_ridge)
+        model = AlignedResidualMapper(
+            base_model,
+            weight,
+            bias,
+            condition=args.residual_condition,
+            residual_scale=args.residual_scale).to(device)
+    else:
+        model = base_model.to(device)
     log_parameter_table(model, logger)
     optimizer = build_optimizer(model, args.lr, args.weight_decay)
     train_loader = DataLoader(
@@ -490,6 +626,12 @@ def main():
         shuffle=False,
         num_workers=args.workers,
         pin_memory=device.type == "cuda")
+    scheduler = build_scheduler(
+        optimizer,
+        args.scheduler,
+        args.epochs,
+        len(train_loader),
+        args.eta_min)
     whiten_stats = None
     if args.lambda_whiten:
         eigvecs, inv_eig = fit_teacher_whiten_stats(
@@ -524,22 +666,46 @@ def main():
             logger.info(f"=> Loaded CSI tensor {tuple(csi_tensor.shape)} "
                         f"from {decoder_cfg['train_path']}")
 
-    logger.info(f"device={device}")
-    logger.info(f"mapper={args.mapper}, trainable_params={count_parameters(model):,}")
+    logger.info(f"=> Device: {device}")
+    logger.info(
+        "=> Mapper: %s trainable_params=%s",
+        args.mapper,
+        f"{count_parameters(model):,}")
+    if args.residual_mapping:
+        logger.info(
+            "=> Alignment: mode=%s ridge=%s weight=%s bias=%s buffers=%d",
+            args.align_mode,
+            args.align_ridge,
+            tuple(model.alignment_weight.shape),
+            tuple(model.alignment_bias.shape),
+            model.alignment_weight.numel() + model.alignment_bias.numel())
+        logger.info(
+            "=> Residual mapping: condition=%s residual_scale=%s "
+            "input_dim=%d output_dim=%d",
+            args.residual_condition,
+            args.residual_scale,
+            residual_input_dim,
+            code_dim)
     val_len = len(val_set) if use_val else 0
     logger.info(
-        f"dataset=train:{len(train_set)}, val:{val_len}, "
-        f"all:{len(all_set)}, code_dim:{code_dim}")
+        f"=> Dataset: train={len(train_set)} val={val_len} "
+        f"all={len(all_set)} code_dim={code_dim}")
     logger.info(
-        f"dataloader=batch_size:{args.batch_size}, workers:{args.workers}, "
-        f"pin_memory:{device.type == 'cuda'}")
+        f"=> DataLoader: batch_size={args.batch_size} "
+        f"workers={args.workers} pin_memory={device.type == 'cuda'}")
     logger.info(
-        f"optimizer=AdamW lr:{args.lr}, weight_decay:{args.weight_decay}")
+        f"=> Optimizer: AdamW lr={args.lr} weight_decay={args.weight_decay}")
+    logger.info(
+        "=> Scheduler: %s eta_min=%s steps_per_epoch=%d total_steps=%d",
+        args.scheduler,
+        args.eta_min,
+        len(train_loader),
+        args.epochs * len(train_loader))
     if not use_val:
         logger.info("val_ratio<=0: skip per-epoch validation; "
                     "select best checkpoint by train loss")
     logger.info(
-        "loss="
+        "=> Objective: "
         f"mse + smoothl1*{args.lambda_smoothl1} "
         f"+ sample_tail*{args.lambda_sample_tail} "
         f"+ dim_tail*{args.lambda_dim_tail} "
@@ -570,6 +736,7 @@ def main():
             train_loader,
             device,
             optimizer,
+            scheduler=scheduler,
             lambda_cos=args.lambda_cos,
             lambda_cov=args.lambda_cov,
             lambda_smoothl1=args.lambda_smoothl1,
@@ -593,6 +760,8 @@ def main():
                 model,
                 val_loader,
                 device,
+                lambda_cos=args.lambda_cos,
+                lambda_cov=args.lambda_cov,
                 lambda_smoothl1=args.lambda_smoothl1,
                 smoothl1_beta=args.smoothl1_beta,
                 lambda_sample_tail=args.lambda_sample_tail,
@@ -610,29 +779,36 @@ def main():
                 decoder_tail_ratio=args.decoder_tail_ratio)
         row = {"epoch": epoch}
         row.update({f"train_{k}": v for k, v in train_metrics.items()})
+        row["lr"] = scheduler.get_lr()[0]
         if val_metrics is not None:
             row.update({f"val_{k}": v for k, v in val_metrics.items()})
         history.append(row)
         log_metrics_to_tensorboard(writer, "train", train_metrics, epoch)
+        writer.add_scalar("train/lr", scheduler.get_lr()[0], global_step=epoch)
         if val_metrics is not None:
             log_metrics_to_tensorboard(writer, "val", val_metrics, epoch)
             logger.info(
-                f"epoch={epoch:04d} "
-                f"train_loss={train_metrics['loss']:.6e} "
-                f"train_mse={train_metrics['mse']:.6e} "
-                f"train_cos={train_metrics['cos']:.6f} "
-                f"train_nmse={train_metrics['nmse']:.3f}dB "
-                f"train_rec={train_metrics['rec']:.6e} "
-                f"train_recT={train_metrics['recT']:.6e} "
+                f"Epoch [{epoch}/{args.epochs}] "
+                f"lr={scheduler.get_lr()[0]:.6e} "
+                f"train_opt_loss={train_metrics['loss']:.6e} "
+                f"val_select_loss={val_metrics['loss']:.6e} "
                 f"val_mse={val_metrics['mse']:.6e} "
-                f"val_rec={val_metrics['rec']:.6e} "
+                f"val_start={val_metrics['start_mse']:.6e} "
+                f"val_delta={val_metrics['delta_mse']:.6e} "
                 f"val_cos={val_metrics['cos']:.6f} "
-                f"val_nmse={val_metrics['nmse']:.3f}dB")
+                f"val_nmse={val_metrics['nmse']:.3f}dB "
+                f"val_rec={val_metrics['rec']:.6e} "
+                f"val_recT={val_metrics['recT']:.6e} "
+                f"val_fc={val_metrics['fc']:.6e}")
         else:
             logger.info(
-                f"epoch={epoch:04d} "
-                f"train_loss={train_metrics['loss']:.6e} "
+                f"Epoch [{epoch}/{args.epochs}] "
+                f"lr={scheduler.get_lr()[0]:.6e} "
+                f"train_opt_loss={train_metrics['loss']:.6e} "
+                f"train_select_loss={train_metrics['loss']:.6e} "
                 f"train_mse={train_metrics['mse']:.6e} "
+                f"train_start={train_metrics['start_mse']:.6e} "
+                f"train_delta={train_metrics['delta_mse']:.6e} "
                 f"train_cos={train_metrics['cos']:.6f} "
                 f"train_nmse={train_metrics['nmse']:.3f}dB "
                 f"train_rec={train_metrics['rec']:.6e} "
@@ -654,8 +830,11 @@ def main():
             torch.save({
                 "epoch": epoch,
                 "state_dict": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "scheduler": scheduler.state_dict(),
                 "best": best_loss,
                 "best_type": "loss",
+                "args": vars(args),
             }, checkpoint_dir / "best_loss.pth")
         if mse_metric < best_mse["metric"]:
             best_mse = {
@@ -669,8 +848,11 @@ def main():
             torch.save({
                 "epoch": epoch,
                 "state_dict": model.state_dict(),
+                "optimizer": optimizer.state_dict(),
+                "scheduler": scheduler.state_dict(),
                 "best": best_mse,
                 "best_type": "mse",
+                "args": vars(args),
             }, checkpoint_dir / "best_mse.pth")
 
     (exp_dir / "history.json").write_text(
@@ -685,6 +867,8 @@ def main():
             model,
             all_loader,
             device,
+            lambda_cos=args.lambda_cos,
+            lambda_cov=args.lambda_cov,
             lambda_smoothl1=args.lambda_smoothl1,
             smoothl1_beta=args.smoothl1_beta,
             lambda_sample_tail=args.lambda_sample_tail,

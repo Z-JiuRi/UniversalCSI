@@ -29,9 +29,19 @@ exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt
 单个实验：
 
 ```bash
-source_code=exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt \
 source_name=seed2026_transnet_transnet \
-mapper=flow gpu=1 \
+source_code=exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt \
+mapper=delta_mlp \
+hidden_dim=256 \
+num_blocks=2 \
+residual_mapping=1 \
+align_mode=affine \
+residual_condition=source_start \
+lambda_smoothl1=0.0 \
+lambda_sample_tail=0.0 \
+lambda_dim_tail=0.0 \
+lambda_whiten=0.0 \
+gpu=0 \
 bash mapper/scripts/train_mapper.sh
 ```
 

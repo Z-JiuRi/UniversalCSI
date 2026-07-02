@@ -17,8 +17,8 @@
 #   bash mapper/scripts/run_mapper.sh
 #
 # 常用覆盖：
-#   mapper=mlp epochs=400 batch_size=256 bash mapper/scripts/run_mapper.sh
-#   mapper=hybrid epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper.sh
+#   mapper=delta_mlp align_mode=affine epochs=400 batch_size=256 bash mapper/scripts/run_mapper.sh
+#   residual_mapping=0 mapper=hybrid epochs=400 gpus=0,4,6,7 bash mapper/scripts/run_mapper.sh
 #   dry_run=1 bash mapper/scripts/run_mapper.sh
 #   overwrite=1 bash mapper/scripts/run_mapper.sh
 #   wait_by_source=1 bash mapper/scripts/run_mapper.sh
@@ -38,15 +38,22 @@ target_code=${target_code:-exps/COST2100/in/seed42/transnet_transnet/codewords/t
 epochs=${epochs:-400}
 batch_size=${batch_size:-1024}
 workers=${workers:-0}
-mapper=${mapper:-hybrid}
+mapper=${mapper:-delta_mlp}
 lr=${lr:-5e-4}
 weight_decay=${weight_decay:-1e-4}
+scheduler=${scheduler:-cosine}
+eta_min=${eta_min:-5e-5}
 flow_blocks=${flow_blocks:-8}
 flow_hidden_dim=${flow_hidden_dim:-1024}
 flow_clamp=${flow_clamp:-0.1}
 hidden_dim=${hidden_dim:-2048}
 num_blocks=${num_blocks:-4}
 dropout=${dropout:-0.0}
+residual_mapping=${residual_mapping:-1}
+align_mode=${align_mode:-affine}
+align_ridge=${align_ridge:-1e-4}
+residual_condition=${residual_condition:-source_start}
+residual_scale=${residual_scale:-1.0}
 max_samples=${max_samples:-0}
 val_ratio=${val_ratio:-0}
 smoothl1_beta=${smoothl1_beta:-0.05}
@@ -95,7 +102,11 @@ running=0
 
 launch_job() {
   gpu="${GPU_LIST[$((task_id % ${#GPU_LIST[@]}))]}"
-  exp_dir="mapper/exps/${mapper}/${config_tag}/${source_name}_to_seed42_transnet_lr${lr}_ep${epochs}"
+  align_tag="direct"
+  if [ "${residual_mapping}" = "1" ]; then
+    align_tag="align${align_mode}_cond${residual_condition}_scale${residual_scale}"
+  fi
+  exp_dir="mapper/exps/${mapper}/${align_tag}/${config_tag}/${source_name}_to_seed42_transnet_lr${lr}_ep${epochs}"
 
   if [ "${overwrite}" != "1" ] && [ -f "${exp_dir}/metrics.json" ]; then
     echo "[skip] ${exp_dir}"
@@ -121,12 +132,19 @@ launch_job() {
   workers="${workers}" \
   lr="${lr}" \
   weight_decay="${weight_decay}" \
+  scheduler="${scheduler}" \
+  eta_min="${eta_min}" \
   flow_blocks="${flow_blocks}" \
   flow_hidden_dim="${flow_hidden_dim}" \
   flow_clamp="${flow_clamp}" \
   hidden_dim="${hidden_dim}" \
   num_blocks="${num_blocks}" \
   dropout="${dropout}" \
+  residual_mapping="${residual_mapping}" \
+  align_mode="${align_mode}" \
+  align_ridge="${align_ridge}" \
+  residual_condition="${residual_condition}" \
+  residual_scale="${residual_scale}" \
   max_samples="${max_samples}" \
   val_ratio="${val_ratio}" \
   lambda_smoothl1="${lambda_smoothl1}" \
