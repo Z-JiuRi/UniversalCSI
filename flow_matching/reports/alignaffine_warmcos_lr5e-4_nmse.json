@@ -1,0 +1,16 @@
+[
+  {
+    "exp_dir": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler_warmcos_lr5e-4/seed2026_transnet_transnet_to_seed42_transnet_lr5e-4_ep400",
+    "checkpoint": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler_warmcos_lr5e-4/seed2026_transnet_transnet_to_seed42_transnet_lr5e-4_ep400/checkpoints/best_mse.pth",
+    "export_skipped": false,
+    "checkpoint_epoch": 277,
+    "checkpoint_best": 9.591756554145832e-06,
+    "code_mse": 2.4725623006816022e-05,
+    "code_rmse": 0.004972486756742001,
+    "code_cos": 0.9999783635139465,
+    "code_nmse": -44.14188003540039,
+    "decoder_mse_loss": 5.587029647358576e-07,
+    "decoder_nmse_linear": 0.0012376513332128525,
+    "decoder_nmse_db": -29.074018478393555
+  }
+]

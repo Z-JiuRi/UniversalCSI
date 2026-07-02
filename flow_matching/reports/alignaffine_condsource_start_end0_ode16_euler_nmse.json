@@ -1,0 +1,58 @@
+[
+  {
+    "exp_dir": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_clnet_transnet_to_seed42_transnet_lr5e-4_ep400",
+    "checkpoint": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_clnet_transnet_to_seed42_transnet_lr5e-4_ep400/checkpoints/best_mse.pth",
+    "export_skipped": false,
+    "checkpoint_epoch": 148,
+    "checkpoint_best": 0.00037283127947710455,
+    "code_mse": 0.0026562530547380447,
+    "code_rmse": 0.051538851112127304,
+    "code_cos": 0.9977247714996338,
+    "code_nmse": -23.830657958984375,
+    "decoder_mse_loss": 1.1192506085717468e-06,
+    "decoder_nmse_linear": 0.0024793888442218304,
+    "decoder_nmse_db": -26.056554794311523
+  },
+  {
+    "exp_dir": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_crnet_transnet_to_seed42_transnet_lr5e-4_ep400",
+    "checkpoint": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_crnet_transnet_to_seed42_transnet_lr5e-4_ep400/checkpoints/best_mse.pth",
+    "export_skipped": false,
+    "checkpoint_epoch": 207,
+    "checkpoint_best": 0.00023810379236005247,
+    "code_mse": 0.0015193450963124633,
+    "code_rmse": 0.03897877782583237,
+    "code_cos": 0.998673141002655,
+    "code_nmse": -26.25678825378418,
+    "decoder_mse_loss": 9.136444840078184e-07,
+    "decoder_nmse_linear": 0.002023926004767418,
+    "decoder_nmse_db": -26.93805503845215
+  },
+  {
+    "exp_dir": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_csinet_transnet_to_seed42_transnet_lr5e-4_ep400",
+    "checkpoint": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_csinet_transnet_to_seed42_transnet_lr5e-4_ep400/checkpoints/best_mse.pth",
+    "export_skipped": false,
+    "checkpoint_epoch": 122,
+    "checkpoint_best": 0.0008318066475354135,
+    "code_mse": 0.008728554472327232,
+    "code_rmse": 0.09342673420906067,
+    "code_cos": 0.9929913878440857,
+    "code_nmse": -18.663928985595703,
+    "decoder_mse_loss": 3.265654653296224e-06,
+    "decoder_nmse_linear": 0.007234151009470224,
+    "decoder_nmse_db": -21.406124114990234
+  },
+  {
+    "exp_dir": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed3407_transnet_transnet_to_seed42_transnet_lr5e-4_ep400",
+    "checkpoint": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed3407_transnet_transnet_to_seed42_transnet_lr5e-4_ep400/checkpoints/best_mse.pth",
+    "export_skipped": false,
+    "checkpoint_epoch": 122,
+    "checkpoint_best": 0.00027630409837700425,
+    "code_mse": 0.0015441157156601548,
+    "code_rmse": 0.03929523751139641,
+    "code_cos": 0.9987092018127441,
+    "code_nmse": -26.186552047729492,
+    "decoder_mse_loss": 8.504221703697112e-07,
+    "decoder_nmse_linear": 0.0018838746473193169,
+    "decoder_nmse_db": -27.249479293823242
+  }
+]
