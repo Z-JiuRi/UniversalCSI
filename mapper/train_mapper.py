@@ -8,7 +8,7 @@ from pathlib import Path
 
 import torch
 import torch.nn.functional as F
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 from torch.utils.tensorboard.writer import SummaryWriter
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -133,7 +133,7 @@ def load_decoder_from_checkpoint(args, device):
 
 def load_csi_tensor(path, channel, nt, nc, max_samples=0):
     if not path:
-        raise ValueError("csi_path is required for decoder-aware losses")
+        raise ValueError("csi_path is required for decoder losses/eval")
     data = torch.load(path, weights_only=True,
                       map_location=torch.device("cpu")).float()
     if data.ndim == 2:
@@ -459,6 +459,32 @@ def log_metrics_to_tensorboard(writer, prefix, metrics, epoch):
         writer.add_scalar(f"{prefix}/{key}", value, global_step=epoch)
 
 
+@torch.no_grad()
+def evaluate_decoder_nmse(model, loader, csi_tensor, decoder, device):
+    model.eval()
+    decoder.eval()
+    total_error = torch.tensor(0.0, device=device)
+    total_power = torch.tensor(0.0, device=device)
+    total_mse = 0.0
+    total_n = 0
+    for source, _, indices in loader:
+        source = source.to(device, non_blocking=True)
+        gt = csi_tensor[indices].to(device, non_blocking=True)
+        mapped = model(source)
+        recon = decoder(mapped)
+        mse = F.mse_loss(recon, gt)
+        total_error += (recon - gt).pow(2).sum()
+        total_power += gt.pow(2).sum()
+        total_mse += float(mse.detach().cpu()) * source.size(0)
+        total_n += source.size(0)
+    decoder_nmse = 10.0 * torch.log10(total_error / total_power.clamp_min(1e-12))
+    return {
+        "decoder_mse": total_mse / max(total_n, 1),
+        "decoder_nmse": float(decoder_nmse.detach().cpu()),
+        "n": total_n,
+    }
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source_code", required=True)
@@ -521,6 +547,10 @@ def main():
     parser.add_argument("--decoder_nc", type=int, default=None)
     parser.add_argument("--decoder_hidden", type=int, default=None)
     parser.add_argument("--decoder_num_blocks", type=int, default=None)
+    parser.add_argument("--eval_decoder_every", type=int, default=0,
+                        help="periodically evaluate mapped code with fixed decoder; 0 disables it")
+    parser.add_argument("--eval_decoder_max_samples", type=int, default=0,
+                        help="max samples for periodic decoder NMSE eval; 0 means full all_set")
     parser.add_argument("--save_last", action="store_true",
                         help="save the last epoch instead of selecting by val MSE")
     parser.add_argument("--gpu", type=int, default=None)
@@ -626,6 +656,18 @@ def main():
         shuffle=False,
         num_workers=args.workers,
         pin_memory=device.type == "cuda")
+    decoder_eval_loader = None
+    if args.eval_decoder_every:
+        decoder_eval_set = all_set
+        if args.eval_decoder_max_samples:
+            n_eval = min(args.eval_decoder_max_samples, len(all_set))
+            decoder_eval_set = Subset(all_set, range(n_eval))
+        decoder_eval_loader = DataLoader(
+            decoder_eval_set,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=args.workers,
+            pin_memory=device.type == "cuda")
     scheduler = build_scheduler(
         optimizer,
         args.scheduler,
@@ -646,11 +688,12 @@ def main():
         args.lambda_fc,
         args.lambda_decoder_tail,
     ])
-    if decoder_aware:
+    need_decoder = decoder_aware or bool(args.eval_decoder_every)
+    if need_decoder:
         if args.decoder_checkpoint is None:
-            raise ValueError("decoder-aware loss requires --decoder_checkpoint")
+            raise ValueError("decoder loss/eval requires --decoder_checkpoint")
         decoder, decoder_cfg = load_decoder_from_checkpoint(args, device)
-        if args.lambda_rec or args.lambda_decoder_tail:
+        if args.lambda_rec or args.lambda_decoder_tail or args.eval_decoder_every:
             csi_tensor = load_csi_tensor(
                 decoder_cfg["train_path"],
                 decoder_cfg["channel"],
@@ -665,6 +708,11 @@ def main():
         if csi_tensor is not None:
             logger.info(f"=> Loaded CSI tensor {tuple(csi_tensor.shape)} "
                         f"from {decoder_cfg['train_path']}")
+        if args.eval_decoder_every:
+            logger.info(
+                "=> Periodic true NMSE eval: every=%d max_samples=%s",
+                args.eval_decoder_every,
+                args.eval_decoder_max_samples or "full")
 
     logger.info(f"=> Device: {device}")
     logger.info(
@@ -729,6 +777,12 @@ def main():
         "epoch": 0,
         "selection": "val_mse" if use_val else "train_mse",
     }
+    best_nmse = {
+        "metric": math.inf,
+        "decoder_mse": math.inf,
+        "epoch": 0,
+        "selection": "true_decoder_nmse",
+    }
     history = []
     for epoch in range(1, args.epochs + 1):
         train_metrics = run_epoch(
@@ -782,6 +836,28 @@ def main():
         row["lr"] = scheduler.get_lr()[0]
         if val_metrics is not None:
             row.update({f"val_{k}": v for k, v in val_metrics.items()})
+        decoder_metrics = None
+        if args.eval_decoder_every and epoch % args.eval_decoder_every == 0:
+            decoder_metrics = evaluate_decoder_nmse(
+                model,
+                decoder_eval_loader,
+                csi_tensor,
+                decoder,
+                device)
+            row.update({
+                f"true_decoder_eval_{k}": v
+                for k, v in decoder_metrics.items()
+            })
+            log_metrics_to_tensorboard(
+                writer,
+                "true_decoder_eval",
+                decoder_metrics,
+                epoch)
+            logger.info(
+                f"Epoch [{epoch}/{args.epochs}] true_decoder_eval "
+                f"n={decoder_metrics['n']} "
+                f"decoder_mse={decoder_metrics['decoder_mse']:.6e} "
+                f"decoder_nmse={decoder_metrics['decoder_nmse']:.3f}dB")
         history.append(row)
         log_metrics_to_tensorboard(writer, "train", train_metrics, epoch)
         writer.add_scalar("train/lr", scheduler.get_lr()[0], global_step=epoch)
@@ -854,11 +930,30 @@ def main():
                 "best_type": "mse",
                 "args": vars(args),
             }, checkpoint_dir / "best_mse.pth")
+        if decoder_metrics is not None:
+            nmse_metric = decoder_metrics["decoder_nmse"]
+            if nmse_metric < best_nmse["metric"]:
+                best_nmse = {
+                    "metric": nmse_metric,
+                    "decoder_mse": decoder_metrics["decoder_mse"],
+                    "epoch": epoch,
+                    "selection": "true_decoder_nmse",
+                }
+                torch.save({
+                    "epoch": epoch,
+                    "state_dict": model.state_dict(),
+                    "optimizer": optimizer.state_dict(),
+                    "scheduler": scheduler.state_dict(),
+                    "best": best_nmse,
+                    "best_type": "nmse",
+                    "args": vars(args),
+                }, checkpoint_dir / "best_nmse.pth")
 
     (exp_dir / "history.json").write_text(
         json.dumps(history, indent=2), encoding="utf-8")
 
-    def load_checkpoint_and_eval(checkpoint_path, output_paths):
+    def load_checkpoint_and_eval(checkpoint_path, output_paths,
+                                 eval_decoder=False):
         ckpt = torch.load(checkpoint_path,
                           weights_only=True,
                           map_location=device)
@@ -885,12 +980,22 @@ def main():
             lambda_decoder_tail=args.lambda_decoder_tail,
             decoder_tail_ratio=args.decoder_tail_ratio)
         save_outputs(model, all_loader, device, output_paths)
-        return metrics
+        decoder_metrics = None
+        if eval_decoder:
+            decoder_metrics = evaluate_decoder_nmse(
+                model,
+                all_loader,
+                csi_tensor,
+                decoder,
+                device)
+        return metrics, decoder_metrics
 
     final_loss_metrics = None
     final_mse_metrics = None
+    final_nmse_metrics = None
+    final_nmse_decoder_metrics = None
     if (checkpoint_dir / "best_loss.pth").exists():
-        final_loss_metrics = load_checkpoint_and_eval(
+        final_loss_metrics, _ = load_checkpoint_and_eval(
             checkpoint_dir / "best_loss.pth",
             [
                 codeword_dir / "mapped_code_best_loss.pt",
@@ -905,7 +1010,7 @@ def main():
             final_loss_metrics,
             args.epochs)
     if (checkpoint_dir / "best_mse.pth").exists():
-        final_mse_metrics = load_checkpoint_and_eval(
+        final_mse_metrics, _ = load_checkpoint_and_eval(
             checkpoint_dir / "best_mse.pth",
             [
                 codeword_dir / "mapped_code_best_mse.pt",
@@ -916,15 +1021,36 @@ def main():
             "all_best_mse",
             final_mse_metrics,
             args.epochs)
+    if (checkpoint_dir / "best_nmse.pth").exists():
+        final_nmse_metrics, final_nmse_decoder_metrics = load_checkpoint_and_eval(
+            checkpoint_dir / "best_nmse.pth",
+            [
+                codeword_dir / "mapped_code_best_nmse.pt",
+                exp_dir / "mapped_code_best_nmse.pt",
+            ],
+            eval_decoder=True)
+        log_metrics_to_tensorboard(
+            writer,
+            "all_best_nmse_code",
+            final_nmse_metrics,
+            args.epochs)
+        log_metrics_to_tensorboard(
+            writer,
+            "all_best_nmse_decoder",
+            final_nmse_decoder_metrics,
+            args.epochs)
     final_metrics = final_loss_metrics or final_mse_metrics
     (exp_dir / "metrics.json").write_text(
         json.dumps({
             "best": best_loss,
             "best_loss": best_loss,
             "best_mse": best_mse,
+            "best_nmse": best_nmse,
             "all": final_metrics,
             "all_best_loss": final_loss_metrics,
             "all_best_mse": final_mse_metrics,
+            "all_best_nmse_code": final_nmse_metrics,
+            "all_best_nmse_decoder": final_nmse_decoder_metrics,
         }, indent=2),
         encoding="utf-8")
     writer.flush()
@@ -939,6 +1065,11 @@ def main():
                 f"best_mse_metric={best_mse['metric']:.6e} "
                 f"best_mse_mse={best_mse['mse']:.6e} "
                 f"best_mse_loss={best_mse['loss']:.6e}")
+    if best_nmse["epoch"]:
+        logger.info(f"best_nmse_epoch={best_nmse['epoch']} "
+                    f"best_nmse_selection={best_nmse['selection']} "
+                    f"best_nmse_metric={best_nmse['metric']:.3f}dB "
+                    f"best_nmse_decoder_mse={best_nmse['decoder_mse']:.6e}")
     if final_loss_metrics is not None:
         logger.info(f"all_best_loss_mse={final_loss_metrics['mse']:.6e} "
                     f"all_best_loss_cos={final_loss_metrics['cos']:.6f} "
@@ -947,6 +1078,12 @@ def main():
         logger.info(f"all_best_mse_mse={final_mse_metrics['mse']:.6e} "
                     f"all_best_mse_cos={final_mse_metrics['cos']:.6f} "
                     f"all_best_mse_nmse={final_mse_metrics['nmse']:.3f}dB")
+    if final_nmse_decoder_metrics is not None:
+        logger.info(
+            f"all_best_nmse_decoder_mse="
+            f"{final_nmse_decoder_metrics['decoder_mse']:.6e} "
+            f"all_best_nmse_decoder_nmse="
+            f"{final_nmse_decoder_metrics['decoder_nmse']:.3f}dB")
 
 
 if __name__ == "__main__":

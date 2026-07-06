@@ -17,6 +17,7 @@
 #   lambda_cos=1e-3 lambda_cov=1e-5 bash mapper/scripts/train_mapper.sh
 #   lambda_smoothl1=0.5 lambda_sample_tail=0.1 lambda_dim_tail=0.05 lambda_whiten=1e-4 bash mapper/scripts/train_mapper.sh
 #   lambda_recT=1.0 lambda_rec=1.0 lambda_fc=1e-2 lambda_decoder_tail=0.1 bash mapper/scripts/train_mapper.sh
+#   eval_decoder_every=20 eval_decoder_max_samples=0 bash mapper/scripts/train_mapper.sh
 
 set -euo pipefail
 
@@ -64,6 +65,8 @@ lambda_recT=${lambda_recT:-0.0}
 lambda_fc=${lambda_fc:-0.0}
 lambda_decoder_tail=${lambda_decoder_tail:-0.0}
 decoder_tail_ratio=${decoder_tail_ratio:-0.2}
+eval_decoder_every=${eval_decoder_every:-20}
+eval_decoder_max_samples=${eval_decoder_max_samples:-0}
 gpu=${gpu:-0}
 seed=${seed:-2026}
 cpu=${cpu:-0}
@@ -85,8 +88,13 @@ if [ ! -f "${target_code}" ]; then
   echo "Missing target_code: ${target_code}" >&2
   exit 1
 fi
+need_decoder=0
 if [ "${lambda_rec}" != "0.0" ] || [ "${lambda_recT}" != "0.0" ] || \
-   [ "${lambda_fc}" != "0.0" ] || [ "${lambda_decoder_tail}" != "0.0" ]; then
+   [ "${lambda_fc}" != "0.0" ] || [ "${lambda_decoder_tail}" != "0.0" ] || \
+   [ "${eval_decoder_every}" != "0" ]; then
+  need_decoder=1
+fi
+if [ "${need_decoder}" = "1" ]; then
   if [ ! -f "${decoder_checkpoint}" ]; then
     echo "Missing decoder_checkpoint: ${decoder_checkpoint}" >&2
     exit 1
@@ -157,6 +165,8 @@ python -u mapper/train_mapper.py \
   --decoder_checkpoint "${decoder_checkpoint}" \
   --decoder_args_json "${decoder_args_json}" \
   --csi_path "${csi_path}" \
+  --eval_decoder_every "${eval_decoder_every}" \
+  --eval_decoder_max_samples "${eval_decoder_max_samples}" \
   --gpu "${gpu}" \
   --seed "${seed}" \
   "${extra_args[@]}" \
