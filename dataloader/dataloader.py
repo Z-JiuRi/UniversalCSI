@@ -11,6 +11,7 @@ class PreFetcher:
     def __init__(self, loader):
         self.ori_loader = loader
         self.len = len(loader)
+        self.dataset = loader.dataset
         self.stream = torch.cuda.Stream()
         self.next_input = None
 
