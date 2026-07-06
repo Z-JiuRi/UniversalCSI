@@ -73,6 +73,16 @@ parser.add_argument('--cpu', action='store_true', default=False,
 parser.add_argument('--cpu_affinity', default=None, type=str,
                     help='CPU affinity, like "0xffff"')
 
+# Multi-experiment batch arguments (comma-separated lists)
+parser.add_argument('--seed_list', default=None, type=str,
+                    help='comma-separated seed list for multi-experiment mode')
+parser.add_argument('--encoder_list', default=None, type=str,
+                    help='comma-separated encoder list for multi-experiment mode')
+parser.add_argument('--decoder_list', default=None, type=str,
+                    help='comma-separated decoder list for multi-experiment mode')
+parser.add_argument('--gpu_list', default=None, type=str,
+                    help='comma-separated GPU id list for multi-experiment mode')
+
 # Other arguments
 parser.add_argument('--epochs', type=int, metavar='N',
                     help='number of total epochs to run')
@@ -147,3 +157,23 @@ parser.add_argument('--lambda_code_l1', type=float, default=0.0,
 parser.add_argument('--code_var_tau', type=float, default=256.0,
                     help='decay constant for fixed decreasing code variance target')
 args = parser.parse_args()
+
+# ----- Multi-experiment mode (list args provided) -----
+if args.seed_list is not None:
+    _seeds = [int(x.strip()) for x in args.seed_list.split(",")]
+    _encoders = [x.strip() for x in args.encoder_list.split(",")]
+    _decoders = [x.strip() for x in args.decoder_list.split(",")]
+    _gpus = [int(x.strip()) for x in args.gpu_list.split(",")]
+    if not (len(_seeds) == len(_encoders) == len(_decoders) == len(_gpus)):
+        raise ValueError(
+            "seed_list, encoder_list, decoder_list, gpu_list must have "
+            f"equal lengths, got {len(_seeds)}, {len(_encoders)}, "
+            f"{len(_decoders)}, {len(_gpus)}")
+    args.experiments = []
+    for s, e, d, g in zip(_seeds, _encoders, _decoders, _gpus):
+        args.experiments.append({
+            "seed": s, "encoder": e, "decoder": d, "gpu": g,
+            "exp_name": f"COST2100/in/seed{s}/{e}_{d}"
+        })
+else:
+    args.experiments = None

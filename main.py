@@ -1,8 +1,10 @@
 import json
 import os
+import sys
 
 import torch
 import torch.nn as nn
+import torch.multiprocessing as mp
 from utils.parser import args
 from utils import (
     logger,
@@ -14,6 +16,8 @@ from utils import (
 from utils import init_device, init_model, FakeLR, WarmUpCosineAnnealingLR
 from utils.init import _load_clean_state_dict
 from dataloader import MyDataLoader
+
+import logging
 
 
 def load_checkpoint_ignoring_thop_stats(model, checkpoint_path):
@@ -36,7 +40,184 @@ def load_checkpoint_ignoring_thop_stats(model, checkpoint_path):
     return result
 
 
+def train_worker(cfg, train_tensor, val_tensor, test_tensor):
+    """Run a single experiment inside a spawned multiprocessing worker.
+    
+    cfg  keys: seed, encoder, decoder, gpu, exp_name
+    train_tensor / val_tensor / test_tensor : preloaded shared-memory tensors.
+    """
+    import copy
+    worker_args = copy.deepcopy(args)
+    worker_args.experiments = None
+    for k, v in cfg.items():
+        setattr(worker_args, k, v)
+
+    exp_dir = os.path.join(os.getcwd(), "exps", worker_args.exp_name)
+    checkpoint_dir = os.path.join(exp_dir, "checkpoints")
+    tensorboard_dir = os.path.join(exp_dir, "tensorboard")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+    os.makedirs(tensorboard_dir, exist_ok=True)
+    setup_logging(exp_dir)
+    logger.info(f"[Worker seed={worker_args.seed} enc={worker_args.encoder}] started")
+
+    with open(os.path.join(exp_dir, "args.json"), "w") as f:
+        json.dump(vars(worker_args), f, indent=2, sort_keys=True)
+
+    device, pin_memory = init_device(
+        worker_args.seed, worker_args.cpu,
+        worker_args.gpu, worker_args.cpu_affinity)
+    log_experiment_header(worker_args, exp_dir=exp_dir, target_logger=logger)
+    logger.info(f'=> Checkpoint directory: {checkpoint_dir}')
+    logger.info(f'=> TensorBoard directory: {tensorboard_dir}')
+
+    data_builder = MyDataLoader(
+        train_path=worker_args.train_path,
+        val_path=worker_args.val_path,
+        test_path=worker_args.test_path,
+        batch_size=worker_args.batch_size,
+        num_workers=0,
+        pin_memory=True,
+        channel=worker_args.channel,
+        nt=worker_args.nt,
+        nc=worker_args.nc,
+        return_indices=True,
+        train_tensor=train_tensor,
+        val_tensor=val_tensor,
+        test_tensor=test_tensor)
+    train_loader, val_loader, test_loader = data_builder()
+    logger.info("=> Dataset sizes: train=%d, val=%d, test=%d",
+                len(train_loader.dataset), len(val_loader.dataset),
+                len(test_loader.dataset))
+    logger.info("=> Loader config: batch_size=%d, workers=0, pin_memory=%s",
+                worker_args.batch_size, True)
+
+    model = init_model(worker_args)
+    model.to(device)
+    criterion = nn.MSELoss().to(device)
+
+    if worker_args.evaluate:
+        Tester(model, device, criterion)(test_loader)
+        trainer = Trainer(model=model, device=device, optimizer=None,
+                          criterion=criterion, scheduler=None,
+                          save_path=checkpoint_dir,
+                          tensorboard_dir=tensorboard_dir)
+        trainer.save_codewords(train_loader, os.path.join(exp_dir, "codewords", "train_code.pt"))
+        return
+
+    decay_params, no_decay_params = [], []
+    for name, param in model.named_parameters():
+        if not param.requires_grad:
+            continue
+        if param.ndim == 1 or name.endswith(".bias"):
+            no_decay_params.append(param)
+        else:
+            decay_params.append(param)
+    if not decay_params and not no_decay_params:
+        raise ValueError("No trainable parameters found for optimizer")
+    optimizer = torch.optim.AdamW(
+        [{"params": decay_params, "weight_decay": worker_args.weight_decay},
+         {"params": no_decay_params, "weight_decay": 0.0}],
+        lr=worker_args.lr_init)
+    logger.info("=> Optimizer: AdamW lr=%s weight_decay=%s",
+                worker_args.lr_init, worker_args.weight_decay)
+
+    if worker_args.scheduler == 'const':
+        scheduler = FakeLR(optimizer=optimizer)
+    else:
+        scheduler = WarmUpCosineAnnealingLR(
+            optimizer=optimizer,
+            T_max=worker_args.epochs * len(train_loader),
+            T_warmup=0.1 * worker_args.epochs * len(train_loader),
+            eta_min=5e-5)
+
+    trainer = Trainer(model=model, device=device, optimizer=optimizer,
+                      criterion=criterion, scheduler=scheduler,
+                      resume=worker_args.resume,
+                      save_path=checkpoint_dir,
+                      tensorboard_dir=tensorboard_dir,
+                      test_every_epoch=False,
+                      teacher_code_path=worker_args.teacher_code,
+                      lambda_recon=worker_args.lambda_recon,
+                      lambda_code=worker_args.lambda_code,
+                      lambda_fc=worker_args.lambda_fc,
+                      lambda_recT=worker_args.lambda_recT,
+                      lambda_teacher_pca=worker_args.lambda_teacher_pca,
+                      lambda_teacher_whiten=worker_args.lambda_teacher_whiten,
+                      teacher_pca_dim=worker_args.teacher_pca_dim,
+                      anchor_target=worker_args.anchor_target,
+                      lambda_anchor=worker_args.lambda_anchor,
+                      anchor_loss=worker_args.anchor_loss,
+                      train_path=worker_args.train_path,
+                      channel=worker_args.channel, nt=worker_args.nt,
+                      nc=worker_args.nc, cr=worker_args.cr,
+                      lambda_code_mean=worker_args.lambda_code_mean,
+                      lambda_code_var=worker_args.lambda_code_var,
+                      lambda_code_cov=worker_args.lambda_code_cov,
+                      lambda_code_l1=worker_args.lambda_code_l1,
+                      code_var_tau=worker_args.code_var_tau)
+    trainer.loop(worker_args.epochs, train_loader, val_loader, test_loader)
+
+    best_checkpoint = os.path.join(checkpoint_dir, "best_nmse.pth")
+    if os.path.isfile(best_checkpoint):
+        logger.info(f'=> Loading best checkpoint before codeword export: {best_checkpoint}')
+        _ = load_checkpoint_ignoring_thop_stats(model, best_checkpoint)
+    else:
+        logger.warning('=> No best_nmse.pth found before codeword export; using current state')
+    trainer.save_codewords(train_loader, os.path.join(exp_dir, "codewords", "train_code.pt"))
+
+    loss, nmse = Tester(model, device, criterion)(test_loader)
+    logger.info(f'\n=! Final test loss: {loss:.4e}\n         test NMSE: {nmse:.4e}\n')
+
+
 def main():
+    # ----- Basic logging (console) – always available -----
+    if not logger.handlers:
+        logger.setLevel(logging.INFO)
+        logger.propagate = False
+        _console_handler = logging.StreamHandler(sys.stdout)
+        _console_handler.setFormatter(logging.Formatter(
+            fmt='%(levelname).1s %(asctime)s %(filename)s:%(lineno)-4d] %(message)s',
+            datefmt='%m.%d/%H:%M:%S'))
+        logger.addHandler(_console_handler)
+        logging.captureWarnings(True)
+
+    # ----- Multi-experiment mode -----
+    if args.experiments is not None:
+        logger.info("=> Multi-experiment mode: %d experiments", len(args.experiments))
+        for cfg in args.experiments:
+            logger.info("   seed=%s enc=%s dec=%s gpu=%s",
+                        cfg['seed'], cfg['encoder'], cfg['decoder'], cfg['gpu'])
+        # Load data once into shared memory
+        def _load_shared_tensor(path):
+            data = torch.load(path, weights_only=True, map_location="cpu")
+            data = data.to(torch.float32)
+            expected = (args.channel, args.nt, args.nc)
+            if data.ndim == 2:
+                data = data.view(-1, *expected)
+            if data.ndim != 4 or tuple(data.shape[1:]) != expected:
+                raise ValueError(f"{path}: expected (N,{expected}), got {tuple(data.shape)}")
+            data.share_memory_()
+            return data
+        logger.info("=> Loading shared data ...")
+        train_data = _load_shared_tensor(args.train_path)
+        val_data = _load_shared_tensor(args.val_path)
+        test_data = _load_shared_tensor(args.test_path)
+        logger.info("=> Shared data: train=%s val=%s test=%s",
+                     train_data.shape, val_data.shape, test_data.shape)
+
+        ctx = mp.get_context("spawn")
+        processes = []
+        for i, cfg in enumerate(args.experiments):
+            p = ctx.Process(target=train_worker,
+                            args=(cfg, train_data, val_data, test_data),
+                            name=f"w{i}_s{cfg['seed']}_{cfg['encoder']}")
+            p.start()
+            processes.append(p)
+        for p in processes:
+            p.join()
+        logger.info("=> All workers finished.")
+        return
+
     exp_dir = os.path.join(os.getcwd(), "exps", args.exp_name)
     checkpoint_dir = os.path.join(exp_dir, "checkpoints")
     tensorboard_dir = os.path.join(exp_dir, "tensorboard")

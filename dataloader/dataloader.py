@@ -51,7 +51,8 @@ class MyDataLoader(object):
 
     def __init__(self, train_path, val_path, test_path, batch_size,
                  num_workers, pin_memory, channel=2, nt=32, nc=32,
-                 return_indices=False):
+                 return_indices=False,
+                 train_tensor=None, val_tensor=None, test_tensor=None):
         self.batch_size = batch_size
         self.num_workers = num_workers
         self.pin_memory = pin_memory
@@ -60,12 +61,34 @@ class MyDataLoader(object):
         self.nc = nc
         self.return_indices = return_indices
         
-        train_tensor = self._load_tensor(train_path)
-        val_tensor = self._load_tensor(val_path)
-        test_tensor = self._load_tensor(test_path)
-        self.train_dataset = self._build_dataset(train_tensor)
-        self.val_dataset = self._build_dataset(val_tensor)
-        self.test_dataset = self._build_dataset(test_tensor)
+        if train_tensor is not None:
+            train_tensor = self._validate_tensor(train_tensor)
+            self.train_dataset = self._build_dataset(train_tensor)
+        else:
+            train_tensor = self._load_tensor(train_path)
+            self.train_dataset = self._build_dataset(train_tensor)
+        if val_tensor is not None:
+            val_tensor = self._validate_tensor(val_tensor)
+            self.val_dataset = self._build_dataset(val_tensor)
+        else:
+            val_tensor = self._load_tensor(val_path)
+            self.val_dataset = self._build_dataset(val_tensor)
+        if test_tensor is not None:
+            test_tensor = self._validate_tensor(test_tensor)
+            self.test_dataset = self._build_dataset(test_tensor)
+        else:
+            test_tensor = self._load_tensor(test_path)
+            self.test_dataset = self._build_dataset(test_tensor)
+
+    def _validate_tensor(self, data):
+        expected_shape = (self.channel, self.nt, self.nc)
+        if data.ndim == 2:
+            data = data.view(-1, *expected_shape)
+        if data.ndim != 4 or tuple(data.shape[1:]) != expected_shape:
+            raise ValueError(
+                f"tensor should have shape (N, {self.channel}, "
+                f"{self.nt}, {self.nc}), got {tuple(data.shape)}")
+        return data.to(torch.float32)
 
     def _load_tensor(self, path):
         data = torch.load(path, weights_only=True,
