@@ -3,6 +3,53 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+class GatedCodeResidualAdapter(nn.Module):
+    def __init__(self, dim=512, lowrank_rank=0, mlp_hidden=0,
+                 gate_lr_init=0.1, gate_mlp_init=0.1, dropout=0.0):
+        super().__init__()
+        self.norm = nn.LayerNorm(dim)
+        self.lowrank_rank = lowrank_rank
+        self.mlp_hidden = mlp_hidden
+        self.dropout = nn.Dropout(dropout) if dropout else nn.Identity()
+        if lowrank_rank > 0:
+            self.lr_down = nn.Linear(dim, lowrank_rank, bias=False)
+            self.lr_up = nn.Linear(lowrank_rank, dim, bias=False)
+            self.gate_lr = nn.Parameter(torch.tensor(float(gate_lr_init)))
+        else:
+            self.lr_down = None
+            self.lr_up = None
+            self.register_buffer("gate_lr", torch.tensor(0.0))
+        if mlp_hidden > 0:
+            self.mlp_fc1 = nn.Linear(dim, mlp_hidden)
+            self.mlp_fc2 = nn.Linear(mlp_hidden, dim)
+            self.gate_mlp = nn.Parameter(torch.tensor(float(gate_mlp_init)))
+        else:
+            self.mlp_fc1 = None
+            self.mlp_fc2 = None
+            self.register_buffer("gate_mlp", torch.tensor(0.0))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        if self.lr_down is not None:
+            nn.init.kaiming_uniform_(self.lr_down.weight, a=5 ** 0.5)
+            nn.init.zeros_(self.lr_up.weight)
+        if self.mlp_fc1 is not None:
+            nn.init.xavier_uniform_(self.mlp_fc1.weight)
+            nn.init.zeros_(self.mlp_fc1.bias)
+            nn.init.zeros_(self.mlp_fc2.weight)
+            nn.init.zeros_(self.mlp_fc2.bias)
+
+    def forward(self, z0):
+        u = self.dropout(self.norm(z0))
+        delta = z0.new_zeros(z0.shape)
+        if self.lr_down is not None:
+            delta = delta + self.gate_lr * self.lr_up(self.lr_down(u))
+        if self.mlp_fc1 is not None:
+            delta = delta + self.gate_mlp * self.mlp_fc2(
+                F.gelu(self.mlp_fc1(u)))
+        return z0 + delta
+
+
 class LoRALinear(nn.Module):
     def __init__(self, base, rank=8, alpha=None, dropout=0.0):
         super().__init__()

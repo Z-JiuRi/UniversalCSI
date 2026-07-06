@@ -9,6 +9,7 @@ import uuid
 from pathlib import Path
 
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset, Subset
 from torch.utils.tensorboard.writer import SummaryWriter
@@ -35,8 +36,22 @@ _scheduler_spec.loader.exec_module(_scheduler_module)
 FakeLR = _scheduler_module.FakeLR
 WarmUpCosineAnnealingLR = _scheduler_module.WarmUpCosineAnnealingLR
 
-from models import (count_lora_parameters, count_trainable_parameters,  # noqa: E402
-                    inject_decoder_lora, mark_only_lora_trainable)
+from models import (GatedCodeResidualAdapter, count_lora_parameters,  # noqa: E402
+                    count_trainable_parameters, inject_decoder_lora,
+                    mark_only_lora_trainable)
+
+
+class DecoderLoraSystem(nn.Module):
+    def __init__(self, decoder, code_adapter=None):
+        super().__init__()
+        self.decoder = decoder
+        self.code_adapter = code_adapter if code_adapter is not None else nn.Identity()
+
+    def adapt_code(self, code):
+        return self.code_adapter(code)
+
+    def forward(self, code):
+        return self.decoder(self.adapt_code(code))
 
 
 class AlignedCodeCsiDataset(Dataset):
@@ -286,11 +301,11 @@ def build_scheduler(optimizer, name, epochs, steps_per_epoch, eta_min):
     raise ValueError(f"Unknown scheduler: {name}")
 
 
-def run_epoch(decoder, loader, device, optimizer=None, scheduler=None,
-              lambda_code=0.0, lambda_recT=0.0, lambda_fc=0.0,
+def run_epoch(model, loader, device, optimizer=None, scheduler=None,
+              lambda_code=0.0, lambda_delta=0.0, lambda_recT=0.0, lambda_fc=0.0,
               teacher_decoder=None):
     train = optimizer is not None
-    decoder.train(train)
+    model.train(train)
     if teacher_decoder is not None:
         teacher_decoder.eval()
     total = {
@@ -299,6 +314,7 @@ def run_epoch(decoder, loader, device, optimizer=None, scheduler=None,
         "code": 0.0,
         "recT": 0.0,
         "fc": 0.0,
+        "delta": 0.0,
         "code_mse": 0.0,
         "code_cos": 0.0,
         "code_nmse": 0.0,
@@ -308,21 +324,25 @@ def run_epoch(decoder, loader, device, optimizer=None, scheduler=None,
         code = code.to(device, non_blocking=True)
         target_code = target_code.to(device, non_blocking=True)
         gt = gt.to(device, non_blocking=True)
-        recon = decoder(code)
+        adapted_code = model.adapt_code(code)
+        recon = model.decoder(adapted_code)
         rec = F.mse_loss(recon, gt)
         loss = rec
-        code_loss = F.mse_loss(code, target_code)
+        code_loss = F.mse_loss(adapted_code, target_code)
+        delta_loss = F.mse_loss(adapted_code, code)
         recT = code.new_tensor(0.0)
         fc = code.new_tensor(0.0)
         if lambda_code:
             loss = loss + lambda_code * code_loss
+        if lambda_delta:
+            loss = loss + lambda_delta * delta_loss
         if lambda_recT:
             with torch.no_grad():
                 teacher_recon = teacher_decoder(target_code)
             recT = F.mse_loss(recon, teacher_recon)
             loss = loss + lambda_recT * recT
         if lambda_fc:
-            fc_pred = decoder.fc_decoder(code)
+            fc_pred = model.decoder.fc_decoder(adapted_code)
             with torch.no_grad():
                 fc_teacher = teacher_decoder.fc_decoder(target_code)
             fc = F.mse_loss(fc_pred, fc_teacher)
@@ -339,16 +359,17 @@ def run_epoch(decoder, loader, device, optimizer=None, scheduler=None,
         total["code"] += float(code_loss.detach().cpu()) * n
         total["recT"] += float(recT.detach().cpu()) * n
         total["fc"] += float(fc.detach().cpu()) * n
+        total["delta"] += float(delta_loss.detach().cpu()) * n
         total["code_mse"] += float(code_loss.detach().cpu()) * n
-        total["code_cos"] += float(cosine_mean(code, target_code).detach().cpu()) * n
-        total["code_nmse"] += float(code_nmse_db(code, target_code).detach().cpu()) * n
+        total["code_cos"] += float(cosine_mean(adapted_code, target_code).detach().cpu()) * n
+        total["code_nmse"] += float(code_nmse_db(adapted_code, target_code).detach().cpu()) * n
         total["n"] += n
     return {k: v / max(total["n"], 1) for k, v in total.items() if k != "n"}
 
 
 @torch.no_grad()
-def evaluate_decoder(decoder, loader, device):
-    decoder.eval()
+def evaluate_decoder(model, loader, device):
+    model.eval()
     total_error = torch.tensor(0.0, device=device)
     total_power = torch.tensor(0.0, device=device)
     total_mse = 0.0
@@ -356,7 +377,7 @@ def evaluate_decoder(decoder, loader, device):
     for code, _, gt, _ in loader:
         code = code.to(device, non_blocking=True)
         gt = gt.to(device, non_blocking=True)
-        recon = decoder(code)
+        recon = model(code)
         mse = F.mse_loss(recon, gt)
         total_error += (recon - gt).pow(2).sum()
         total_power += gt.pow(2).sum()
@@ -376,12 +397,12 @@ def log_metrics(writer, prefix, metrics, epoch):
         writer.add_scalar(f"{prefix}/{key}", value, global_step=epoch)
 
 
-def save_lora_state(decoder, path, epoch, best, args, optimizer, scheduler):
+def save_lora_state(model, path, epoch, best, args, optimizer, scheduler):
     path.parent.mkdir(parents=True, exist_ok=True)
     state_dict = {
         key: value.detach().cpu()
-        for key, value in decoder.state_dict().items()
-        if "lora_" in key
+        for key, value in model.state_dict().items()
+        if "lora_" in key or key.startswith("code_adapter.")
     }
     torch.save({
         "epoch": epoch,
@@ -393,15 +414,35 @@ def save_lora_state(decoder, path, epoch, best, args, optimizer, scheduler):
     }, path)
 
 
-def load_lora_state(decoder, path, device):
+def load_lora_state(model, path, device):
     ckpt = torch.load(path, weights_only=True, map_location=device)
-    missing, unexpected = decoder.load_state_dict(
+    missing, unexpected = model.load_state_dict(
         ckpt["state_dict"],
         strict=False)
-    unexpected = [key for key in unexpected if "lora_" in key]
+    unexpected = [
+        key for key in unexpected
+        if "lora_" in key or key.startswith("code_adapter.")
+    ]
     if unexpected:
         raise ValueError(f"Unexpected LoRA keys: {unexpected}")
     return ckpt, missing
+
+
+def build_code_adapter(args, dim, device):
+    if args.code_adapter == "none":
+        return None
+    if args.code_adapter != "gated_lr_mlp":
+        raise ValueError(f"Unknown code_adapter: {args.code_adapter}")
+    if args.code_lowrank_rank <= 0 and args.code_mlp_hidden <= 0:
+        raise ValueError(
+            "gated_lr_mlp needs code_lowrank_rank>0 or code_mlp_hidden>0")
+    return GatedCodeResidualAdapter(
+        dim=dim,
+        lowrank_rank=args.code_lowrank_rank,
+        mlp_hidden=args.code_mlp_hidden,
+        gate_lr_init=args.code_gate_lr,
+        gate_mlp_init=args.code_gate_mlp,
+        dropout=args.code_adapter_dropout).to(device)
 
 
 def main():
@@ -425,6 +466,13 @@ def main():
     parser.add_argument("--fc_lora_alpha", type=float, default=None)
     parser.add_argument("--ffn_lora_alpha", type=float, default=None)
     parser.add_argument("--lora_dropout", type=float, default=0.0)
+    parser.add_argument("--code_adapter", default="none",
+                        choices=["none", "gated_lr_mlp"])
+    parser.add_argument("--code_lowrank_rank", type=int, default=0)
+    parser.add_argument("--code_mlp_hidden", type=int, default=0)
+    parser.add_argument("--code_gate_lr", type=float, default=0.1)
+    parser.add_argument("--code_gate_mlp", type=float, default=0.1)
+    parser.add_argument("--code_adapter_dropout", type=float, default=0.0)
     parser.add_argument("--epochs", type=int, default=400)
     parser.add_argument("--batch_size", type=int, default=1024)
     parser.add_argument("--workers", type=int, default=0)
@@ -438,6 +486,7 @@ def main():
     parser.add_argument("--eval_decoder_every", type=int, default=20)
     parser.add_argument("--eval_decoder_max_samples", type=int, default=0)
     parser.add_argument("--lambda_code", type=float, default=0.0)
+    parser.add_argument("--lambda_delta", type=float, default=0.0)
     parser.add_argument("--lambda_recT", type=float, default=0.0)
     parser.add_argument("--lambda_fc", type=float, default=0.0)
     parser.add_argument("--save_last", action="store_true")
@@ -561,7 +610,12 @@ def main():
         shuffle=False,
         num_workers=args.workers,
         pin_memory=device.type == "cuda")
-    optimizer = build_optimizer(base_decoder, args.lr, args.weight_decay)
+    code_adapter = build_code_adapter(
+        args,
+        dim=train_set.code.size(1),
+        device=device)
+    model = DecoderLoraSystem(base_decoder, code_adapter).to(device)
+    optimizer = build_optimizer(model, args.lr, args.weight_decay)
     scheduler = build_scheduler(
         optimizer,
         args.scheduler,
@@ -594,10 +648,19 @@ def main():
         args.lora_dropout,
         ",".join(injected))
     logger.info(
+        "=> Code adapter: type=%s lowrank_rank=%d mlp_hidden=%d "
+        "gate_lr=%s gate_mlp=%s dropout=%s",
+        args.code_adapter,
+        args.code_lowrank_rank,
+        args.code_mlp_hidden,
+        args.code_gate_lr,
+        args.code_gate_mlp,
+        args.code_adapter_dropout)
+    logger.info(
         "=> Parameters: trainable=%s lora=%s",
-        f"{count_trainable_parameters(base_decoder):,}",
+        f"{count_trainable_parameters(model):,}",
         f"{count_lora_parameters(base_decoder):,}")
-    log_parameter_table(base_decoder, logger)
+    log_parameter_table(model, logger)
     logger.info(
         "=> Dataset sizes: train=%d val=%d all=%d",
         len(train_set),
@@ -619,8 +682,9 @@ def main():
         len(train_loader),
         args.epochs * len(train_loader))
     logger.info(
-        "=> Objective: rec + code*%s + recT*%s + fc*%s",
+        "=> Objective: rec + code*%s + delta*%s + recT*%s + fc*%s",
         args.lambda_code,
+        args.lambda_delta,
         args.lambda_recT,
         args.lambda_fc)
     if not use_val:
@@ -636,22 +700,24 @@ def main():
     best_nmse = {"metric": math.inf, "epoch": 0, "selection": ""}
     for epoch in range(1, args.epochs + 1):
         train_metrics = run_epoch(
-            base_decoder,
+            model,
             train_loader,
             device,
             optimizer=optimizer,
             scheduler=scheduler,
             lambda_code=args.lambda_code,
+            lambda_delta=args.lambda_delta,
             lambda_recT=args.lambda_recT,
             lambda_fc=args.lambda_fc,
             teacher_decoder=teacher_decoder)
         if use_val:
             eval_prefix = "val"
             eval_metrics = run_epoch(
-                base_decoder,
+                model,
                 val_loader,
                 device,
                 lambda_code=args.lambda_code,
+                lambda_delta=args.lambda_delta,
                 lambda_recT=args.lambda_recT,
                 lambda_fc=args.lambda_fc,
                 teacher_decoder=teacher_decoder)
@@ -671,7 +737,7 @@ def main():
         decoder_metrics = None
         if args.eval_decoder_every and epoch % args.eval_decoder_every == 0:
             decoder_metrics = evaluate_decoder(
-                base_decoder,
+                model,
                 decoder_eval_loader,
                 device)
             record["true_decoder_eval"] = decoder_metrics
@@ -695,7 +761,7 @@ def main():
                 else f"{eval_prefix}_loss",
             }
             save_lora_state(
-                base_decoder,
+                model,
                 checkpoint_dir / "best_loss.pth",
                 epoch,
                 best_loss,
@@ -712,7 +778,7 @@ def main():
                     "selection": "true_decoder_nmse",
                 }
                 save_lora_state(
-                    base_decoder,
+                    model,
                     checkpoint_dir / "best_nmse.pth",
                     epoch,
                     best_nmse,
@@ -726,6 +792,7 @@ def main():
             f"{eval_prefix}_select_loss={selected_loss:.6e} "
             f"{eval_prefix}_rec={eval_metrics['rec']:.6e} "
             f"{eval_prefix}_code={eval_metrics['code']:.6e} "
+            f"{eval_prefix}_delta={eval_metrics['delta']:.6e} "
             f"{eval_prefix}_recT={eval_metrics['recT']:.6e} "
             f"{eval_prefix}_fc={eval_metrics['fc']:.6e}")
 
@@ -750,8 +817,13 @@ def main():
             ffn_rank=args.ffn_lora_rank,
             fc_alpha=args.fc_lora_alpha,
             ffn_alpha=args.ffn_lora_alpha)
-        load_lora_state(base_decoder, path, device)
-        final_metrics = evaluate_decoder(base_decoder, all_loader, device)
+        final_code_adapter = build_code_adapter(
+            args,
+            dim=train_set.code.size(1),
+            device=device)
+        final_model = DecoderLoraSystem(base_decoder, final_code_adapter).to(device)
+        load_lora_state(final_model, path, device)
+        final_metrics = evaluate_decoder(final_model, all_loader, device)
         metrics[tag]["all"] = final_metrics
         logger.info(
             f"all_{tag}_decoder_mse={final_metrics['decoder_mse']:.6e} "

@@ -1,180 +1,380 @@
 #!/bin/bash
 
-# 批量跑 affine code + fixed decoder LoRA 实验。
+# 显式列出 decoder LoRA + gated residual code adapter 实验命令。
 #
-# 默认 source:
-#   seed2026 transnet/clnet/crnet/csinet + seed3407 transnet
+# 数据流：
+#   source code -> closed-form affine -> z0
+#   z1 = z0
+#      + gate_lr  * Up(Down(LN(z0)))
+#      + gate_mlp * W2 GELU(W1 LN(z0))
+#   z1 -> seed42 fixed decoder + LoRA(fc/FFN) -> reconstructed CSI
 #
-# 默认配置：
-#   fc rank=8/16
-#   fc_ffn rank=8/16
-#   fc_ffn fc_rank=128/256 + ffn_rank=8/16
+# 说明：
+#   1. 每一段都是一条独立训练命令，按需注释/取消注释即可。
+#   2. 默认后台运行，实际日志写到对应实验目录 run.log。
+#   3. lambda_code 约束 z1 贴近 teacher code。
+#   4. lambda_delta 约束 z1 不要偏离 affine 后的 z0 太远。
+#   5. fc_lora_rank/alpha 和 ffn_lora_rank/alpha 已分开控制。
 #
 # 用法：
 #   bash decoder_lora/scripts/run_decoder_lora.sh
-#   gpus=0,4,6,7 overwrite=1 bash decoder_lora/scripts/run_decoder_lora.sh
-#   sources=seed2026_transnet_transnet bash decoder_lora/scripts/run_decoder_lora.sh
 
 set -euo pipefail
 
-target_code=${target_code:-exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt}
-csi_path=${csi_path:-/storage/hujiacong/zxd/datasets/cost2100/in_train.pt}
-decoder_checkpoint=${decoder_checkpoint:-exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth}
-decoder_args_json=${decoder_args_json:-exps/COST2100/in/seed42/transnet_transnet/args.json}
+common_target_code=${target_code:-exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt}
+common_csi_path=${csi_path:-/storage/hujiacong/zxd/datasets/cost2100/in_train.pt}
+common_decoder_checkpoint=${decoder_checkpoint:-exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth}
+common_decoder_args_json=${decoder_args_json:-exps/COST2100/in/seed42/transnet_transnet/args.json}
 
-align_mode=${align_mode:-affine}
-align_ridge=${align_ridge:-1e-4}
-epochs=${epochs:-400}
-batch_size=${batch_size:-1024}
-workers=${workers:-0}
-lr=${lr:-5e-4}
-weight_decay=${weight_decay:-1e-4}
-scheduler=${scheduler:-cosine}
-eta_min=${eta_min:-5e-5}
-val_ratio=${val_ratio:-0}
-max_samples=${max_samples:-0}
-eval_decoder_every=${eval_decoder_every:-20}
-eval_decoder_max_samples=${eval_decoder_max_samples:-0}
-lambda_code=${lambda_code:-0.0}
-lambda_recT=${lambda_recT:-0.0}
-lambda_fc=${lambda_fc:-0.0}
-gpus=${gpus:-0,4,6,7}
-dry_run=${dry_run:-0}
-overwrite=${overwrite:-0}
-wait_existing=${wait_existing:-1}
-wait_seconds=${wait_seconds:-600}
-wait_by_source=${wait_by_source:-0}
+source_name=seed2026_transnet_transnet \
+source_code=exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=512 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=0 \
+lambda_delta=0 \
+gpu=0 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-IFS=',' read -r -a GPU_LIST <<< "${gpus}"
-if [ "${#GPU_LIST[@]}" -eq 0 ]; then
-  echo "No GPUs configured: gpus=${gpus}" >&2
-  exit 1
-fi
+source_name=seed2026_transnet_transnet \
+source_code=exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=512 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=1e-5 \
+lambda_delta=1e-5 \
+gpu=4 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-if [ "${dry_run}" != "1" ] && [ "${wait_existing}" = "1" ]; then
-  while pgrep -f "python -u decoder_lora/train_decoder_lora.py" > /dev/null; do
-    echo "[wait] existing decoder_lora training process found; sleep ${wait_seconds}s"
-    sleep "${wait_seconds}"
-  done
-fi
+source_name=seed2026_transnet_transnet \
+source_code=exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=1024 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=0 \
+lambda_delta=0 \
+gpu=6 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-ALL_SOURCES=(
-  "seed2026_transnet_transnet|exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt"
-  "seed3407_transnet_transnet|exps/COST2100/in/seed3407/transnet_transnet/codewords/train_code.pt"
-  "seed2026_clnet_transnet|exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt"
-  "seed2026_crnet_transnet|exps/COST2100/in/seed2026/crnet_transnet/codewords/train_code.pt"
-  "seed2026_csinet_transnet|exps/COST2100/in/seed2026/csinet_transnet/codewords/train_code.pt"
-)
+source_name=seed2026_transnet_transnet \
+source_code=exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=1024 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=1e-5 \
+lambda_delta=1e-5 \
+gpu=7 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-SOURCES=("${ALL_SOURCES[@]}")
-if [ "${sources:-}" != "" ]; then
-  SOURCES=()
-  IFS=',' read -r -a SOURCE_FILTER <<< "${sources}"
-  for wanted in "${SOURCE_FILTER[@]}"; do
-    found=0
-    for item in "${ALL_SOURCES[@]}"; do
-      IFS='|' read -r name path <<< "${item}"
-      if [ "${name}" = "${wanted}" ]; then
-        SOURCES+=("${item}")
-        found=1
-      fi
-    done
-    if [ "${found}" = "0" ]; then
-      echo "Unknown source filter: ${wanted}" >&2
-      exit 1
-    fi
-  done
-fi
+##########
+source_name=seed2026_clnet_transnet \
+source_code=exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=512 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=0 \
+lambda_delta=0 \
+gpu=0 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-# tag|lora_target|lora_rank|fc_lora_rank|ffn_lora_rank|lambda_recT|lambda_fc|lambda_code
-CONFIGS=(
-  "fc_r128|fc|8|128|0|0.0|0.0|0.0"
-  "fc_r256|fc|8|256|0|0.0|0.0|0.0"
-  "fc128_ffn8|fc_ffn|8|128|8|0.0|0.0|0.0"
-  "fc128_ffn16|fc_ffn|8|128|16|0.0|0.0|0.0"
-  "fc256_ffn8|fc_ffn|8|256|8|0.0|0.0|0.0"
-)
+source_name=seed2026_clnet_transnet \
+source_code=exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=512 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=1e-5 \
+lambda_delta=1e-5 \
+gpu=4 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-task_id=0
-running=0
+source_name=seed2026_clnet_transnet \
+source_code=exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=1024 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=0 \
+lambda_delta=0 \
+gpu=6 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-launch_job() {
-  gpu="${GPU_LIST[$((task_id % ${#GPU_LIST[@]}))]}"
-  tag="align${align_mode}_${config_tag}_recT${cfg_recT}_fc${cfg_fc}_code${cfg_code}"
-  exp_dir="decoder_lora/exps/${tag}/${source_name}_to_seed42_lr${lr}_ep${epochs}"
+source_name=seed2026_clnet_transnet \
+source_code=exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=1024 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=1e-5 \
+lambda_delta=1e-5 \
+gpu=7 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-  if [ "${overwrite}" != "1" ] && [ -f "${exp_dir}/metrics.json" ]; then
-    echo "[skip] ${exp_dir}"
-    task_id=$((task_id + 1))
-    return
-  fi
+source_name=seed2026_clnet_transnet \
+source_code=exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=1024 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=1e-3 \
+lambda_delta=1e-3 \
+gpu=6 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-  echo "[launch] gpu=${gpu} config=${config_tag} source=${source_name}"
-  echo "         exp_dir=${exp_dir}"
+source_name=seed2026_clnet_transnet \
+source_code=exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt \
+target_code="${common_target_code}" \
+csi_path="${common_csi_path}" \
+decoder_checkpoint="${common_decoder_checkpoint}" \
+decoder_args_json="${common_decoder_args_json}" \
+align_mode=affine \
+lora_target=fc_ffn \
+fc_lora_rank=256 \
+fc_lora_alpha=1024 \
+ffn_lora_rank=16 \
+ffn_lora_alpha=64 \
+code_adapter=gated_lr_mlp \
+code_lowrank_rank=128 \
+code_mlp_hidden=1024 \
+code_gate_lr=0.1 \
+code_gate_mlp=0.1 \
+lambda_code=1e-3 \
+lambda_delta=1e-3 \
+gpu=7 \
+lr=1e-3 \
+eta_min=2e-4 \
+epochs=400 \
+bash decoder_lora/scripts/train_decoder_lora.sh
 
-  if [ "${dry_run}" = "1" ]; then
-    task_id=$((task_id + 1))
-    return
-  fi
+##########
 
-  source_name="${source_name}" \
-  source_code="${source_code}" \
-  target_code="${target_code}" \
-  csi_path="${csi_path}" \
-  decoder_checkpoint="${decoder_checkpoint}" \
-  decoder_args_json="${decoder_args_json}" \
-  exp_dir="${exp_dir}" \
-  align_mode="${align_mode}" \
-  align_ridge="${align_ridge}" \
-  lora_target="${cfg_target}" \
-  lora_rank="${cfg_rank}" \
-  fc_lora_rank="${cfg_fc_rank}" \
-  ffn_lora_rank="${cfg_ffn_rank}" \
-  epochs="${epochs}" \
-  batch_size="${batch_size}" \
-  workers="${workers}" \
-  lr="${lr}" \
-  weight_decay="${weight_decay}" \
-  scheduler="${scheduler}" \
-  eta_min="${eta_min}" \
-  val_ratio="${val_ratio}" \
-  max_samples="${max_samples}" \
-  eval_decoder_every="${eval_decoder_every}" \
-  eval_decoder_max_samples="${eval_decoder_max_samples}" \
-  lambda_recT="${cfg_recT}" \
-  lambda_fc="${cfg_fc}" \
-  lambda_code="${cfg_code}" \
-  gpu="${gpu}" \
-  bash decoder_lora/scripts/train_decoder_lora.sh > /dev/null 2>&1 &
+# source_name=seed3407_transnet_transnet \
+# source_code=exps/COST2100/in/seed3407/transnet_transnet/codewords/train_code.pt \
+# target_code="${common_target_code}" \
+# csi_path="${common_csi_path}" \
+# decoder_checkpoint="${common_decoder_checkpoint}" \
+# decoder_args_json="${common_decoder_args_json}" \
+# align_mode=affine \
+# lora_target=fc_ffn \
+# fc_lora_rank=256 \
+# fc_lora_alpha=1024 \
+# ffn_lora_rank=16 \
+# ffn_lora_alpha=64 \
+# code_adapter=gated_lr_mlp \
+# code_lowrank_rank=128 \
+# code_mlp_hidden=512 \
+# code_gate_lr=0.1 \
+# code_gate_mlp=0.1 \
+# lambda_code=1e-3 \
+# lambda_delta=1e-4 \
+# gpu=0 \
+# lr=5e-4 \
+# eta_min=2e-4 \
+# epochs=400 \
+# bash decoder_lora/scripts/train_decoder_lora.sh
 
-  task_id=$((task_id + 1))
-  running=$((running + 1))
-  if [ "${running}" -ge "${#GPU_LIST[@]}" ]; then
-    wait
-    running=0
-  fi
-  sleep 5
-}
+# source_name=seed2026_clnet_transnet \
+# source_code=exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt \
+# target_code="${common_target_code}" \
+# csi_path="${common_csi_path}" \
+# decoder_checkpoint="${common_decoder_checkpoint}" \
+# decoder_args_json="${common_decoder_args_json}" \
+# align_mode=affine \
+# lora_target=fc_ffn \
+# fc_lora_rank=256 \
+# fc_lora_alpha=1024 \
+# ffn_lora_rank=16 \
+# ffn_lora_alpha=64 \
+# code_adapter=gated_lr_mlp \
+# code_lowrank_rank=128 \
+# code_mlp_hidden=512 \
+# code_gate_lr=0.1 \
+# code_gate_mlp=0.1 \
+# lambda_code=1e-3 \
+# lambda_delta=1e-4 \
+# gpu=4 \
+# lr=5e-4 \
+# eta_min=2e-4 \
+# epochs=400 \
+# bash decoder_lora/scripts/train_decoder_lora.sh
 
-if [ "${wait_by_source}" = "1" ]; then
-  for source in "${SOURCES[@]}"; do
-    IFS='|' read -r source_name source_code <<< "${source}"
-    for config in "${CONFIGS[@]}"; do
-      IFS='|' read -r config_tag cfg_target cfg_rank cfg_fc_rank cfg_ffn_rank cfg_recT cfg_fc cfg_code <<< "${config}"
-      launch_job
-    done
-    wait
-    running=0
-  done
-else
-  for config in "${CONFIGS[@]}"; do
-    IFS='|' read -r config_tag cfg_target cfg_rank cfg_fc_rank cfg_ffn_rank cfg_recT cfg_fc cfg_code <<< "${config}"
-    for source in "${SOURCES[@]}"; do
-      IFS='|' read -r source_name source_code <<< "${source}"
-      launch_job
-    done
-  done
-fi
+# source_name=seed2026_crnet_transnet \
+# source_code=exps/COST2100/in/seed2026/crnet_transnet/codewords/train_code.pt \
+# target_code="${common_target_code}" \
+# csi_path="${common_csi_path}" \
+# decoder_checkpoint="${common_decoder_checkpoint}" \
+# decoder_args_json="${common_decoder_args_json}" \
+# align_mode=affine \
+# lora_target=fc_ffn \
+# fc_lora_rank=256 \
+# fc_lora_alpha=1024 \
+# ffn_lora_rank=16 \
+# ffn_lora_alpha=64 \
+# code_adapter=gated_lr_mlp \
+# code_lowrank_rank=128 \
+# code_mlp_hidden=512 \
+# code_gate_lr=0.1 \
+# code_gate_mlp=0.1 \
+# lambda_code=1e-3 \
+# lambda_delta=1e-4 \
+# gpu=6 \
+# lr=5e-4 \
+# eta_min=2e-4 \
+# epochs=400 \
+# bash decoder_lora/scripts/train_decoder_lora.sh
 
-wait
-echo "All decoder_lora jobs finished."
+# source_name=seed2026_csinet_transnet \
+# source_code=exps/COST2100/in/seed2026/csinet_transnet/codewords/train_code.pt \
+# target_code="${common_target_code}" \
+# csi_path="${common_csi_path}" \
+# decoder_checkpoint="${common_decoder_checkpoint}" \
+# decoder_args_json="${common_decoder_args_json}" \
+# align_mode=affine \
+# lora_target=fc_ffn \
+# fc_lora_rank=256 \
+# fc_lora_alpha=1024 \
+# ffn_lora_rank=16 \
+# ffn_lora_alpha=64 \
+# code_adapter=gated_lr_mlp \
+# code_lowrank_rank=128 \
+# code_mlp_hidden=512 \
+# code_gate_lr=0.1 \
+# code_gate_mlp=0.1 \
+# lambda_code=1e-3 \
+# lambda_delta=1e-4 \
+# gpu=7 \
+# lr=5e-4 \
+# eta_min=2e-4 \
+# epochs=400 \
+# bash decoder_lora/scripts/train_decoder_lora.sh
