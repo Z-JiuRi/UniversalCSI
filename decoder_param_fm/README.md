@@ -14,7 +14,7 @@
   theta_gen:   Flow Matching 生成的 decoder 全量参数
 ```
 
-当前第一版固定使用：
+当前支持两种训练方式。单对调试模式固定使用：
 
 ```text
 theta_star checkpoint:
@@ -28,6 +28,15 @@ guide_codes:
   exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt
 ```
 
+多对泛化模式从 `data.txt` 读取 `(码字集合, decoder 权重)` 样本：
+
+```text
+exps/COST2100/in/seed3407/transnet_transnet/codewords/train_code.pt,exps/COST2100/in/seed3407/transnet_transnet/checkpoints/best_nmse.pth
+exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt,exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth
+```
+
+每行用逗号分割，第一列是 `guide_codes` 的 `.pt` 路径，第二列是对应完整模型 checkpoint。空行和 `#` 注释行会被忽略。所有样本必须使用同一个 decoder 架构和 code 维度。
+
 不使用：
 
 ```text
@@ -38,12 +47,14 @@ LoRA
 mapper
 ```
 
-第一版目标不是证明泛化，而是确认：
+单对模式目标不是证明泛化，而是确认：
 
 - 全量 decoder 参数能否被 token 化、归一化、FM 生成、反归一化并还原。
 - `(N,512)` 指导码字集合能否通过三种粗提取方式变成 `(512,512)` 条件。
 - 三种条件注入方式能否指导参数 velocity 预测。
 - 仅使用 MSE 类 loss 时，生成参数能否接近目标参数和目标 decoder 函数行为。
+
+多对模式用于研究从码字集合到 decoder 权重集合的泛化。实现上所有样本共享同一个随机初始化 `theta_base`、同一份参数 token meta，以及跨所有目标 decoder 统计得到的全局归一化参数；训练时每个 step 随机抽一个 `(guide_codes, theta_star)` 样本监督 velocity。
 
 ## 固定实验设定
 
@@ -59,10 +70,17 @@ nt = 32
 nc = 32
 ```
 
-目标参数：
+单对模式目标参数：
 
 ```text
 theta_star = decoder state_dict from seed42/transnet_transnet/best_nmse.pth
+```
+
+多对模式目标参数：
+
+```text
+theta_star_i = decoder state_dict from data.txt line i
+guide_codes_i = code tensor from data.txt line i
 ```
 
 初始参数：
@@ -92,7 +110,7 @@ raw CSI
 真实 NMSE
 ```
 
-因此第一版只使用 MSE 类 loss：
+因此当前只使用 MSE 类 loss：
 
 ```text
 velocity_mse
@@ -181,6 +199,33 @@ decoder_param_fm/
 bash decoder_param_fm/scripts/run_param_fm.sh
 ```
 
+多对泛化训练可以直接设置 `data_txt`：
+
+```bash
+data_txt=decoder_param_fm/data.txt \
+token_size=64 \
+hidden_dim=1024 \
+param_norm=zscore \
+condition_extract=set_transformer \
+condition_inject=film \
+epochs=1000 \
+lr=1e-4 \
+gpu=0 \
+bash decoder_param_fm/scripts/train_param_fm.sh
+```
+
+训练完成后，对某个码字集合采样生成 decoder：
+
+```bash
+exp_dir=decoder_param_fm/exps/set_transformer_film_zscore_tok64_h1024_lr1e-4_ep1000_seed42 \
+guide_code_path=exps/COST2100/in/seed3407/transnet_transnet/codewords/train_code.pt \
+target_checkpoint=exps/COST2100/in/seed3407/transnet_transnet/checkpoints/best_nmse.pth \
+gpu=0 \
+bash decoder_param_fm/scripts/sample_param_fm.sh
+```
+
+`target_checkpoint` 在采样时只用于报告 normalized parameter MSE；真正生成 decoder 参数只依赖 `guide_code_path`、训练保存的 `theta_base` 和全局归一化统计。
+
 1 epoch smoke 测试脚本同样采用顶部集中 `参数=值`：
 
 ```bash
@@ -212,6 +257,7 @@ decoder_param_fm/exps/{run_name}/
   artifacts/
     theta_base.pt
     theta_star.pt
+    data_pairs.json        # multi-pair mode only
     param_meta.json
     norm_stats.pt
     decoder_args_resolved.json

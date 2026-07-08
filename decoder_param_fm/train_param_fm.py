@@ -20,8 +20,12 @@ from decoder_param_fm.models import (  # noqa: E402
 )
 from decoder_param_fm.param_utils import (  # noqa: E402
     build_param_meta,
+    build_decoder_from_args,
+    compute_global_norm_stats,
     compute_norm_stats,
+    extract_decoder_state,
     load_codes,
+    load_param_pairs,
     make_base_and_target,
     masked_mse,
     normalize_target_delta,
@@ -43,8 +47,11 @@ def parse_args():
         description="Train flow matching to generate full decoder parameters.")
     parser.add_argument("--exp_dir", type=str, required=True)
     parser.add_argument("--decoder_args_json", type=str, required=True)
-    parser.add_argument("--target_checkpoint", type=str, required=True)
-    parser.add_argument("--guide_code_path", type=str, required=True)
+    parser.add_argument("--target_checkpoint", type=str, default="")
+    parser.add_argument("--guide_code_path", type=str, default="")
+    parser.add_argument(
+        "--data_txt", type=str, default="",
+        help="Optional CSV-like file: code_path,target_checkpoint per line.")
     parser.add_argument("--base_seed", type=int, default=2026)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--gpu", type=int, default=0)
@@ -136,6 +143,92 @@ def save_checkpoint(path, model, optimizer, scheduler, args, epoch, step,
     }, path)
 
 
+def build_base_state(args):
+    base_decoder, decoder_cfg = build_decoder_from_args(
+        args.decoder_args_json, seed=args.base_seed)
+    base_state = {
+        key: value.detach().cpu().float()
+        for key, value in base_decoder.state_dict().items()
+    }
+    return base_state, decoder_cfg
+
+
+def validate_target_state(base_state, target_state, source):
+    missing = sorted(set(base_state) - set(target_state))
+    unexpected = sorted(set(target_state) - set(base_state))
+    if missing or unexpected:
+        raise ValueError(
+            f"decoder state mismatch for {source}: "
+            f"missing={missing}, unexpected={unexpected}")
+    for key in base_state:
+        if tuple(base_state[key].shape) != tuple(target_state[key].shape):
+            raise ValueError(
+                f"shape mismatch for {key} in {source}: "
+                f"{tuple(base_state[key].shape)} vs "
+                f"{tuple(target_state[key].shape)}")
+
+
+def load_training_examples(args, device):
+    if args.data_txt:
+        pairs = load_param_pairs(args.data_txt)
+    else:
+        if not args.guide_code_path or not args.target_checkpoint:
+            raise ValueError(
+                "Either --data_txt or both --guide_code_path and "
+                "--target_checkpoint must be provided")
+        pairs = [{
+            "code_path": args.guide_code_path,
+            "target_checkpoint": args.target_checkpoint,
+        }]
+
+    base_state, decoder_cfg = build_base_state(args)
+    target_states = []
+    for pair in pairs:
+        target_state = extract_decoder_state(pair["target_checkpoint"])
+        validate_target_state(base_state, target_state, pair["target_checkpoint"])
+        target_states.append(target_state)
+
+    meta = build_param_meta(target_states[0], args.token_size)
+    if len(target_states) == 1:
+        norm_stats = compute_norm_stats(
+            base_state, target_states[0], method=args.param_norm)
+    else:
+        norm_stats = compute_global_norm_stats(
+            base_state, target_states, method=args.param_norm)
+
+    examples = []
+    code_dim = None
+    for idx, (pair, target_state) in enumerate(zip(pairs, target_states)):
+        norm_target_state = normalize_target_delta(
+            base_state, target_state, norm_stats)
+        theta1, token_mask, meta_tensors = state_to_tokens(
+            norm_target_state, meta, device="cpu")
+        guide_codes = load_codes(
+            pair["code_path"], max_samples=args.max_guide_codes)
+        if code_dim is None:
+            code_dim = guide_codes.size(1)
+        elif code_dim != guide_codes.size(1):
+            raise ValueError(
+                f"code_dim mismatch for {pair['code_path']}: "
+                f"{guide_codes.size(1)} vs {code_dim}")
+        examples.append({
+            "index": idx,
+            "code_path": pair["code_path"],
+            "target_checkpoint": pair["target_checkpoint"],
+            "guide_codes": guide_codes,
+            "theta1": theta1,
+            "token_mask": token_mask,
+            "meta_tensors": meta_tensors,
+            "num_codes": int(guide_codes.size(0)),
+        })
+
+    # Move static metadata once; per-example tensors stay on CPU until sampled.
+    meta_tensors = {
+        key: value.to(device) for key, value in examples[0]["meta_tensors"].items()
+    }
+    return base_state, target_states, decoder_cfg, meta, norm_stats, examples, code_dim, meta_tensors
+
+
 def summarize_decoder_tensors(state):
     total = sum(value.numel() for value in state.values())
     largest = sorted(
@@ -172,13 +265,14 @@ def summarize_norm_stats(norm_stats):
     logger.info("\n%s", "\n".join(lines))
 
 
-def log_training_preamble(args, device, decoder_cfg, meta, guide_codes, model,
+def log_training_preamble(args, device, decoder_cfg, meta, examples, model,
                           total_steps, warmup_steps):
     total, trainable, frozen = count_parameters(model)
     logger.info("=> Device: %s", device)
-    logger.info("=> Target checkpoint: %s", args.target_checkpoint)
+    logger.info("=> Data txt: %s", args.data_txt or "<single pair>")
+    logger.info("=> Target checkpoint: %s", args.target_checkpoint or "<from data_txt>")
     logger.info("=> Decoder args json: %s", args.decoder_args_json)
-    logger.info("=> Guide code path: %s", args.guide_code_path)
+    logger.info("=> Guide code path: %s", args.guide_code_path or "<from data_txt>")
     logger.info(
         "=> Decoder: type=%s cr=%s channel=%s nt=%s nc=%s d_model=%s "
         "dim_feedforward=%s",
@@ -209,9 +303,19 @@ def log_training_preamble(args, device, decoder_cfg, meta, guide_codes, model,
         meta["num_tokens"] * meta["token_size"]
         - sum(token["valid_elements"] for token in meta["tokens"]))
     logger.info(
-        "=> Guide codes: shape=%s max_guide_codes=%d",
-        tuple(guide_codes.shape),
+        "=> Training pairs: count=%d max_guide_codes=%d",
+        len(examples),
         args.max_guide_codes)
+    for item in examples[:8]:
+        logger.info(
+            "   pair[%d] codes=%s target=%s code_shape=(%d,%d)",
+            item["index"],
+            item["code_path"],
+            item["target_checkpoint"],
+            item["num_codes"],
+            item["guide_codes"].size(1))
+    if len(examples) > 8:
+        logger.info("   ... %d more pairs", len(examples) - 8)
     logger.info(
         "=> Optimizer: AdamW lr=%g eta_min=%g weight_decay=%g "
         "grad_clip=%g",
@@ -259,30 +363,30 @@ def main():
         f"cuda:{args.gpu}" if torch.cuda.is_available() and not args.cpu
         else "cpu")
 
-    base_state, target_state, decoder_cfg = make_base_and_target(
-        args.decoder_args_json, args.target_checkpoint, args.base_seed)
-    summarize_decoder_tensors(target_state)
-    meta = build_param_meta(target_state, args.token_size)
-    norm_stats = compute_norm_stats(
-        base_state, target_state, method=args.param_norm)
+    (base_state, target_states, decoder_cfg, meta, norm_stats, examples,
+     code_dim, meta_tensors) = load_training_examples(args, device)
+    summarize_decoder_tensors(target_states[0])
     summarize_norm_stats(norm_stats)
-    save_artifacts(
-        artifact_dir, base_state, target_state, meta, norm_stats, decoder_cfg)
+    if len(target_states) == 1:
+        save_artifacts(
+            artifact_dir, base_state, target_states[0], meta, norm_stats,
+            decoder_cfg)
+    else:
+        save_artifacts(
+            artifact_dir, base_state, target_states[0], meta, norm_stats,
+            decoder_cfg)
+        (artifact_dir / "data_pairs.json").write_text(
+            json.dumps([{
+                "code_path": item["code_path"],
+                "target_checkpoint": item["target_checkpoint"],
+                "num_codes": item["num_codes"],
+            } for item in examples], indent=2),
+            encoding="utf-8")
     logger.info(
-        "Prepared %d tensors, %d parameter tokens, token_size=%d",
-        meta["num_tensors"], meta["num_tokens"], meta["token_size"])
-
-    norm_target_state = normalize_target_delta(
-        base_state, target_state, norm_stats)
-    theta1, token_mask, meta_tensors = state_to_tokens(
-        norm_target_state, meta, device=device)
-    theta0 = torch.zeros_like(theta1)
-    velocity_target = theta1
-    token_mask = token_mask.to(device)
-
-    guide_codes = load_codes(
-        args.guide_code_path, max_samples=args.max_guide_codes).to(device)
-    code_dim = guide_codes.size(1)
+        "Prepared %d training pairs, %d tensors, %d parameter tokens, "
+        "token_size=%d",
+        len(examples), meta["num_tensors"], meta["num_tokens"],
+        meta["token_size"])
 
     model = build_system(args, code_dim, meta).to(device)
     optimizer = optim.AdamW(
@@ -296,11 +400,12 @@ def main():
         optimizer, T_max=total_steps, T_warmup=warmup_steps,
         eta_min=args.eta_min)
     log_training_preamble(
-        args, device, decoder_cfg, meta, guide_codes, model, total_steps,
+        args, device, decoder_cfg, meta, examples, model, total_steps,
         warmup_steps)
     total_params, trainable_params, frozen_params = count_parameters(model)
     writer.add_scalar("meta/decoder_target_params",
-                      sum(value.numel() for value in target_state.values()), 0)
+                      sum(value.numel() for value in target_states[0].values()), 0)
+    writer.add_scalar("meta/training_pairs", len(examples), 0)
     writer.add_scalar("meta/param_tokens", meta["num_tokens"], 0)
     writer.add_scalar("meta/valid_param_elements",
                       sum(token["valid_elements"] for token in meta["tokens"]),
@@ -323,6 +428,12 @@ def main():
             epoch_endpoint_loss = 0.0
             for _ in range(args.steps_per_epoch):
                 global_step += 1
+                example = random.choice(examples)
+                theta1 = example["theta1"].to(device, non_blocking=True)
+                token_mask = example["token_mask"].to(device, non_blocking=True)
+                guide_codes = example["guide_codes"].to(device, non_blocking=True)
+                theta0 = torch.zeros_like(theta1)
+                velocity_target = theta1
                 t = torch.rand((), device=device).clamp_(1e-4, 1.0 - 1e-4)
                 theta_t = theta0 + t * (theta1 - theta0)
                 pred_v = model(theta_t, t, meta_tensors, guide_codes)
@@ -356,6 +467,8 @@ def main():
                     global_step)
                 writer.add_scalar("train_step/lr", lr, global_step)
                 writer.add_scalar("train_step/t", t.item(), global_step)
+                writer.add_scalar(
+                    "train_step/pair_index", example["index"], global_step)
                 if grad_norm is not None:
                     writer.add_scalar(
                         "train_step/grad_norm",

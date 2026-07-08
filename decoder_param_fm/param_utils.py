@@ -17,6 +17,25 @@ def load_json(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def load_param_pairs(path):
+    pairs = []
+    for lineno, raw in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [item.strip() for item in line.split(",")]
+        if len(parts) != 2 or not parts[0] or not parts[1]:
+            raise ValueError(
+                f"{path}:{lineno} should be 'code_path,target_checkpoint'")
+        pairs.append({
+            "code_path": parts[0],
+            "target_checkpoint": parts[1],
+        })
+    if not pairs:
+        raise ValueError(f"{path} does not contain any code/checkpoint pairs")
+    return pairs
+
+
 def clean_state_dict(checkpoint_path):
     checkpoint = torch.load(
         checkpoint_path, weights_only=True, map_location=torch.device("cpu"))
@@ -196,6 +215,33 @@ def compute_norm_stats(base_state, target_state, method="rms", eps=1e-8):
             mean = delta.mean()
             std = delta.std(unbiased=False).clamp_min(eps)
             item["mean"] = mean
+            item["std"] = std
+        else:
+            raise ValueError(f"Unknown norm method: {method}")
+        stats[name] = item
+    return stats
+
+
+def compute_global_norm_stats(base_state, target_states, method="rms", eps=1e-8):
+    stats = {}
+    num_states = len(target_states)
+    if num_states == 0:
+        raise ValueError("target_states must not be empty")
+    for name, base in base_state.items():
+        deltas = [target[name].float() - base.float() for target in target_states]
+        item = {"method": method, "shape": list(base.shape)}
+        if method == "rms":
+            total_sq = sum(delta.double().pow(2).sum() for delta in deltas)
+            denom = max(base.numel() * num_states, 1)
+            item["scale"] = (total_sq / denom).sqrt().float().clamp_min(eps)
+        elif method == "zscore":
+            total = sum(delta.double().sum() for delta in deltas)
+            denom = max(base.numel() * num_states, 1)
+            mean = total / denom
+            total_var = sum((delta.double() - mean).pow(2).sum()
+                            for delta in deltas)
+            std = (total_var / denom).sqrt().float().clamp_min(eps)
+            item["mean"] = mean.float()
             item["std"] = std
         else:
             raise ValueError(f"Unknown norm method: {method}")

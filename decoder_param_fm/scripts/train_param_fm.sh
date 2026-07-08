@@ -9,6 +9,7 @@ target_exp="${target_exp:-exps/COST2100/in/seed42/transnet_transnet}"
 decoder_args_json="${decoder_args_json:-${target_exp}/args.json}"
 target_checkpoint="${target_checkpoint:-${target_exp}/checkpoints/best_nmse.pth}"
 guide_code_path="${guide_code_path:-${target_exp}/codewords/train_code.pt}"
+data_txt="${data_txt:-}"
 
 condition_extract="${condition_extract:-random}"
 condition_inject="${condition_inject:-film}"
@@ -33,11 +34,9 @@ max_guide_codes="${max_guide_codes:-0}"
 run_name="${run_name:-${condition_extract}_${condition_inject}_${param_norm}_tok${token_size}_h${hidden_dim}_lr${lr}_ep${epochs}_seed${seed}}"
 exp_dir="${exp_dir:-decoder_param_fm/exps/${run_name}}"
 
-"$python_bin" -u decoder_param_fm/train_param_fm.py \
+cmd=("$python_bin" -u decoder_param_fm/train_param_fm.py
   --exp_dir "$exp_dir" \
   --decoder_args_json "$decoder_args_json" \
-  --target_checkpoint "$target_checkpoint" \
-  --guide_code_path "$guide_code_path" \
   --condition_extract "$condition_extract" \
   --condition_inject "$condition_inject" \
   --param_norm "$param_norm" \
@@ -56,5 +55,13 @@ exp_dir="${exp_dir:-decoder_param_fm/exps/${run_name}}"
   --base_seed "$base_seed" \
   --seed "$seed" \
   --gpu "$gpu" \
-  --max_guide_codes "$max_guide_codes" \
-  > /dev/null 2>&1 &
+  --max_guide_codes "$max_guide_codes")
+
+if [[ -n "$data_txt" ]]; then
+  cmd+=(--data_txt "$data_txt")
+else
+  cmd+=(--target_checkpoint "$target_checkpoint")
+  cmd+=(--guide_code_path "$guide_code_path")
+fi
+
+"${cmd[@]}" > /dev/null 2>&1 &

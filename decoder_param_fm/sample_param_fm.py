@@ -17,6 +17,7 @@ from decoder_param_fm.models import (  # noqa: E402
 )
 from decoder_param_fm.param_utils import (  # noqa: E402
     denormalize_state,
+    extract_decoder_state,
     load_codes,
     load_param_meta,
     masked_mse,
@@ -32,6 +33,7 @@ def parse_args():
     parser.add_argument("--exp_dir", type=str, required=True)
     parser.add_argument("--checkpoint", type=str, default="")
     parser.add_argument("--guide_code_path", type=str, default="")
+    parser.add_argument("--target_checkpoint", type=str, default="")
     parser.add_argument("--output", type=str, default="")
     parser.add_argument("--ode_steps", type=int, default=16)
     parser.add_argument("--gpu", type=int, default=0)
@@ -94,7 +96,11 @@ def main():
         exp_dir / "checkpoints" / "best_loss.pth")
     output_path = Path(args.output) if args.output else (
         exp_dir / "generated" / "generated_decoder.pth")
-    guide_code_path = args.guide_code_path or train_args["guide_code_path"]
+    guide_code_path = args.guide_code_path or train_args.get("guide_code_path", "")
+    if not guide_code_path:
+        raise ValueError(
+            "--guide_code_path is required when the FM was trained with "
+            "--data_txt")
     artifact_dir = exp_dir / "artifacts"
 
     device = torch.device(
@@ -102,8 +108,15 @@ def main():
         else "cpu")
     base_state = torch.load(
         artifact_dir / "theta_base.pt", weights_only=True, map_location="cpu")
-    target_state = torch.load(
-        artifact_dir / "theta_star.pt", weights_only=True, map_location="cpu")
+    if args.target_checkpoint:
+        target_state = extract_decoder_state(args.target_checkpoint)
+    elif train_args.get("target_checkpoint"):
+        target_state = torch.load(
+            artifact_dir / "theta_star.pt",
+            weights_only=True,
+            map_location="cpu")
+    else:
+        target_state = None
     norm_stats = torch.load(
         artifact_dir / "norm_stats.pt", weights_only=True, map_location="cpu")
     meta = load_param_meta(artifact_dir / "param_meta.json")
@@ -121,26 +134,27 @@ def main():
     norm_state = tokens_to_norm_state(theta_tokens, meta)
     generated_state = denormalize_state(base_state, norm_state, norm_stats)
 
-    target_norm = normalize_target_delta(base_state, target_state, norm_stats)
-    target_tokens = []
-    masks = []
-    for token in meta["tokens"]:
-        name = token["tensor_name"]
-        flat = target_norm[name].flatten().to(device)
-        start = token["token_offset"] * meta["token_size"]
-        valid = token["valid_elements"]
-        tok = theta_tokens.new_zeros(meta["token_size"])
-        mask = theta_tokens.new_zeros(meta["token_size"])
-        tok[:valid] = flat[start:start + valid]
-        mask[:valid] = 1.0
-        target_tokens.append(tok)
-        masks.append(mask)
-    target_tokens = torch.stack(target_tokens)
-    masks = torch.stack(masks)
-    param_mse = masked_mse(theta_tokens, target_tokens, masks).item()
+    param_mse = None
+    if target_state is not None:
+        target_norm = normalize_target_delta(base_state, target_state, norm_stats)
+        target_tokens = []
+        masks = []
+        for token in meta["tokens"]:
+            name = token["tensor_name"]
+            flat = target_norm[name].flatten().to(device)
+            start = token["token_offset"] * meta["token_size"]
+            valid = token["valid_elements"]
+            tok = theta_tokens.new_zeros(meta["token_size"])
+            mask = theta_tokens.new_zeros(meta["token_size"])
+            tok[:valid] = flat[start:start + valid]
+            mask[:valid] = 1.0
+            target_tokens.append(tok)
+            masks.append(mask)
+        target_tokens = torch.stack(target_tokens)
+        masks = torch.stack(masks)
+        param_mse = masked_mse(theta_tokens, target_tokens, masks).item()
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    torch.save({
+    output = {
         "decoder_state_dict": {
             key: value.detach().cpu() for key, value in generated_state.items()
         },
@@ -149,12 +163,18 @@ def main():
             for key, value in generated_state.items()
         },
         "source_checkpoint": str(checkpoint_path),
+        "guide_code_path": str(guide_code_path),
+        "target_checkpoint": str(args.target_checkpoint),
         "ode_steps": args.ode_steps,
-        "param_mse_normalized": param_mse,
         "train_args": train_args,
-    }, output_path)
+    }
+    if param_mse is not None:
+        output["param_mse_normalized"] = param_mse
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(output, output_path)
     print(f"saved={output_path}")
-    print(f"param_mse_normalized={param_mse:.8f}")
+    if param_mse is not None:
+        print(f"param_mse_normalized={param_mse:.8f}")
 
 
 if __name__ == "__main__":
