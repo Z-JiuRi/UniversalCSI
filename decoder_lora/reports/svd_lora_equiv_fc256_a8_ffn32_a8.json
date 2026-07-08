@@ -1,0 +1,45 @@
+{
+  "checkpoint": "decoder_lora/exps/lora_rank_alpha_sweep/seed2026_transnet_transnet_to_seed42/fc256_a8_ffn32_a8_lr5e-4_eta2e-4_ep400/checkpoints/best_nmse.pth",
+  "exp_dir": "decoder_lora/exps/lora_rank_alpha_sweep/seed2026_transnet_transnet_to_seed42/fc256_a8_ffn32_a8_lr5e-4_eta2e-4_ep400",
+  "original": {
+    "test": {
+      "decoder_mse": 1.2642591802432434e-06,
+      "decoder_nmse": -25.532447814941406,
+      "n": 20000
+    },
+    "train": {
+      "decoder_mse": 7.097591726233077e-07,
+      "decoder_nmse": -28.03471565246582,
+      "n": 100000
+    },
+    "val": {
+      "decoder_mse": 1.2463586346105633e-06,
+      "decoder_nmse": -25.593746185302734,
+      "n": 30000
+    }
+  },
+  "svd_canonical": {
+    "test": {
+      "decoder_mse": 1.2642593319469596e-06,
+      "decoder_nmse": -25.532445907592773,
+      "n": 20000
+    },
+    "train": {
+      "decoder_mse": 7.097591671663395e-07,
+      "decoder_nmse": -28.03471565246582,
+      "n": 100000
+    },
+    "val": {
+      "decoder_mse": 1.2463587490249968e-06,
+      "decoder_nmse": -25.593746185302734,
+      "n": 30000
+    }
+  },
+  "svd_relative_delta_errors": {
+    "decoder.decoder.layers.0.linear1": 8.98106691238354e-07,
+    "decoder.decoder.layers.0.linear2": 8.262188089247502e-07,
+    "decoder.decoder.layers.1.linear1": 8.346208346665662e-07,
+    "decoder.decoder.layers.1.linear2": 5.839091841153277e-07,
+    "decoder.fc_decoder": 1.4191747368386132e-06
+  }
+}

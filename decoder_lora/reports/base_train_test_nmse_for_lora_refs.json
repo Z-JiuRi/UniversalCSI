@@ -1,0 +1,76 @@
+{
+  "train_data_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+  "test_data_path": "/storage/hujiacong/zxd/datasets/cost2100/in_test.pt",
+  "num_base_exps": 3,
+  "results": [
+    {
+      "exp_dir": "exps/COST2100/in/base/seed2026/transnet_transnet",
+      "checkpoint": "exps/COST2100/in/base/seed2026/transnet_transnet/checkpoints/best_nmse.pth",
+      "encoder": "transnet",
+      "decoder": "transnet",
+      "seed": 2026,
+      "train": {
+        "n": 100000,
+        "mse_loss": 5.836951661149215e-07,
+        "error_sum": 119.54080200195312,
+        "power_sum": 92451.2265625,
+        "nmse_linear": 0.0012930147349834442,
+        "nmse_db": -28.88396453857422
+      },
+      "test": {
+        "n": 20000,
+        "mse_loss": 7.801181667673518e-07,
+        "error_sum": 31.953641891479492,
+        "power_sum": 18511.462890625,
+        "nmse_linear": 0.0017261543544009328,
+        "nmse_db": -27.62920379638672
+      }
+    },
+    {
+      "exp_dir": "exps/COST2100/in/base/seed42/transnet_transnet",
+      "checkpoint": "exps/COST2100/in/base/seed42/transnet_transnet/checkpoints/best_nmse.pth",
+      "encoder": "transnet",
+      "decoder": "transnet",
+      "seed": 42,
+      "train": {
+        "n": 100000,
+        "mse_loss": 5.549547052578418e-07,
+        "error_sum": 113.65470123291016,
+        "power_sum": 92451.2265625,
+        "nmse_linear": 0.0012293476611375809,
+        "nmse_db": -29.103252410888672
+      },
+      "test": {
+        "n": 20000,
+        "mse_loss": 7.94876462805405e-07,
+        "error_sum": 32.558143615722656,
+        "power_sum": 18511.462890625,
+        "nmse_linear": 0.0017588098999112844,
+        "nmse_db": -27.547809600830078
+      }
+    },
+    {
+      "exp_dir": "exps/COST2100/in/base/seed1024/transnet_transnet",
+      "checkpoint": "exps/COST2100/in/base/seed1024/transnet_transnet/checkpoints/best_nmse.pth",
+      "encoder": "transnet",
+      "decoder": "transnet",
+      "seed": 1024,
+      "train": {
+        "n": 100000,
+        "mse_loss": 7.525566907315806e-07,
+        "error_sum": 154.12364196777344,
+        "power_sum": 92451.2265625,
+        "nmse_linear": 0.001667080563493073,
+        "nmse_db": -27.78043556213379
+      },
+      "test": {
+        "n": 20000,
+        "mse_loss": 9.828879466112995e-07,
+        "error_sum": 40.259090423583984,
+        "power_sum": 18511.462890625,
+        "nmse_linear": 0.0021748195867985487,
+        "nmse_db": -26.625768661499023
+      }
+    }
+  ]
+}
