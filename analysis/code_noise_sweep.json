@@ -1,0 +1,167 @@
+{
+  "baseline_nmse": -29.11143942034901,
+  "baseline_mse": 0.0011311877751722932,
+  "code_dim": 512,
+  "code_std": 0.799338161945343,
+  "var_per_elem": 0.6389414971421594,
+  "decoder_params": 1646592,
+  "1db_threshold": {
+    "max_code_mse": 0.00025560345966368914,
+    "max_code_rmse": 0.015987603312056786,
+    "min_code_snr": 33.97894367219481
+  },
+  "existing_mapper": {
+    "code_mse": 0.004659476,
+    "code_rmse": 0.06826035452588859,
+    "code_snr": 21.371240159278496,
+    "decoder_nmse_after_lora": -26.655,
+    "gap_to_native": 1.4749999999999979,
+    "code_mse_ratio_to_1db": 18.229315073163395
+  },
+  "results": [
+    {
+      "sigma_rel": 0,
+      "code_mse": 0.0,
+      "code_rmse": 0.0,
+      "code_snr_db": Infinity,
+      "decoder_mse": 0.0011311877751722932,
+      "nmse_db": -29.1114,
+      "nmse_gap": 0.0
+    },
+    {
+      "sigma_rel": 1e-05,
+      "code_mse": 6.393999912868154e-11,
+      "code_rmse": 7.996249066198571e-06,
+      "code_snr_db": 100.0,
+      "decoder_mse": 0.0011311877751722932,
+      "nmse_db": -29.1114,
+      "nmse_gap": 0.0
+    },
+    {
+      "sigma_rel": 2e-05,
+      "code_mse": 2.556380940266223e-10,
+      "code_rmse": 1.5988686438435844e-05,
+      "code_snr_db": 93.98,
+      "decoder_mse": 0.0011311883572489023,
+      "nmse_db": -29.1114,
+      "nmse_gap": 0.0
+    },
+    {
+      "sigma_rel": 5e-05,
+      "code_mse": 1.5976527878436286e-09,
+      "code_rmse": 3.997064907958875e-05,
+      "code_snr_db": 86.02,
+      "decoder_mse": 0.0011311877751722932,
+      "nmse_db": -29.1114,
+      "nmse_gap": -0.0
+    },
+    {
+      "sigma_rel": 0.0001,
+      "code_mse": 6.397173457628469e-09,
+      "code_rmse": 7.998233215922419e-05,
+      "code_snr_db": 79.99,
+      "decoder_mse": 0.0011311889393255115,
+      "nmse_db": -29.1114,
+      "nmse_gap": 0.0
+    },
+    {
+      "sigma_rel": 0.0002,
+      "code_mse": 2.555639433410306e-08,
+      "code_rmse": 0.0001598636742168247,
+      "code_snr_db": 73.98,
+      "decoder_mse": 0.0011311990674585104,
+      "nmse_db": -29.1114,
+      "nmse_gap": 0.0
+    },
+    {
+      "sigma_rel": 0.0005,
+      "code_mse": 1.5972965172750264e-07,
+      "code_rmse": 0.00039966192178828177,
+      "code_snr_db": 66.02,
+      "decoder_mse": 0.0011312473798170686,
+      "nmse_db": -29.1112,
+      "nmse_gap": 0.0002
+    },
+    {
+      "sigma_rel": 0.001,
+      "code_mse": 6.392383511411026e-07,
+      "code_rmse": 0.0007995238277506822,
+      "code_snr_db": 60.0,
+      "decoder_mse": 0.001131419325247407,
+      "nmse_db": -29.1106,
+      "nmse_gap": 0.0009
+    },
+    {
+      "sigma_rel": 0.002,
+      "code_mse": 2.5532492600177648e-06,
+      "code_rmse": 0.0015978890011567651,
+      "code_snr_db": 53.98,
+      "decoder_mse": 0.0011321828933432698,
+      "nmse_db": -29.1076,
+      "nmse_gap": 0.0038
+    },
+    {
+      "sigma_rel": 0.005,
+      "code_mse": 1.5982901459210552e-05,
+      "code_rmse": 0.00399786211108019,
+      "code_snr_db": 46.02,
+      "decoder_mse": 0.0011374459136277437,
+      "nmse_db": -29.0875,
+      "nmse_gap": 0.024
+    },
+    {
+      "sigma_rel": 0.01,
+      "code_mse": 6.393535295501351e-05,
+      "code_rmse": 0.00799595853885033,
+      "code_snr_db": 40.0,
+      "decoder_mse": 0.00115600333083421,
+      "nmse_db": -29.0172,
+      "nmse_gap": 0.0942
+    },
+    {
+      "sigma_rel": 0.02,
+      "code_mse": 0.00025560345966368914,
+      "code_rmse": 0.015987603312056786,
+      "code_snr_db": 33.98,
+      "decoder_mse": 0.0012303553521633148,
+      "nmse_db": -28.7465,
+      "nmse_gap": 0.365
+    },
+    {
+      "sigma_rel": 0.05,
+      "code_mse": 0.00159702287055552,
+      "code_rmse": 0.0399627685546875,
+      "code_snr_db": 26.02,
+      "decoder_mse": 0.0017567543545737863,
+      "nmse_db": -27.1997,
+      "nmse_gap": 1.9118
+    },
+    {
+      "sigma_rel": 0.1,
+      "code_mse": 0.006391408387571573,
+      "code_rmse": 0.07994628438877928,
+      "code_snr_db": 20.0,
+      "decoder_mse": 0.003683823859319091,
+      "nmse_db": -23.9838,
+      "nmse_gap": 5.1276
+    },
+    {
+      "sigma_rel": 0.2,
+      "code_mse": 0.025541311129927635,
+      "code_rmse": 0.1598164920461203,
+      "code_snr_db": 13.98,
+      "decoder_mse": 0.011906947009265423,
+      "nmse_db": -18.8888,
+      "nmse_gap": 10.2227
+    },
+    {
+      "sigma_rel": 0.5,
+      "code_mse": 0.15979859232902527,
+      "code_rmse": 0.3997481611327628,
+      "code_snr_db": 6.02,
+      "decoder_mse": 0.08431492000818253,
+      "nmse_db": -10.3877,
+      "nmse_gap": 18.7237
+    }
+  ]
+}
