@@ -1,0 +1,252 @@
+{
+  "baseline": {
+    "mse_sum_per_sample": 0.001136547242230261,
+    "nmse_db": -29.103250993281282,
+    "num_samples": 100000
+  },
+  "device": "cuda:0",
+  "scopes": {
+    "fc": {
+      "rows": [
+        {
+          "delta_nmse_db": 0.0,
+          "global_param_mse": 0.0,
+          "mse_sum_per_sample": 0.001136547242230261,
+          "nmse_db": -29.103250993281282,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 0.0,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.0
+        },
+        {
+          "delta_nmse_db": 0.042649556763493024,
+          "global_param_mse": 5.8112759623766204e-08,
+          "mse_sum_per_sample": 0.0011477636018781018,
+          "nmse_db": -29.06060143651779,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 9.107730748052247e-08,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.01
+        },
+        {
+          "delta_nmse_db": 0.06815690260554774,
+          "global_param_mse": 8.361102340498278e-08,
+          "mse_sum_per_sample": 0.0011545245779514483,
+          "nmse_db": -29.035094090675734,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 1.3103949866979757e-07,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.012
+        },
+        {
+          "delta_nmse_db": 0.08979274590330988,
+          "global_param_mse": 1.307199659561829e-07,
+          "mse_sum_per_sample": 0.0011602905819611067,
+          "nmse_db": -29.013458247377972,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 2.04871057755889e-07,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.015
+        },
+        {
+          "delta_nmse_db": 0.17101073075857087,
+          "global_param_mse": 2.3265382290235188e-07,
+          "mse_sum_per_sample": 0.0011821934957326138,
+          "nmse_db": -28.93224026252271,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 3.6462704408087897e-07,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.02
+        },
+        {
+          "delta_nmse_db": 0.36883105059972365,
+          "global_param_mse": 5.221476614839609e-07,
+          "mse_sum_per_sample": 0.0012372874207783313,
+          "nmse_db": -28.73441994268156,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 8.183366858345118e-07,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.03
+        },
+        {
+          "delta_nmse_db": 0.9454079498211385,
+          "global_param_mse": 1.4512081919797062e-06,
+          "mse_sum_per_sample": 0.001412954859785554,
+          "nmse_db": -28.157843043460144,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 2.2744081605295978e-06,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.05
+        },
+        {
+          "delta_nmse_db": 2.0671944115467866,
+          "global_param_mse": 3.716359959804295e-06,
+          "mse_sum_per_sample": 0.0018293926659787734,
+          "nmse_db": -27.036056581734496,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 5.824470580278076e-06,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.08
+        },
+        {
+          "delta_nmse_db": 3.0370656619703738,
+          "global_param_mse": 5.813374790800005e-06,
+          "mse_sum_per_sample": 0.0022871468954113313,
+          "nmse_db": -26.06618533131091,
+          "num_samples": 100000,
+          "scope": "fc",
+          "scoped_param_mse": 9.11102013996726e-06,
+          "selected_params": 1050624,
+          "selected_tensors": 2,
+          "sigma_rel_tensor_rms": 0.1
+        }
+      ],
+      "selected_names": [
+        "fc_decoder.weight",
+        "fc_decoder.bias"
+      ],
+      "selected_params": 1050624,
+      "selected_tensors": 2
+    },
+    "ffn": {
+      "rows": [
+        {
+          "delta_nmse_db": 0.0,
+          "global_param_mse": 0.0,
+          "mse_sum_per_sample": 0.001136547242230261,
+          "nmse_db": -29.103250993281282,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 0.0,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.0
+        },
+        {
+          "delta_nmse_db": 0.7634259739578049,
+          "global_param_mse": 5.8787831922201e-08,
+          "mse_sum_per_sample": 0.001354971279742375,
+          "nmse_db": -28.339825019323477,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 1.8315492125143949e-07,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.01
+        },
+        {
+          "delta_nmse_db": 0.9268627283927806,
+          "global_param_mse": 8.494108338780861e-08,
+          "mse_sum_per_sample": 0.0014069341309425366,
+          "nmse_db": -28.1763882648885,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 2.6463601276356744e-07,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.012
+        },
+        {
+          "delta_nmse_db": 2.164408339375715,
+          "global_param_mse": 1.3192171908091864e-07,
+          "mse_sum_per_sample": 0.0018708041578412208,
+          "nmse_db": -26.938842653905567,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 4.110053267757175e-07,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.015
+        },
+        {
+          "delta_nmse_db": 3.04280417331114,
+          "global_param_mse": 2.347137294014577e-07,
+          "mse_sum_per_sample": 0.002290170994023175,
+          "nmse_db": -26.060446819970142,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 7.312563368903734e-07,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.02
+        },
+        {
+          "delta_nmse_db": 4.833941830038334,
+          "global_param_mse": 5.289459981349115e-07,
+          "mse_sum_per_sample": 0.0034592478167928893,
+          "nmse_db": -24.269309163242948,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 1.647944131752846e-06,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.03
+        },
+        {
+          "delta_nmse_db": 9.578092086300241,
+          "global_param_mse": 1.4711197998933202e-06,
+          "mse_sum_per_sample": 0.010313277444170939,
+          "nmse_db": -19.52515890698104,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 4.583309543673449e-06,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.05
+        },
+        {
+          "delta_nmse_db": 11.017335884402097,
+          "global_param_mse": 3.767020287421012e-06,
+          "mse_sum_per_sample": 0.01436551106383247,
+          "nmse_db": -18.085915108879185,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 1.1736243394861685e-05,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.08
+        },
+        {
+          "delta_nmse_db": 11.043608734137521,
+          "global_param_mse": 5.861078122578926e-06,
+          "mse_sum_per_sample": 0.014452679299620247,
+          "nmse_db": -18.05964225914376,
+          "num_samples": 100000,
+          "scope": "ffn",
+          "scoped_param_mse": 1.826033154973488e-05,
+          "selected_params": 528512,
+          "selected_tensors": 8,
+          "sigma_rel_tensor_rms": 0.1
+        }
+      ],
+      "selected_names": [
+        "decoder.layers.0.linear1.weight",
+        "decoder.layers.0.linear1.bias",
+        "decoder.layers.0.linear2.weight",
+        "decoder.layers.0.linear2.bias",
+        "decoder.layers.1.linear1.weight",
+        "decoder.layers.1.linear1.bias",
+        "decoder.layers.1.linear2.weight",
+        "decoder.layers.1.linear2.bias"
+      ],
+      "selected_params": 528512,
+      "selected_tensors": 8
+    }
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "best_generated_by_param_mse": [
+    {
+      "decoder_path": "decoder_param_fm/exps/svd_film_zscore_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth",
+      "exp_name": "svd_film_zscore_tok512_h2048_lr2e-4_ep400_seed42",
+      "global_param_mse": 1.840861089235621e-07,
+      "worst_tensor": "decoder.norm.bias",
+      "worst_tensor_mse": 0.0002295772428624332,
+      "worst_tensor_rel_rmse": 0.03863554120009488
+    },
+    {
+      "decoder_path": "decoder_param_fm/exps/svd_cross_attention_zscore_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth",
+      "exp_name": "svd_cross_attention_zscore_tok512_h2048_lr2e-4_ep400_seed42",
+      "global_param_mse": 2.0520886412908626e-07,
+      "worst_tensor": "decoder.norm.bias",
+      "worst_tensor_mse": 0.002091557253152132,
+      "worst_tensor_rel_rmse": 0.11661581742132132
+    },
+    {
+      "decoder_path": "decoder_param_fm/exps/random_hyper_lora_rms_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth",
+      "exp_name": "random_hyper_lora_rms_tok512_h2048_lr2e-4_ep400_seed42",
+      "global_param_mse": 2.9893758593344876e-07,
+      "worst_tensor": "decoder.norm.weight",
+      "worst_tensor_mse": 0.0021741483360528946,
+      "worst_tensor_rel_rmse": 0.08416604267294832
+    },
+    {
+      "decoder_path": "decoder_param_fm/exps/set_transformer_film_zscore_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth",
+      "exp_name": "set_transformer_film_zscore_tok512_h2048_lr2e-4_ep400_seed42",
+      "global_param_mse": 4.034336875923145e-07,
+      "worst_tensor": "decoder.norm.bias",
+      "worst_tensor_mse": 0.004744702950119972,
+      "worst_tensor_rel_rmse": 0.1756414833326165
+    },
+    {
+      "decoder_path": "decoder_param_fm/exps/svd_film_rms_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth",
+      "exp_name": "svd_film_rms_tok512_h2048_lr2e-4_ep400_seed42",
+      "global_param_mse": 4.549104376732149e-07,
+      "worst_tensor": "decoder.norm.bias",
+      "worst_tensor_mse": 0.003063179086893797,
+      "worst_tensor_rel_rmse": 0.14112656674587754
+    }
+  ],
+  "code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "csi_path": "",
+  "device": "cuda:0",
+  "generated_count": 13,
+  "noise_rows": [
+    {
+      "delta_nmse_db": 0.0,
+      "global_param_mse": 0.0,
+      "mse_sum_per_sample": 0.001136547242230261,
+      "nmse_db": -29.103250993281282,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 0.0
+    },
+    {
+      "delta_nmse_db": 0.002256180505533223,
+      "global_param_mse": 1.795936002826821e-13,
+      "mse_sum_per_sample": 0.0011371378373276663,
+      "nmse_db": -29.10099481277575,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 1e-05
+    },
+    {
+      "delta_nmse_db": 0.001412586238323854,
+      "global_param_mse": 7.257306611437598e-13,
+      "mse_sum_per_sample": 0.0011369169757144628,
+      "nmse_db": -29.10183840704296,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 2e-05
+    },
+    {
+      "delta_nmse_db": 0.007352343655593785,
+      "global_param_mse": 4.482536627592975e-12,
+      "mse_sum_per_sample": 0.0011384729777833237,
+      "nmse_db": -29.09589864962569,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 5e-05
+    },
+    {
+      "delta_nmse_db": 0.05603892259994936,
+      "global_param_mse": 1.799535433106155e-11,
+      "mse_sum_per_sample": 0.0011513076351062522,
+      "nmse_db": -29.047212070681333,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 0.0001
+    },
+    {
+      "delta_nmse_db": 0.22102237371186462,
+      "global_param_mse": 7.213741376854004e-11,
+      "mse_sum_per_sample": 0.0011958858572758255,
+      "nmse_db": -28.882228619569418,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 0.0002
+    },
+    {
+      "delta_nmse_db": 1.206478925951469,
+      "global_param_mse": 4.482859525471156e-10,
+      "mse_sum_per_sample": 0.0015004978763639952,
+      "nmse_db": -27.896772067329813,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 0.0005
+    },
+    {
+      "delta_nmse_db": 3.437197260576017,
+      "global_param_mse": 1.782442559287867e-09,
+      "mse_sum_per_sample": 0.00250788269414968,
+      "nmse_db": -25.666053732705265,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 0.001
+    },
+    {
+      "delta_nmse_db": 7.1163956676725135,
+      "global_param_mse": 7.1686980713387725e-09,
+      "mse_sum_per_sample": 0.005850959059747734,
+      "nmse_db": -21.98685532560877,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 0.002
+    },
+    {
+      "delta_nmse_db": 14.760991560098077,
+      "global_param_mse": 4.563633774025307e-08,
+      "mse_sum_per_sample": 0.034016266750120136,
+      "nmse_db": -14.342259433183205,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 0.005
+    },
+    {
+      "delta_nmse_db": 20.645080183193286,
+      "global_param_mse": 1.7848776049166782e-07,
+      "mse_sum_per_sample": 0.13185466838621754,
+      "nmse_db": -8.458170810087998,
+      "num_samples": 100000,
+      "sigma_rel_tensor_rms": 0.01
+    }
+  ],
+  "target_checkpoint": "exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth",
+  "teacher_baseline": {
+    "mse_sum_per_sample": 0.001136547242230261,
+    "nmse_db": -29.103250993281282,
+    "num_samples": 100000
+  }
+}

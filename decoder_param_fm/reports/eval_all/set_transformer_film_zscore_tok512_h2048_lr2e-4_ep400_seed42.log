@@ -1,0 +1,16 @@
+run_name=set_transformer_film_zscore_tok512_h2048_lr2e-4_ep400_seed42
+exp_dir=decoder_param_fm/exps/set_transformer_film_zscore_tok512_h2048_lr2e-4_ep400_seed42
+gpu=6
+Sun Jul  5 05:01:34 CST 2026
+saved=decoder_param_fm/exps/set_transformer_film_zscore_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth
+param_mse_normalized=0.00007895
+{
+  "code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "csi_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "decoder_state": "decoder_param_fm/exps/set_transformer_film_zscore_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth",
+  "mse_sum_per_sample": 11.649703301568353,
+  "nmse_db": 11.00402272907104,
+  "num_samples": 100000
+}
+Sun Jul  5 05:02:30 CST 2026

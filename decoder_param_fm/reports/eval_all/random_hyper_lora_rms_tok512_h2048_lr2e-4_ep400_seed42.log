@@ -1,0 +1,16 @@
+run_name=random_hyper_lora_rms_tok512_h2048_lr2e-4_ep400_seed42
+exp_dir=decoder_param_fm/exps/random_hyper_lora_rms_tok512_h2048_lr2e-4_ep400_seed42
+gpu=4
+Sun Jul  5 04:59:02 CST 2026
+saved=decoder_param_fm/exps/random_hyper_lora_rms_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth
+param_mse_normalized=0.00007447
+{
+  "code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "csi_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "decoder_state": "decoder_param_fm/exps/random_hyper_lora_rms_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth",
+  "mse_sum_per_sample": 11.331598641616626,
+  "nmse_db": 10.883785918297296,
+  "num_samples": 100000
+}
+Sun Jul  5 05:00:18 CST 2026

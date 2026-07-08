@@ -1,0 +1,43 @@
+{
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "generated_paths": {
+    "set_transformer_film_zscore_tok512_h2048_lr1e-4_ep1000_seed42": "decoder_param_fm/exps/set_transformer_film_zscore_tok512_h2048_lr1e-4_ep1000_seed42/generated/generated_decoder.pth",
+    "set_transformer_film_zscore_tok512_h2048_lr1e-4_ep2000_seed42": "decoder_param_fm/exps/set_transformer_film_zscore_tok512_h2048_lr1e-4_ep2000_seed42/generated/generated_decoder.pth"
+  },
+  "guide_code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "max_guide_codes": 0,
+  "ode_steps": 16,
+  "summary": [
+    {
+      "csi_mse_sum_per_sample": 1.8294227877999962,
+      "csi_nmse_db": 2.964014926330931,
+      "csi_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+      "exp_name": "set_transformer_film_zscore_tok512_h2048_lr1e-4_ep2000_seed42",
+      "generated_path": "decoder_param_fm/exps/set_transformer_film_zscore_tok512_h2048_lr1e-4_ep2000_seed42/generated/generated_decoder.pth",
+      "global_param_mse": 3.240430345130354e-08,
+      "global_param_nmse_db": -47.429583819180614,
+      "num_samples": 100000,
+      "total_numel": 1646592,
+      "worst_tensor_by_mse": "decoder.norm.bias",
+      "worst_tensor_by_nmse": "decoder.layers.0.linear2.bias",
+      "worst_tensor_mse": 0.0006272136118173447,
+      "worst_tensor_nmse_db": -22.098528532867686
+    },
+    {
+      "csi_mse_sum_per_sample": 4.654436562071062,
+      "csi_nmse_db": 7.019545235941727,
+      "csi_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+      "exp_name": "set_transformer_film_zscore_tok512_h2048_lr1e-4_ep1000_seed42",
+      "generated_path": "decoder_param_fm/exps/set_transformer_film_zscore_tok512_h2048_lr1e-4_ep1000_seed42/generated/generated_decoder.pth",
+      "global_param_mse": 7.082664697312561e-08,
+      "global_param_nmse_db": -44.03364390192316,
+      "num_samples": 100000,
+      "total_numel": 1646592,
+      "worst_tensor_by_mse": "decoder.norm.bias",
+      "worst_tensor_by_nmse": "decoder.layers.0.linear2.bias",
+      "worst_tensor_mse": 0.00123341377082746,
+      "worst_tensor_nmse_db": -19.09388703581174
+    }
+  ],
+  "target_checkpoint": "exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth"
+}
