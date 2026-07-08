@@ -40,6 +40,8 @@ from models import (GatedCodeResidualAdapter, count_lora_parameters,  # noqa: E4
                     count_trainable_parameters, inject_decoder_lora,
                     mark_only_lora_trainable)
 
+# Lazy import for AffineResidualMLPMapper (used within build_code_adapter)
+
 
 class DecoderLoraSystem(nn.Module):
     def __init__(self, decoder, code_adapter=None):
@@ -105,6 +107,35 @@ class AlignedCodeCsiDataset(Dataset):
         self.target_code = target[sl].contiguous()
         self.csi = csi[sl].contiguous()
         self.indices = torch.arange(n, dtype=torch.long)[sl].contiguous()
+
+    def __len__(self):
+        return self.code.size(0)
+
+    def __getitem__(self, idx):
+        return (
+            self.code[idx],
+            self.target_code[idx],
+            self.csi[idx],
+            self.indices[idx],
+        )
+
+
+class AlignedTensorDataset(Dataset):
+    def __init__(self, source_code, target_code, csi, weight, bias):
+        if source_code.ndim != 2 or target_code.ndim != 2:
+            raise ValueError("source/target code must be 2D tensors")
+        if source_code.shape != target_code.shape:
+            raise ValueError(
+                f"source and target shape mismatch: {source_code.shape} vs "
+                f"{target_code.shape}")
+        if csi.ndim != 4:
+            raise ValueError(f"CSI should be 4D, got {tuple(csi.shape)}")
+        n = min(source_code.size(0), target_code.size(0), csi.size(0))
+        self.source = source_code[:n].contiguous()
+        self.code = self.source.matmul(weight) + bias
+        self.target_code = target_code[:n].contiguous()
+        self.csi = csi[:n].contiguous()
+        self.indices = torch.arange(n, dtype=torch.long)
 
     def __len__(self):
         return self.code.size(0)
@@ -256,6 +287,124 @@ def load_code_pair(source_path, target_path, max_samples=0):
         source = source[:max_samples].contiguous()
         target = target[:max_samples].contiguous()
     return source, target
+
+
+def load_alignment_code_pair(source_path, target_path, source_extra_paths=None,
+                             target_extra_paths=None, max_samples=0):
+    source, target = load_code_pair(source_path, target_path, max_samples=max_samples)
+    source_parts = [source]
+    target_parts = [target]
+    source_extra_paths = source_extra_paths or []
+    target_extra_paths = target_extra_paths or []
+    if len(source_extra_paths) != len(target_extra_paths):
+        raise ValueError(
+            "source_align_code and target_align_code must have the same count")
+    for source_extra, target_extra in zip(source_extra_paths, target_extra_paths):
+        source_extra, target_extra = load_code_pair(
+            source_extra,
+            target_extra,
+            max_samples=max_samples)
+        source_parts.append(source_extra)
+        target_parts.append(target_extra)
+    return (
+        torch.cat(source_parts, dim=0).contiguous(),
+        torch.cat(target_parts, dim=0).contiguous())
+
+
+def exp_dir_from_code_path(code_path):
+    code_path = Path(code_path)
+    if code_path.name != "train_code.pt":
+        raise ValueError(f"Cannot infer exp dir from code path: {code_path}")
+    return code_path.parent.parent
+
+
+def exp_dir_from_checkpoint_path(checkpoint_path):
+    checkpoint_path = Path(checkpoint_path)
+    if checkpoint_path.parent.name != "checkpoints":
+        raise ValueError(
+            f"Cannot infer exp dir from checkpoint path: {checkpoint_path}")
+    return checkpoint_path.parent.parent
+
+
+def load_full_model_from_exp(exp_dir, checkpoint_path, device):
+    cfg = json.loads((Path(exp_dir) / "args.json").read_text())
+    main_models = load_main_models_package()
+    model = main_models.universal_csi(
+        encoder_name=cfg.get("encoder", "transnet"),
+        decoder_name=cfg.get("decoder", "transnet"),
+        reduction=cfg.get("cr", 4),
+        d_model=cfg.get("d_model", 64),
+        channel=cfg.get("channel", 2),
+        nt=cfg.get("nt", 32),
+        nc=cfg.get("nc", 32),
+        dim_feedforward=cfg.get("dim_feedforward", 2048),
+        hidden=cfg.get("hidden", 16),
+        num_blocks=cfg.get("num_blocks", 2))
+    state_dict = clean_state_dict(checkpoint_path)
+    missing, unexpected = model.load_state_dict(state_dict, strict=False)
+    unexpected = [
+        key for key in unexpected
+        if not (key.endswith("total_ops") or key.endswith("total_params"))
+    ]
+    if missing or unexpected:
+        raise ValueError(
+            f"full checkpoint mismatch: missing={missing}, "
+            f"unexpected={unexpected}")
+    model.to(device).eval()
+    return model, cfg
+
+
+def load_csi_tensor(path, channel, nt, nc, max_samples=0):
+    csi = torch.load(path, weights_only=True, map_location="cpu").float()
+    if csi.ndim == 2:
+        csi = csi.view(-1, channel, nt, nc)
+    if csi.ndim != 4 or tuple(csi.shape[1:]) != (channel, nt, nc):
+        raise ValueError(
+            f"{path} should have shape (N,{channel},{nt},{nc}), got "
+            f"{tuple(csi.shape)}")
+    if max_samples and csi.size(0) > max_samples:
+        csi = csi[:max_samples].contiguous()
+    return csi.contiguous()
+
+
+@torch.no_grad()
+def encode_csi(model, csi, device, batch_size=1024, workers=0):
+    model.eval()
+    loader = DataLoader(
+        torch.utils.data.TensorDataset(csi),
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=workers,
+        pin_memory=device.type == "cuda")
+    codes = []
+    for (gt,) in loader:
+        gt = gt.to(device, non_blocking=True)
+        codes.append(model.encode(gt).detach().cpu())
+    return torch.cat(codes, dim=0).contiguous()
+
+
+def build_external_csi_dataset(path, source_model, target_model, weight, bias,
+                               decoder_cfg, device, batch_size, workers,
+                               max_samples=0):
+    csi = load_csi_tensor(
+        path,
+        decoder_cfg["channel"],
+        decoder_cfg["nt"],
+        decoder_cfg["nc"],
+        max_samples=max_samples)
+    source_code = encode_csi(
+        source_model,
+        csi,
+        device,
+        batch_size=batch_size,
+        workers=workers)
+    target_code = encode_csi(
+        target_model,
+        csi,
+        device,
+        batch_size=batch_size,
+        workers=workers)
+    return AlignedTensorDataset(source_code, target_code, csi, weight, bias)
 
 
 def nmse_db_from_sums(error_sum, power_sum):
@@ -431,27 +580,49 @@ def load_lora_state(model, path, device):
 def build_code_adapter(args, dim, device):
     if args.code_adapter == "none":
         return None
-    if args.code_adapter != "gated_lr_mlp":
-        raise ValueError(f"Unknown code_adapter: {args.code_adapter}")
-    if args.code_lowrank_rank <= 0 and args.code_mlp_hidden <= 0:
-        raise ValueError(
-            "gated_lr_mlp needs code_lowrank_rank>0 or code_mlp_hidden>0")
-    return GatedCodeResidualAdapter(
-        dim=dim,
-        lowrank_rank=args.code_lowrank_rank,
-        mlp_hidden=args.code_mlp_hidden,
-        gate_lr_init=args.code_gate_lr,
-        gate_mlp_init=args.code_gate_mlp,
-        dropout=args.code_adapter_dropout).to(device)
+    if args.code_adapter == "gated_lr_mlp":
+        if args.code_lowrank_rank <= 0 and args.code_mlp_hidden <= 0:
+            raise ValueError(
+                "gated_lr_mlp needs code_lowrank_rank>0 or code_mlp_hidden>0")
+        return GatedCodeResidualAdapter(
+            dim=dim,
+            lowrank_rank=args.code_lowrank_rank,
+            mlp_hidden=args.code_mlp_hidden,
+            gate_lr_init=args.code_gate_lr,
+            gate_mlp_init=args.code_gate_mlp,
+            dropout=args.code_adapter_dropout).to(device)
+    if args.code_adapter == "affine_res_mlp":
+        from staged_mlp_lora.train_affine_mlp_mapper import AffineResidualMLPMapper  # noqa: E402
+        weight = torch.eye(dim, device=device)
+        bias = torch.zeros(dim, device=device)
+        return AffineResidualMLPMapper(
+            weight=weight,
+            bias=bias,
+            hidden_dim=args.code_hidden_dim,
+            num_blocks=args.code_num_blocks,
+            dropout=args.code_adapter_dropout,
+            residual_scale=args.code_residual_scale,
+            use_final_norm=args.code_use_final_norm).to(device)
+    raise ValueError(f"Unknown code_adapter: {args.code_adapter}")
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--source_code", required=True)
     parser.add_argument("--target_code", required=True)
+    parser.add_argument("--source_align_code", action="append", default=[],
+                        help="extra source code file for fitting alignment; "
+                             "can be passed multiple times")
+    parser.add_argument("--target_align_code", action="append", default=[],
+                        help="extra target code file for fitting alignment; "
+                             "can be passed multiple times")
     parser.add_argument("--csi_path", required=True)
+    parser.add_argument("--val_csi_path", default=None)
+    parser.add_argument("--test_csi_path", default=None)
     parser.add_argument("--decoder_checkpoint", required=True)
     parser.add_argument("--decoder_args_json", default=None)
+    parser.add_argument("--source_checkpoint", default=None)
+    parser.add_argument("--source_args_json", default=None)
     parser.add_argument("--exp_dir", required=True)
     parser.add_argument("--source_name", default="source")
     parser.add_argument("--align_mode", default="affine",
@@ -467,12 +638,20 @@ def main():
     parser.add_argument("--ffn_lora_alpha", type=float, default=None)
     parser.add_argument("--lora_dropout", type=float, default=0.0)
     parser.add_argument("--code_adapter", default="none",
-                        choices=["none", "gated_lr_mlp"])
+                        choices=["none", "gated_lr_mlp", "affine_res_mlp"])
     parser.add_argument("--code_lowrank_rank", type=int, default=0)
     parser.add_argument("--code_mlp_hidden", type=int, default=0)
     parser.add_argument("--code_gate_lr", type=float, default=0.1)
     parser.add_argument("--code_gate_mlp", type=float, default=0.1)
     parser.add_argument("--code_adapter_dropout", type=float, default=0.0)
+    parser.add_argument("--code_hidden_dim", type=int, default=1024,
+                        help="Hidden dim for AffineResMLP residual blocks")
+    parser.add_argument("--code_num_blocks", type=int, default=4,
+                        help="Number of residual blocks in AffineResMLP")
+    parser.add_argument("--code_residual_scale", type=float, default=1.0,
+                        help="Residual scale for AffineResMLP blocks")
+    parser.add_argument("--code_use_final_norm", action="store_true",
+                        help="Add LayerNorm after AffineResMLP blocks")
     parser.add_argument("--epochs", type=int, default=400)
     parser.add_argument("--batch_size", type=int, default=1024)
     parser.add_argument("--workers", type=int, default=0)
@@ -485,6 +664,7 @@ def main():
     parser.add_argument("--max_samples", type=int, default=0)
     parser.add_argument("--eval_decoder_every", type=int, default=20)
     parser.add_argument("--eval_decoder_max_samples", type=int, default=0)
+    parser.add_argument("--eval_external_max_samples", type=int, default=0)
     parser.add_argument("--lambda_code", type=float, default=0.0)
     parser.add_argument("--lambda_delta", type=float, default=0.0)
     parser.add_argument("--lambda_recT", type=float, default=0.0)
@@ -532,9 +712,11 @@ def main():
         fc_alpha=args.fc_lora_alpha,
         ffn_alpha=args.ffn_lora_alpha)
     mark_only_lora_trainable(base_decoder)
-    source_fit, target_fit = load_code_pair(
+    source_fit, target_fit = load_alignment_code_pair(
         args.source_code,
         args.target_code,
+        source_extra_paths=args.source_align_code,
+        target_extra_paths=args.target_align_code,
         max_samples=args.max_samples)
     weight, bias = fit_alignment(
         args.align_mode,
@@ -553,7 +735,8 @@ def main():
         split="train",
         val_ratio=args.val_ratio,
         max_samples=args.max_samples)
-    use_val = args.val_ratio > 0
+    use_external_val = args.val_csi_path is not None
+    use_val = args.val_ratio > 0 and not use_external_val
     val_set = None
     if use_val:
         val_set = AlignedCodeCsiDataset(
@@ -580,6 +763,39 @@ def main():
         split="all",
         val_ratio=args.val_ratio,
         max_samples=args.max_samples)
+    external_val_set = None
+    external_test_set = None
+    if use_external_val:
+        source_exp_dir = (
+            Path(args.source_args_json).parent
+            if args.source_args_json else exp_dir_from_code_path(args.source_code))
+        source_checkpoint = (
+            args.source_checkpoint
+            if args.source_checkpoint else str(source_exp_dir / "checkpoints" / "best_nmse.pth"))
+        target_exp_dir = exp_dir_from_checkpoint_path(args.decoder_checkpoint)
+        source_model, _ = load_full_model_from_exp(
+            source_exp_dir,
+            source_checkpoint,
+            device)
+        target_model, _ = load_full_model_from_exp(
+            target_exp_dir,
+            args.decoder_checkpoint,
+            device)
+        if use_external_val:
+            external_val_set = build_external_csi_dataset(
+                args.val_csi_path,
+                source_model,
+                target_model,
+                weight,
+                bias,
+                decoder_cfg,
+                device,
+                batch_size=args.batch_size,
+                workers=args.workers,
+                max_samples=args.eval_external_max_samples)
+        del source_model
+        del target_model
+        torch.cuda.empty_cache()
     train_loader = DataLoader(
         train_set,
         batch_size=args.batch_size,
@@ -590,6 +806,22 @@ def main():
     if use_val:
         val_loader = DataLoader(
             val_set,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=args.workers,
+            pin_memory=device.type == "cuda")
+    external_val_loader = None
+    if external_val_set is not None:
+        external_val_loader = DataLoader(
+            external_val_set,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=args.workers,
+            pin_memory=device.type == "cuda")
+    external_test_loader = None
+    if external_test_set is not None:
+        external_test_loader = DataLoader(
+            external_test_set,
             batch_size=args.batch_size,
             shuffle=False,
             num_workers=args.workers,
@@ -626,7 +858,11 @@ def main():
     logger.info("=> Device: %s", device)
     logger.info("=> Source code: %s", args.source_code)
     logger.info("=> Target code: %s", args.target_code)
+    logger.info("=> Source align extra code: %s", args.source_align_code)
+    logger.info("=> Target align extra code: %s", args.target_align_code)
     logger.info("=> CSI path: %s", args.csi_path)
+    logger.info("=> Val CSI path: %s", args.val_csi_path)
+    logger.info("=> Test CSI path: %s", args.test_csi_path)
     logger.info("=> Decoder checkpoint: %s", args.decoder_checkpoint)
     logger.info(
         "=> Alignment: mode=%s ridge=%s weight=%s bias=%s buffers=%d",
@@ -649,22 +885,29 @@ def main():
         ",".join(injected))
     logger.info(
         "=> Code adapter: type=%s lowrank_rank=%d mlp_hidden=%d "
-        "gate_lr=%s gate_mlp=%s dropout=%s",
+        "gate_lr=%s gate_mlp=%s dropout=%s"
+        " hidden_dim=%d num_blocks=%d residual_scale=%s use_final_norm=%s",
         args.code_adapter,
         args.code_lowrank_rank,
         args.code_mlp_hidden,
         args.code_gate_lr,
         args.code_gate_mlp,
-        args.code_adapter_dropout)
+        args.code_adapter_dropout,
+        args.code_hidden_dim,
+        args.code_num_blocks,
+        args.code_residual_scale,
+        args.code_use_final_norm)
     logger.info(
         "=> Parameters: trainable=%s lora=%s",
         f"{count_trainable_parameters(model):,}",
         f"{count_lora_parameters(base_decoder):,}")
     log_parameter_table(model, logger)
     logger.info(
-        "=> Dataset sizes: train=%d val=%d all=%d",
+        "=> Dataset sizes: train=%d val=%d external_val=%d external_test=%d all=%d",
         len(train_set),
         len(val_set) if use_val else 0,
+        len(external_val_set) if external_val_set is not None else 0,
+        len(external_test_set) if external_test_set is not None else 0,
         len(all_set))
     logger.info(
         "=> DataLoader: batch_size=%d workers=%d pin_memory=%s",
@@ -687,7 +930,9 @@ def main():
         args.lambda_delta,
         args.lambda_recT,
         args.lambda_fc)
-    if not use_val:
+    if use_external_val:
+        logger.info("=> Select best checkpoint by external validation CSI")
+    elif not use_val:
         logger.info("val_ratio<=0: select best checkpoint by train loss")
     if args.eval_decoder_every:
         logger.info(
@@ -710,7 +955,18 @@ def main():
             lambda_recT=args.lambda_recT,
             lambda_fc=args.lambda_fc,
             teacher_decoder=teacher_decoder)
-        if use_val:
+        if external_val_loader is not None:
+            eval_prefix = "val_external"
+            eval_metrics = run_epoch(
+                model,
+                external_val_loader,
+                device,
+                lambda_code=args.lambda_code,
+                lambda_delta=args.lambda_delta,
+                lambda_recT=args.lambda_recT,
+                lambda_fc=args.lambda_fc,
+                teacher_decoder=teacher_decoder)
+        elif use_val:
             eval_prefix = "val"
             eval_metrics = run_epoch(
                 model,
@@ -736,14 +992,19 @@ def main():
 
         decoder_metrics = None
         if args.eval_decoder_every and epoch % args.eval_decoder_every == 0:
+            decoder_eval_name = "true_decoder_eval"
+            decoder_eval_loader_cur = decoder_eval_loader
+            if external_val_loader is not None:
+                decoder_eval_name = "val_external_decoder_eval"
+                decoder_eval_loader_cur = external_val_loader
             decoder_metrics = evaluate_decoder(
                 model,
-                decoder_eval_loader,
+                decoder_eval_loader_cur,
                 device)
-            record["true_decoder_eval"] = decoder_metrics
-            log_metrics(writer, "true_decoder_eval", decoder_metrics, epoch)
+            record[decoder_eval_name] = decoder_metrics
+            log_metrics(writer, decoder_eval_name, decoder_metrics, epoch)
             logger.info(
-                f"Epoch [{epoch}/{args.epochs}] true_decoder_eval "
+                f"Epoch [{epoch}/{args.epochs}] {decoder_eval_name} "
                 f"n={decoder_metrics['n']} "
                 f"decoder_mse={decoder_metrics['decoder_mse']:.6e} "
                 f"decoder_nmse={decoder_metrics['decoder_nmse']:.3f}dB")
@@ -775,7 +1036,10 @@ def main():
                     "metric": nmse_metric,
                     "decoder_mse": decoder_metrics["decoder_mse"],
                     "epoch": epoch,
-                    "selection": "true_decoder_nmse",
+                    "selection": (
+                        "val_external_decoder_nmse"
+                        if external_val_loader is not None
+                        else "true_decoder_nmse"),
                 }
                 save_lora_state(
                     model,
@@ -799,6 +1063,43 @@ def main():
     (exp_dir / "history.json").write_text(
         json.dumps(history, indent=2),
         encoding="utf-8")
+
+    if args.test_csi_path:
+        source_exp_dir = (
+            Path(args.source_args_json).parent
+            if args.source_args_json else exp_dir_from_code_path(args.source_code))
+        source_checkpoint = (
+            args.source_checkpoint
+            if args.source_checkpoint else str(source_exp_dir / "checkpoints" / "best_nmse.pth"))
+        target_exp_dir = exp_dir_from_checkpoint_path(args.decoder_checkpoint)
+        source_model, _ = load_full_model_from_exp(
+            source_exp_dir,
+            source_checkpoint,
+            device)
+        target_model, _ = load_full_model_from_exp(
+            target_exp_dir,
+            args.decoder_checkpoint,
+            device)
+        external_test_set = build_external_csi_dataset(
+            args.test_csi_path,
+            source_model,
+            target_model,
+            weight,
+            bias,
+            decoder_cfg,
+            device,
+            batch_size=args.batch_size,
+            workers=args.workers,
+            max_samples=args.eval_external_max_samples)
+        external_test_loader = DataLoader(
+            external_test_set,
+            batch_size=args.batch_size,
+            shuffle=False,
+            num_workers=args.workers,
+            pin_memory=device.type == "cuda")
+        del source_model
+        del target_model
+        torch.cuda.empty_cache()
 
     metrics = {"best_loss": best_loss, "best_nmse": best_nmse}
     for tag, path in [
@@ -824,11 +1125,33 @@ def main():
         final_model = DecoderLoraSystem(base_decoder, final_code_adapter).to(device)
         load_lora_state(final_model, path, device)
         final_metrics = evaluate_decoder(final_model, all_loader, device)
-        metrics[tag]["all"] = final_metrics
+        metrics[tag]["train_all"] = final_metrics
+        if external_val_loader is not None:
+            metrics[tag]["val_external"] = evaluate_decoder(
+                final_model,
+                external_val_loader,
+                device)
+        if external_test_loader is not None:
+            metrics[tag]["test_external"] = evaluate_decoder(
+                final_model,
+                external_test_loader,
+                device)
         logger.info(
-            f"all_{tag}_decoder_mse={final_metrics['decoder_mse']:.6e} "
-            f"all_{tag}_decoder_nmse={final_metrics['decoder_nmse']:.3f}dB "
+            f"train_all_{tag}_decoder_mse={final_metrics['decoder_mse']:.6e} "
+            f"train_all_{tag}_decoder_nmse={final_metrics['decoder_nmse']:.3f}dB "
             f"epoch={metrics[tag]['epoch']}")
+        if "val_external" in metrics[tag]:
+            val_metrics = metrics[tag]["val_external"]
+            logger.info(
+                f"val_external_{tag}_decoder_mse={val_metrics['decoder_mse']:.6e} "
+                f"val_external_{tag}_decoder_nmse={val_metrics['decoder_nmse']:.3f}dB "
+                f"epoch={metrics[tag]['epoch']}")
+        if "test_external" in metrics[tag]:
+            test_metrics = metrics[tag]["test_external"]
+            logger.info(
+                f"test_external_{tag}_decoder_mse={test_metrics['decoder_mse']:.6e} "
+                f"test_external_{tag}_decoder_nmse={test_metrics['decoder_nmse']:.3f}dB "
+                f"epoch={metrics[tag]['epoch']}")
     (exp_dir / "metrics.json").write_text(
         json.dumps(metrics, indent=2),
         encoding="utf-8")

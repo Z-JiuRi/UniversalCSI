@@ -20,7 +20,8 @@ if str(ROOT) not in sys.path:
 
 from train_decoder_lora import (DecoderLoraSystem, build_code_adapter,  # noqa: E402
                                 fit_alignment, inject_decoder_lora,
-                                load_code_pair, load_decoder_from_checkpoint,
+                                load_alignment_code_pair,
+                                load_decoder_from_checkpoint,
                                 load_lora_state)
 
 
@@ -143,6 +144,8 @@ def build_decoder_lora_system(exp_dir, checkpoint_name, device):
             "code_gate_mlp": 0.1,
             "code_adapter_dropout": 0.0,
             "lambda_delta": 0.0,
+            "source_align_code": [],
+            "target_align_code": [],
     }.items():
         if not hasattr(args, key):
             setattr(args, key, value)
@@ -204,9 +207,11 @@ def evaluate_exp(exp_dir, data_path, checkpoint_name, device, batch_size,
         decoder_cfg["nc"],
         max_samples=max_samples)
 
-    source_fit, target_fit = load_code_pair(
+    source_fit, target_fit = load_alignment_code_pair(
         args.source_code,
         args.target_code,
+        source_extra_paths=args.source_align_code,
+        target_extra_paths=args.target_align_code,
         max_samples=args.max_samples)
     weight, bias = fit_alignment(
         args.align_mode,
