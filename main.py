@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import time
 
 import torch
 import torch.nn as nn
@@ -209,6 +210,7 @@ def main():
                             name=f"w{i}_s{cfg['seed']}_{cfg['encoder']}")
             p.start()
             processes.append(p)
+            time.sleep(2)
         for p in processes:
             p.join()
         logger.info("=> All workers finished.")

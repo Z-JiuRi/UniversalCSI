@@ -61,6 +61,56 @@ def _load_encoder_state_dict(checkpoint_path):
     return encoder_state
 
 
+def _parse_freeze_decoder_keywords(freeze_decoder):
+    keywords = [
+        item.strip()
+        for item in freeze_decoder.split(",")
+        if item.strip()
+    ]
+    if not keywords:
+        raise ValueError("--freeze_decoder requires at least one keyword")
+    return keywords
+
+
+def _decoder_keyword_matches(name, keyword):
+    if keyword == "ffn":
+        return ".linear1." in name or ".linear2." in name
+    return keyword in name
+
+
+def _freeze_decoder_except_keywords(model, freeze_decoder):
+    keywords = _parse_freeze_decoder_keywords(freeze_decoder)
+    matched_names = []
+    frozen_numel = 0
+    trainable_numel = 0
+
+    for name, param in model.decoder.named_parameters():
+        keep_trainable = any(
+            _decoder_keyword_matches(name, keyword)
+            for keyword in keywords
+        )
+        param.requires_grad = keep_trainable
+        if keep_trainable:
+            matched_names.append(name)
+            trainable_numel += param.numel()
+        else:
+            frozen_numel += param.numel()
+
+    if not matched_names:
+        raise ValueError(
+            "--freeze_decoder did not match any decoder parameters: "
+            f"{keywords}")
+
+    logger.info(
+        "=> Decoder frozen except keywords=%s: trainable_params=%d "
+        "frozen_params=%d matched_tensors=%d",
+        keywords,
+        trainable_numel,
+        frozen_numel,
+        len(matched_names))
+    logger.info("=> Trainable decoder tensors: %s", ", ".join(matched_names))
+
+
 def init_device(seed=None, cpu=None, gpu=None, affinity=None):
     # set the CPU affinity
     if affinity is not None:
@@ -112,9 +162,12 @@ def init_model(args):
     if args.pretrained_decoder is not None:
         decoder_state = _load_decoder_state_dict(args.pretrained_decoder)
         model.decoder.load_state_dict(decoder_state)
-        for param in model.decoder.parameters():
-            param.requires_grad = False
-        logger.info("pretrained decoder loaded and frozen from {}".format(args.pretrained_decoder))
+        logger.info("pretrained decoder loaded from {}".format(args.pretrained_decoder))
+
+    if args.freeze_decoder is not None:
+        if args.pretrained_decoder is None:
+            raise ValueError("--freeze_decoder requires --pretrained_decoder")
+        _freeze_decoder_except_keywords(model, args.freeze_decoder)
 
     if args.pretrained_encoder is not None:
         encoder_state = _load_encoder_state_dict(args.pretrained_encoder)
@@ -136,6 +189,7 @@ def init_model(args):
     model_name = "UniversalCSI"
     logger.info(f'=> Model Name: {model_name} [pretrained: {args.pretrained}; '
                 f'pretrained_decoder: {args.pretrained_decoder}; '
+                f'freeze_decoder: {args.freeze_decoder}; '
                 f'pretrained_encoder: {args.pretrained_encoder}; '
                 f'adapter: {args.adapter}; '
                 f'adapter_hidden_dim: {args.adapter_hidden_dim}]')

@@ -25,7 +25,11 @@ parser.add_argument('-e', '--evaluate', dest='evaluate', action='store_true',
 parser.add_argument('--pretrained', type=str, default=None,
                     help='using locally pre-trained model. The path of pre-trained model should be given')
 parser.add_argument('--pretrained_decoder', type=str, default=None,
-                    help='path to a checkpoint whose decoder weights will be loaded and frozen')
+                    help='path to a checkpoint whose decoder weights will be loaded')
+parser.add_argument('--freeze_decoder', type=str, default=None,
+                    help='comma-separated decoder parameter keywords to keep trainable '
+                         'after loading --pretrained_decoder; all other decoder '
+                         'parameters are frozen. Example: fc_decoder,ffn')
 parser.add_argument('--pretrained_encoder', type=str, default=None,
                     help='path to a checkpoint whose encoder weights will be loaded and frozen')
 parser.add_argument('--resume', type=str, metavar='PATH', default=None,
@@ -152,7 +156,7 @@ if args.seed_list is not None:
     for s, e, d, g in zip(_seeds, _encoders, _decoders, _gpus):
         args.experiments.append({
             "seed": s, "encoder": e, "decoder": d, "gpu": g,
-            "exp_name": f"COST2100/in/seed{s}/{e}_{d}"
+            "exp_name": f"COST2100/in/base/seed{s}/{e}_{d}"
         })
 else:
     args.experiments = None
