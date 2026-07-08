@@ -53,19 +53,6 @@ parser.add_argument('--adapter_rank', default=32, type=int,
                     help='low-rank adapter rank for schemes B/C/D')
 parser.add_argument('--adapter_gate_init', default=0.1, type=float,
                     help='initial learnable gate value for scheme D')
-parser.add_argument('--canonical_head', type=str, default='none',
-                    choices=['none', 'fixed_q_lowrank', 'codebook'],
-                    help='canonical encoder head for transnet encoder')
-parser.add_argument('--canonical_anchor_seed', type=int, default=0,
-                    help='seed for fixed Q/codebook anchors, independent of training seed')
-parser.add_argument('--canonical_lowrank_rank', type=int, default=0,
-                    help='rank for fixed_q_lowrank residual branch')
-parser.add_argument('--canonical_lowrank_scale', type=float, default=0.0,
-                    help='initial scale for fixed_q_lowrank residual branch')
-parser.add_argument('--canonical_codebook_size', type=int, default=1024,
-                    help='number of fixed codebook entries')
-parser.add_argument('--canonical_codebook_temperature', type=float, default=1.0,
-                    help='initial softmax temperature for fixed codebook head')
 parser.add_argument('--gpu', default=None, type=int,
                     help='GPU id to use.')
 parser.add_argument('--cpu', action='store_true', default=False,
@@ -138,14 +125,6 @@ parser.add_argument('--lambda_teacher_whiten', type=float, default=0.0,
                     help='weight for whitened teacher code loss')
 parser.add_argument('--teacher_pca_dim', type=int, default=0,
                     help='number of teacher-code PCA dims; 0 means full code dim')
-parser.add_argument('--anchor_target', type=str, default='none',
-                    choices=['none', 'pca', 'dct'],
-                    help='raw CSI auxiliary target for encoder code')
-parser.add_argument('--lambda_anchor', type=float, default=0.0,
-                    help='weight for raw CSI auxiliary target loss')
-parser.add_argument('--anchor_loss', type=str, default='mse',
-                    choices=['mse', 'cosine'],
-                    help='distance for raw CSI auxiliary target')
 parser.add_argument('--lambda_code_mean', type=float, default=0.0,
                     help='weight for code mean regularization')
 parser.add_argument('--lambda_code_var', type=float, default=0.0,

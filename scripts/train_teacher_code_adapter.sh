@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 训练“teacher-code anchored adapter”。
+# 训练 teacher-code adapter。
 #
 # 目标场景：
 # - baseline encoder/decoder 训练阶段完全不加 aux_pca/canonical/code_reg 约束。
@@ -20,14 +20,6 @@
 #        + lambda_teacher_pca    * MSE(PCA(z_a), PCA(z_t))
 #        + lambda_teacher_whiten * MSE(Whiten(z_a), Whiten(z_t))
 #
-# 可选：
-# - 设置 lambda_pca > 0 时，会额外启用 adapter 侧 aux_pca anchor：
-#
-#     lambda_pca * MSE(LN(z_a), LN(PCA(x)))
-#
-#   这只是对照项。主线建议先用 teacher_code/fc/recT，因为 target decoder
-#   真正认识的是 z_t，不一定认识原始 CSI PCA 坐标。
-#
 # 默认用法：
 #   source_seed=2026 target_seed=42 gpu=1 bash scripts/train_teacher_code_adapter.sh
 #
@@ -36,7 +28,7 @@
 #     gpu=1 bash scripts/train_teacher_code_adapter.sh
 #
 # 只做 teacher-code 对齐，不加 PCA：
-#   lambda_code=1e-3 lambda_fc=1e-2 lambda_recT=0 lambda_pca=0 \
+#   lambda_code=1e-3 lambda_fc=1e-2 lambda_recT=0 \
 #     source_seed=2026 target_seed=42 gpu=1 bash scripts/train_teacher_code_adapter.sh
 #
 # 加 teacher-code PCA/whitening 对齐：
@@ -44,10 +36,6 @@
 #     source_seed=2026 target_seed=42 gpu=1 bash scripts/train_teacher_code_adapter.sh
 #
 #   lambda_teacher_whiten=1e-4 teacher_pca_dim=128 \
-#     source_seed=2026 target_seed=42 gpu=1 bash scripts/train_teacher_code_adapter.sh
-#
-# 加 adapter 侧 aux_pca 对照：
-#   lambda_code=1e-3 lambda_fc=1e-2 lambda_pca=1e-4 \
 #     source_seed=2026 target_seed=42 gpu=1 bash scripts/train_teacher_code_adapter.sh
 #
 # smoke run：
@@ -97,9 +85,6 @@ lambda_recT=${lambda_recT:-0.0}
 lambda_teacher_pca=${lambda_teacher_pca:-0.0}
 lambda_teacher_whiten=${lambda_teacher_whiten:-0.0}
 teacher_pca_dim=${teacher_pca_dim:-0}
-lambda_pca=${lambda_pca:-0.0}
-anchor_loss=${anchor_loss:-mse}
-
 source_exp=${source_exp:-${baseline_root}/seed${source_seed}/${source_encoder}_${source_decoder}}
 target_exp=${target_exp:-${baseline_root}/seed${target_seed}/${target_encoder}_${target_decoder}}
 
@@ -107,7 +92,7 @@ pretrained_encoder=${pretrained_encoder:-${source_exp}/checkpoints/best_nmse.pth
 pretrained_decoder=${pretrained_decoder:-${target_exp}/checkpoints/best_nmse.pth}
 teacher_code=${teacher_code:-${target_exp}/codewords/train_code.pt}
 
-exp_name=${exp_name:-COST2100/in/teacher_code_adapter/gated_lowrank_affine_mlp/src_seed${source_seed}_${source_encoder}_${source_decoder}_tgt_seed${target_seed}_${target_encoder}_${target_decoder}_code${lambda_code}_fc${lambda_fc}_recT${lambda_recT}_tPCA${lambda_teacher_pca}_tWhite${lambda_teacher_whiten}_tDim${teacher_pca_dim}_pca${lambda_pca}_lr${lr_init}_ep${epochs}}
+exp_name=${exp_name:-COST2100/in/teacher_code_adapter/gated_lowrank_affine_mlp/src_seed${source_seed}_${source_encoder}_${source_decoder}_tgt_seed${target_seed}_${target_encoder}_${target_decoder}_code${lambda_code}_fc${lambda_fc}_recT${lambda_recT}_tPCA${lambda_teacher_pca}_tWhite${lambda_teacher_whiten}_tDim${teacher_pca_dim}_lr${lr_init}_ep${epochs}}
 
 if [ ! -f "${pretrained_encoder}" ]; then
   echo "Missing pretrained_encoder: ${pretrained_encoder}" >&2
@@ -146,18 +131,12 @@ add_arg --lambda_teacher_pca "${lambda_teacher_pca}"
 add_arg --lambda_teacher_whiten "${lambda_teacher_whiten}"
 add_arg --teacher_pca_dim "${teacher_pca_dim}"
 
-if [ "${lambda_pca}" != "0" ] && [ "${lambda_pca}" != "0.0" ]; then
-  add_arg --anchor_target pca
-  add_arg --lambda_anchor "${lambda_pca}"
-  add_arg --anchor_loss "${anchor_loss}"
-fi
-
-echo "Training teacher-code anchored adapter:"
+echo "Training teacher-code adapter:"
 echo "  source encoder checkpoint: ${pretrained_encoder}"
 echo "  target decoder checkpoint: ${pretrained_decoder}"
 echo "  target teacher code: ${teacher_code}"
 echo "  adapter: gated_lowrank_affine_mlp rank=${adapter_rank} hidden=${adapter_hidden_dim} gate=${adapter_gate_init}"
-echo "  lambda_recon/code/fc/recT/teacher_pca/teacher_whiten/raw_pca: ${lambda_recon}/${lambda_code}/${lambda_fc}/${lambda_recT}/${lambda_teacher_pca}/${lambda_teacher_whiten}/${lambda_pca}"
+echo "  lambda_recon/code/fc/recT/teacher_pca/teacher_whiten: ${lambda_recon}/${lambda_code}/${lambda_fc}/${lambda_recT}/${lambda_teacher_pca}/${lambda_teacher_whiten}"
 echo "  teacher_pca_dim: ${teacher_pca_dim}"
 echo "  exp_name: ${exp_name}"
 

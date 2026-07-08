@@ -81,8 +81,6 @@ class UniversalCSIModel(nn.Module):
         self.code_adapter = code_adapter
         self.init_strategy = init_strategy
         self._reset_parameters(init_strategy)
-        if hasattr(self.encoder, "reset_canonical_head_parameters"):
-            self.encoder.reset_canonical_head_parameters()
         if self.code_adapter is not None:
             self.code_adapter.reset_parameters()
         if hasattr(self.decoder, "reset_refinement_output"):
@@ -146,15 +144,8 @@ class UniversalCSIModel(nn.Module):
 
 
 def build_encoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
-                  dim_feedforward=None, canonical_head=None,
-                  canonical_anchor_seed=0, canonical_lowrank_rank=0,
-                  canonical_lowrank_scale=0.0,
-                  canonical_codebook_size=1024,
-                  canonical_codebook_temperature=1.0):
+                  dim_feedforward=None):
     name = name.lower()
-    if canonical_head not in (None, "", "none") and name != "transnet":
-        raise ValueError("canonical_head is currently supported only for "
-                         "encoder=transnet")
     if name == "csinet":
         return CsiNetEncoder(reduction, channel, nt, nc)
     if name == "cnn":
@@ -167,13 +158,7 @@ def build_encoder(name, reduction, d_model=64, channel=2, nt=32, nc=32,
         return CLNetEncoder(reduction, channel, nt, nc)
     if name == "transnet":
         return TransNetEncoder(reduction, d_model, channel, nt, nc,
-                               dim_feedforward,
-                               canonical_head=canonical_head,
-                               canonical_anchor_seed=canonical_anchor_seed,
-                               canonical_lowrank_rank=canonical_lowrank_rank,
-                               canonical_lowrank_scale=canonical_lowrank_scale,
-                               canonical_codebook_size=canonical_codebook_size,
-                               canonical_codebook_temperature=canonical_codebook_temperature)
+                               dim_feedforward)
     if name == "resnet":
         return ResNetCsiEncoder(reduction, channel, nt, nc)
     if name == "dscnn":
@@ -213,19 +198,9 @@ def universal_csi(encoder_name="transnet", reduction=4, d_model=64,
                   channel=2, nt=32, nc=32, dim_feedforward=None,
                   decoder_name="transnet", hidden=16, num_blocks=2,
                   adapter=None, adapter_hidden_dim=None,
-                  adapter_rank=32, adapter_gate_init=0.1,
-                  canonical_head=None, canonical_anchor_seed=0,
-                  canonical_lowrank_rank=0, canonical_lowrank_scale=0.0,
-                  canonical_codebook_size=1024,
-                  canonical_codebook_temperature=1.0):
+                  adapter_rank=32, adapter_gate_init=0.1):
     encoder = build_encoder(encoder_name, reduction, d_model, channel, nt, nc,
-                            dim_feedforward,
-                            canonical_head=canonical_head,
-                            canonical_anchor_seed=canonical_anchor_seed,
-                            canonical_lowrank_rank=canonical_lowrank_rank,
-                            canonical_lowrank_scale=canonical_lowrank_scale,
-                            canonical_codebook_size=canonical_codebook_size,
-                            canonical_codebook_temperature=canonical_codebook_temperature)
+                            dim_feedforward)
     decoder = build_decoder(decoder_name, reduction, d_model, channel, nt, nc,
                             dim_feedforward, hidden=hidden,
                             num_blocks=num_blocks)

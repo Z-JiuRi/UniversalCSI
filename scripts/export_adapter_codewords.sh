@@ -13,11 +13,11 @@
 #   gpu=0 bash scripts/export_adapter_codewords.sh
 #
 # 指定根目录：
-#   root=exps/COST2100/in/encoder_canonical/adapter gpu=0 \
+#   root=exps/COST2100/in/teacher_code_adapter gpu=0 \
 #     bash scripts/export_adapter_codewords.sh
 #
 # 只导出某一个实验目录：
-#   exp_dir=exps/COST2100/in/encoder_canonical/adapter/aux_pca_1e-3/mlp/enc_seed2026_dec_seed42_recon1.0_code1e-3_lr2e-4 \
+#   exp_dir=exps/COST2100/in/teacher_code_adapter/gated_lowrank_affine_mlp/example \
 #     gpu=0 bash scripts/export_adapter_codewords.sh
 #
 # 使用 CPU：
@@ -31,7 +31,7 @@
 
 set -euo pipefail
 
-root=${root:-exps/COST2100/in/encoder_canonical/adapter}
+root=${root:-exps/COST2100/in/teacher_code_adapter}
 exp_dir=${exp_dir:-}
 gpu=${gpu:-0}
 cpu=${cpu:-0}
@@ -97,13 +97,6 @@ def build_model(args):
         adapter_hidden_dim=args.get("adapter_hidden_dim"),
         adapter_rank=args.get("adapter_rank", 32),
         adapter_gate_init=args.get("adapter_gate_init", 0.1),
-        canonical_head=args.get("canonical_head"),
-        canonical_anchor_seed=args.get("canonical_anchor_seed", 0),
-        canonical_lowrank_rank=args.get("canonical_lowrank_rank", 0),
-        canonical_lowrank_scale=args.get("canonical_lowrank_scale", 0.0),
-        canonical_codebook_size=args.get("canonical_codebook_size", 1024),
-        canonical_codebook_temperature=args.get(
-            "canonical_codebook_temperature", 1.0),
     )
 
 
@@ -113,7 +106,7 @@ def discover_experiments():
         paths = [Path(exp_dir) / "args.json"]
     else:
         root = Path(os.environ.get(
-            "root", "exps/COST2100/in/encoder_canonical/adapter"))
+            "root", "exps/COST2100/in/teacher_code_adapter"))
         paths = sorted(root.rglob("args.json"))
 
     experiments = []

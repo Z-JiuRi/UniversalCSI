@@ -102,13 +102,7 @@ def init_model(args):
                           adapter=args.adapter,
                           adapter_hidden_dim=args.adapter_hidden_dim,
                           adapter_rank=args.adapter_rank,
-                          adapter_gate_init=args.adapter_gate_init,
-                          canonical_head=args.canonical_head,
-                          canonical_anchor_seed=args.canonical_anchor_seed,
-                          canonical_lowrank_rank=args.canonical_lowrank_rank,
-                          canonical_lowrank_scale=args.canonical_lowrank_scale,
-                          canonical_codebook_size=args.canonical_codebook_size,
-                          canonical_codebook_temperature=args.canonical_codebook_temperature)
+                          adapter_gate_init=args.adapter_gate_init)
 
     if args.pretrained is not None:
         state_dict = _load_clean_state_dict(args.pretrained)
@@ -144,9 +138,7 @@ def init_model(args):
                 f'pretrained_decoder: {args.pretrained_decoder}; '
                 f'pretrained_encoder: {args.pretrained_encoder}; '
                 f'adapter: {args.adapter}; '
-                f'adapter_hidden_dim: {args.adapter_hidden_dim}; '
-                f'canonical_head: {args.canonical_head}; '
-                f'canonical_anchor_seed: {args.canonical_anchor_seed}]')
+                f'adapter_hidden_dim: {args.adapter_hidden_dim}]')
     logger.info(f'=> Model Config: compression ratio=1/{args.cr}; '
                 f'encoder={args.encoder}; '
                 f'decoder={args.decoder}; '

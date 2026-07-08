@@ -49,15 +49,10 @@ fc.bias:                                                        (code_dim,)
 import torch.nn as nn
 from torch.nn import TransformerEncoderLayer, TransformerEncoder
 
-from ..canonical_heads import build_canonical_head
-
 
 class TransNetEncoder(nn.Module):
     def __init__(self, reduction=4, d_model=64, channel=2, nt=32, nc=32,
-                 dim_feedforward=None, canonical_head=None,
-                 canonical_anchor_seed=0, canonical_lowrank_rank=0,
-                 canonical_lowrank_scale=0.0, canonical_codebook_size=1024,
-                 canonical_codebook_temperature=1.0):
+                 dim_feedforward=None):
         super().__init__()
         input_dim = channel * nt * nc
         assert input_dim % d_model == 0
@@ -67,22 +62,10 @@ class TransNetEncoder(nn.Module):
         encoder_layer = TransformerEncoderLayer(
             d_model, 2, dim_feedforward, dropout=0., batch_first=True)
         self.encoder = TransformerEncoder(encoder_layer, num_layers=2)
-        self.fc = build_canonical_head(
-            canonical_head,
-            input_dim,
-            code_dim,
-            anchor_seed=canonical_anchor_seed,
-            lowrank_rank=canonical_lowrank_rank,
-            lowrank_scale=canonical_lowrank_scale,
-            codebook_size=canonical_codebook_size,
-            codebook_temperature=canonical_codebook_temperature)
+        self.fc = nn.Linear(input_dim, code_dim)
 
     def forward(self, x):
         batch_size = x.size(0)
         memory = self.encoder(x.view(batch_size, self.feature_shape[0],
                                      self.feature_shape[1]))
         return self.fc(memory.flatten(1))
-
-    def reset_canonical_head_parameters(self):
-        if hasattr(self.fc, "reset_lowrank_residual"):
-            self.fc.reset_lowrank_residual()

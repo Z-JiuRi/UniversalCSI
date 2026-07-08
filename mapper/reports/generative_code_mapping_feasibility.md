@@ -1580,9 +1580,7 @@ residual mean、tail、decoder-sensitive directions 都被压住。
 - `mapper/reports/codeword_analysis/codeword_analysis.md`
 - `mapper/reports/mapper_distribution_analysis/`
 - `mapper/reports/mapper_advanced_analysis/`
-- `docs/encoder_canonical_full_experiment_report.md`
 - `docs/set_conditioned_adapter_weight_generation.md`
-- `docs/adapter_cross_seed_diagnostics.md`
 - `mapper/reports/generative_code_mapping_feasibility/local_summary.json`
 - `mapper/analyze_csi_code_deep_dive.py`
 - `mapper/reports/generative_code_mapping_feasibility/csi_code_deep_dive/summary.json`

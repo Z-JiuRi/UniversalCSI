@@ -1,9 +1,7 @@
 import time
 import os
 import torch
-import torch.nn.functional as F
 from torch.utils.tensorboard.writer import SummaryWriter
-from models.canonical_heads import AnchorTargetBuilder
 from utils import logger
 from utils.statics import AverageMeter, evaluator, nmse_from_sums
 
@@ -20,8 +18,7 @@ class Trainer:
                  lambda_fc=0.0, lambda_recT=0.0,
                  lambda_teacher_pca=0.0, lambda_teacher_whiten=0.0,
                  teacher_pca_dim=0,
-                 anchor_target='none', lambda_anchor=0.0, anchor_loss='mse',
-                 train_path=None, channel=2, nt=32, nc=32, cr=4,
+                 channel=2, nt=32, nc=32, cr=4,
                  lambda_code_mean=0.0, lambda_code_var=0.0,
                  lambda_code_cov=0.0, lambda_code_l1=0.0,
                  code_var_tau=256.0):
@@ -82,21 +79,6 @@ class Trainer:
             if lambda_teacher_pca or lambda_teacher_whiten:
                 self._fit_teacher_code_pca()
             self._move_teacher_codes_to_device()
-        self.lambda_anchor = lambda_anchor
-        self.anchor_loss = anchor_loss
-        self.anchor_target = None
-        if anchor_target not in (None, '', 'none') and lambda_anchor > 0:
-            code_dim = channel * nt * nc // cr
-            self.anchor_target = AnchorTargetBuilder(
-                target_type=anchor_target,
-                code_dim=code_dim,
-                channel=channel,
-                nt=nt,
-                nc=nc,
-                train_path=train_path,
-                device=device)
-            logger.info(f'=> Enabled {anchor_target} anchor target '
-                        f'(lambda={lambda_anchor}, loss={anchor_loss})')
 
         self.lambda_code_mean = lambda_code_mean
         self.lambda_code_var = lambda_code_var
@@ -181,7 +163,6 @@ class Trainer:
         iter_recT_loss = AverageMeter('Teacher recon loss')
         iter_teacher_pca_loss = AverageMeter('Teacher PCA loss')
         iter_teacher_whiten_loss = AverageMeter('Teacher whiten loss')
-        iter_anchor_loss = AverageMeter('Anchor loss')
         iter_code_reg_loss = AverageMeter('Code reg loss')
         iter_recon_loss = AverageMeter('Recon loss')
         iter_time = AverageMeter('Iter time')
@@ -194,7 +175,6 @@ class Trainer:
             needs_code_pred = (
                 self.model.training and (
                     self.teacher_codes is not None
-                    or self.anchor_target is not None
                     or self._has_code_regularization()
                 )
             )
@@ -252,21 +232,6 @@ class Trainer:
                         total_loss
                         + self.lambda_teacher_whiten * teacher_whiten_loss)
 
-            anchor_loss = torch.tensor(0., device=self.device)
-            if self.model.training and self.anchor_target is not None:
-                anchor_code = self.anchor_target(sparse_gt)
-                if self.anchor_loss == 'cosine':
-                    anchor_loss = (
-                        1.0 - F.cosine_similarity(
-                            F.layer_norm(code_pred, code_pred.shape[1:]),
-                            F.layer_norm(anchor_code, anchor_code.shape[1:]),
-                            dim=1)).mean()
-                else:
-                    anchor_loss = self.criterion(
-                        F.layer_norm(code_pred, code_pred.shape[1:]),
-                        F.layer_norm(anchor_code, anchor_code.shape[1:]))
-                total_loss = total_loss + self.lambda_anchor * anchor_loss
-
             code_reg_loss = torch.tensor(0., device=self.device)
             if self.model.training and self._has_code_regularization():
                 code_reg_loss = self._code_regularization_loss(code_pred)
@@ -290,8 +255,6 @@ class Trainer:
                     iter_teacher_pca_loss.update(teacher_pca_loss)
                 if self.lambda_teacher_whiten:
                     iter_teacher_whiten_loss.update(teacher_whiten_loss)
-            if self.model.training and self.anchor_target is not None:
-                iter_anchor_loss.update(anchor_loss)
             if self.model.training and self._has_code_regularization():
                 iter_code_reg_loss.update(code_reg_loss)
             iter_time.update(time.time() - time_tmp)
@@ -315,8 +278,6 @@ class Trainer:
                     if self.lambda_teacher_whiten:
                         parts.append(f'teacher_white: '
                                      f'{iter_teacher_whiten_loss.avg:.4e}')
-                if self.model.training and self.anchor_target is not None:
-                    parts.append(f'anchor: {iter_anchor_loss.avg:.4e}')
                 if self.model.training and self._has_code_regularization():
                     parts.append(f'code_reg: {iter_code_reg_loss.avg:.4e}')
                 parts.append(f'total: {iter_loss.avg:.4e}'
@@ -341,8 +302,6 @@ class Trainer:
             if self.lambda_teacher_whiten:
                 parts.append(f'Teacher whiten loss: '
                              f'{iter_teacher_whiten_loss.avg:.4e}')
-        if self.model.training and self.anchor_target is not None:
-            parts.append(f'Anchor loss: {iter_anchor_loss.avg:.4e}')
         if self.model.training and self._has_code_regularization():
             parts.append(f'Code reg loss: {iter_code_reg_loss.avg:.4e}')
         parts.append(f'Total: {iter_loss.avg:.4e}')
@@ -361,8 +320,6 @@ class Trainer:
             if self.lambda_teacher_whiten:
                 metrics["teacher_whiten_loss"] = self._as_float(
                     iter_teacher_whiten_loss.avg)
-        if self.model.training and self.anchor_target is not None:
-            metrics["anchor_loss"] = self._as_float(iter_anchor_loss.avg)
         if self.model.training and self._has_code_regularization():
             metrics["code_reg_loss"] = self._as_float(iter_code_reg_loss.avg)
         adapter_metrics = self._get_adapter_metrics()
