@@ -1,0 +1,470 @@
+[
+  {
+    "encoder": "attention_cnn",
+    "exp_dir": "exps/COST2100/in/seed0/attention_cnn_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "cbam_cnn",
+    "exp_dir": "exps/COST2100/in/seed0/cbam_cnn_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "clnet",
+    "exp_dir": "exps/COST2100/in/seed0/clnet_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "cnn",
+    "exp_dir": "exps/COST2100/in/seed0/cnn_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "convnext",
+    "exp_dir": "exps/COST2100/in/seed0/convnext_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "crnet",
+    "exp_dir": "exps/COST2100/in/seed0/crnet_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "csinet",
+    "exp_dir": "exps/COST2100/in/seed0/csinet_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "dscnn",
+    "exp_dir": "exps/COST2100/in/seed0/dscnn_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_ae",
+    "exp_dir": "exps/COST2100/in/seed0/mlp_ae_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_mixer",
+    "exp_dir": "exps/COST2100/in/seed0/mlp_mixer_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "resnet",
+    "exp_dir": "exps/COST2100/in/seed0/resnet_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "sparse_resnet",
+    "exp_dir": "exps/COST2100/in/seed0/sparse_resnet_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "swin",
+    "exp_dir": "exps/COST2100/in/seed0/swin_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "transnet",
+    "exp_dir": "exps/COST2100/in/seed0/transnet_transnet",
+    "seed": 0,
+    "split": "train"
+  },
+  {
+    "encoder": "transnet",
+    "exp_dir": "exps/COST2100/in/seed10796/transnet_transnet",
+    "seed": 10796,
+    "split": "train"
+  },
+  {
+    "encoder": "clnet",
+    "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+    "seed": 2026,
+    "split": "train"
+  },
+  {
+    "encoder": "crnet",
+    "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+    "seed": 2026,
+    "split": "train"
+  },
+  {
+    "encoder": "csinet",
+    "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+    "seed": 2026,
+    "split": "train"
+  },
+  {
+    "encoder": "attention_cnn",
+    "exp_dir": "exps/COST2100/in/seed223/attention_cnn_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "cbam_cnn",
+    "exp_dir": "exps/COST2100/in/seed223/cbam_cnn_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "clnet",
+    "exp_dir": "exps/COST2100/in/seed223/clnet_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "cnn",
+    "exp_dir": "exps/COST2100/in/seed223/cnn_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "convnext",
+    "exp_dir": "exps/COST2100/in/seed223/convnext_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "crnet",
+    "exp_dir": "exps/COST2100/in/seed223/crnet_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "csinet",
+    "exp_dir": "exps/COST2100/in/seed223/csinet_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "dscnn",
+    "exp_dir": "exps/COST2100/in/seed223/dscnn_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_ae",
+    "exp_dir": "exps/COST2100/in/seed223/mlp_ae_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_mixer",
+    "exp_dir": "exps/COST2100/in/seed223/mlp_mixer_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "resnet",
+    "exp_dir": "exps/COST2100/in/seed223/resnet_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "sparse_resnet",
+    "exp_dir": "exps/COST2100/in/seed223/sparse_resnet_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "swin",
+    "exp_dir": "exps/COST2100/in/seed223/swin_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "transnet",
+    "exp_dir": "exps/COST2100/in/seed223/transnet_transnet",
+    "seed": 223,
+    "split": "train"
+  },
+  {
+    "encoder": "attention_cnn",
+    "exp_dir": "exps/COST2100/in/seed287/attention_cnn_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "cbam_cnn",
+    "exp_dir": "exps/COST2100/in/seed287/cbam_cnn_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "clnet",
+    "exp_dir": "exps/COST2100/in/seed287/clnet_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "cnn",
+    "exp_dir": "exps/COST2100/in/seed287/cnn_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "convnext",
+    "exp_dir": "exps/COST2100/in/seed287/convnext_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "crnet",
+    "exp_dir": "exps/COST2100/in/seed287/crnet_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "csinet",
+    "exp_dir": "exps/COST2100/in/seed287/csinet_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "dscnn",
+    "exp_dir": "exps/COST2100/in/seed287/dscnn_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_ae",
+    "exp_dir": "exps/COST2100/in/seed287/mlp_ae_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_mixer",
+    "exp_dir": "exps/COST2100/in/seed287/mlp_mixer_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "resnet",
+    "exp_dir": "exps/COST2100/in/seed287/resnet_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "sparse_resnet",
+    "exp_dir": "exps/COST2100/in/seed287/sparse_resnet_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "swin",
+    "exp_dir": "exps/COST2100/in/seed287/swin_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "transnet",
+    "exp_dir": "exps/COST2100/in/seed287/transnet_transnet",
+    "seed": 287,
+    "split": "train"
+  },
+  {
+    "encoder": "attention_cnn",
+    "exp_dir": "exps/COST2100/in/seed314/attention_cnn_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "cbam_cnn",
+    "exp_dir": "exps/COST2100/in/seed314/cbam_cnn_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "clnet",
+    "exp_dir": "exps/COST2100/in/seed314/clnet_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "cnn",
+    "exp_dir": "exps/COST2100/in/seed314/cnn_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "convnext",
+    "exp_dir": "exps/COST2100/in/seed314/convnext_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "crnet",
+    "exp_dir": "exps/COST2100/in/seed314/crnet_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "csinet",
+    "exp_dir": "exps/COST2100/in/seed314/csinet_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "dscnn",
+    "exp_dir": "exps/COST2100/in/seed314/dscnn_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_ae",
+    "exp_dir": "exps/COST2100/in/seed314/mlp_ae_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_mixer",
+    "exp_dir": "exps/COST2100/in/seed314/mlp_mixer_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "resnet",
+    "exp_dir": "exps/COST2100/in/seed314/resnet_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "swin",
+    "exp_dir": "exps/COST2100/in/seed314/swin_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "transnet",
+    "exp_dir": "exps/COST2100/in/seed314/transnet_transnet",
+    "seed": 314,
+    "split": "train"
+  },
+  {
+    "encoder": "crnet",
+    "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+    "seed": 3407,
+    "split": "train"
+  },
+  {
+    "encoder": "csinet",
+    "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+    "seed": 3407,
+    "split": "train"
+  },
+  {
+    "encoder": "transnet",
+    "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+    "seed": 3407,
+    "split": "train"
+  },
+  {
+    "encoder": "attention_cnn",
+    "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "cbam_cnn",
+    "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "clnet",
+    "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "cnn",
+    "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "convnext",
+    "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "crnet",
+    "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "dscnn",
+    "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_ae",
+    "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "mlp_mixer",
+    "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "resnet",
+    "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "sparse_resnet",
+    "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "swin",
+    "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "transnet",
+    "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+    "seed": 42,
+    "split": "train"
+  },
+  {
+    "encoder": "transnet",
+    "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+    "seed": 2026,
+    "split": "test"
+  },
+  {
+    "encoder": "clnet",
+    "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+    "seed": 3407,
+    "split": "test"
+  },
+  {
+    "encoder": "csinet",
+    "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+    "seed": 42,
+    "split": "test"
+  }
+]

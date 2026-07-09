@@ -1,0 +1,259 @@
+I 07.05/05:22:22 logger.py:152 ] => Experiment directory: decoder_param_fm/exps/set_transformer_cross_attention_zscore_tok512_h2048_lr5e-5_ep400_seed42
+I 07.05/05:22:22 logger.py:71  ] => Runtime Context:
+I 07.05/05:22:22 logger.py:72  ]    cwd: /storage/hujiacong/zxd/Huawei/UniversalCSI
+I 07.05/05:22:22 logger.py:73  ]    pid: 1926714
+I 07.05/05:22:22 logger.py:74  ]    command: decoder_param_fm/train_param_fm.py --exp_dir decoder_param_fm/exps/set_transformer_cross_attention_zscore_tok512_h2048_lr5e-5_ep400_seed42 --decoder_args_json exps/COST2100/in/seed42/transnet_transnet/args.json --target_checkpoint exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth --guide_code_path exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt --condition_extract set_transformer --condition_inject cross_attention --param_norm zscore --epochs 400 --steps_per_epoch 100 --lr 5e-5 --warmup_ratio 0.1 --token_size 512 --hidden_dim 2048 --num_blocks 4 --condition_tokens 512 --cond_dim 512 --num_heads 8 --set_layers 2 --lambda_endpoint 0.0 --base_seed 2026 --seed 42 --gpu 0 --max_guide_codes 0
+I 07.05/05:22:22 logger.py:75  ]    python: 3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]
+I 07.05/05:22:22 logger.py:76  ]    pytorch: 2.5.1
+I 07.05/05:22:26 logger.py:77  ]    cuda_available: True
+I 07.05/05:22:26 logger.py:79  ]    cuda_version: 12.1
+I 07.05/05:22:26 logger.py:81  ]    CUDA_VISIBLE_DEVICES: None
+I 07.05/05:22:26 logger.py:91  ]    current_device: not initialized yet
+I 07.05/05:22:26 logger.py:63  ] => Arguments:
+{
+  "base_seed": 2026,
+  "cond_dim": 512,
+  "condition_extract": "set_transformer",
+  "condition_inject": "cross_attention",
+  "condition_tokens": 512,
+  "cpu": false,
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "dropout": 0.0,
+  "epochs": 400,
+  "eta_min": 1e-06,
+  "exp_dir": "decoder_param_fm/exps/set_transformer_cross_attention_zscore_tok512_h2048_lr5e-5_ep400_seed42",
+  "gpu": 0,
+  "grad_clip": 1.0,
+  "guide_code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "hidden_dim": 2048,
+  "hyper_lora_rank": 16,
+  "lambda_endpoint": 0.0,
+  "lr": 5e-05,
+  "max_guide_codes": 0,
+  "num_blocks": 4,
+  "num_heads": 8,
+  "param_norm": "zscore",
+  "save_every": 0,
+  "seed": 42,
+  "set_layers": 2,
+  "steps_per_epoch": 100,
+  "target_checkpoint": "exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth",
+  "time_dim": 128,
+  "token_size": 512,
+  "warmup_ratio": 0.1,
+  "warmup_steps": 0,
+  "weight_decay": 0.0
+}
+I 07.05/05:22:26 train_param_fm.py:253 ] => TensorBoard directory: decoder_param_fm/exps/set_transformer_cross_attention_zscore_tok512_h2048_lr5e-5_ep400_seed42/tensorboard
+I 07.05/05:22:28 train_param_fm.py:153 ] 
+=> Target decoder tensors:
+   tensors=40 total_params=1,646,592
+   largest tensors:
+     fc_decoder.weight                                       shape=(2048, 512) numel=1,048,576
+     decoder.layers.0.linear1.weight                         shape=(2048, 64) numel=131,072
+     decoder.layers.0.linear2.weight                         shape=(64, 2048) numel=131,072
+     decoder.layers.1.linear1.weight                         shape=(2048, 64) numel=131,072
+     decoder.layers.1.linear2.weight                         shape=(64, 2048) numel=131,072
+     decoder.layers.0.self_attn.in_proj_weight               shape=(192, 64) numel=12,288
+     decoder.layers.0.multihead_attn.in_proj_weight          shape=(192, 64) numel=12,288
+     decoder.layers.1.self_attn.in_proj_weight               shape=(192, 64) numel=12,288
+I 07.05/05:22:30 train_param_fm.py:172 ] 
+=> Parameter normalization:
+   method=zscore tensors=40
+   fc_decoder.weight                                       mean=-7.203897e-05 std=4.112401e-02
+   fc_decoder.bias                                         mean=8.564996e-04 std=3.915015e-02
+   decoder.layers.0.self_attn.in_proj_weight               mean=-1.715433e-03 std=1.173178e-01
+   decoder.layers.0.self_attn.in_proj_bias                 mean=3.988165e-03 std=3.429867e-02
+   decoder.layers.0.self_attn.out_proj.weight              mean=-1.926031e-03 std=1.769522e-01
+   decoder.layers.0.self_attn.out_proj.bias                mean=1.331626e-04 std=3.740509e-02
+   decoder.layers.0.multihead_attn.in_proj_weight          mean=2.884256e-04 std=1.192297e-01
+   decoder.layers.0.multihead_attn.in_proj_bias            mean=-4.016574e-04 std=9.705125e-03
+   ... 32 more tensors
+I 07.05/05:22:30 train_param_fm.py:271 ] Prepared 40 tensors, 3236 parameter tokens, token_size=512
+I 07.05/05:22:38 train_param_fm.py:178 ] => Device: cuda:0
+I 07.05/05:22:38 train_param_fm.py:179 ] => Target checkpoint: exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth
+I 07.05/05:22:38 train_param_fm.py:180 ] => Decoder args json: exps/COST2100/in/seed42/transnet_transnet/args.json
+I 07.05/05:22:38 train_param_fm.py:181 ] => Guide code path: exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt
+I 07.05/05:22:38 train_param_fm.py:182 ] => Decoder: type=transnet cr=4 channel=2 nt=32 nc=32 d_model=64 dim_feedforward=2048
+I 07.05/05:22:38 train_param_fm.py:192 ] => Condition: extract=set_transformer tokens=512 inject=cross_attention cond_dim=512 heads=8 set_layers=2 hyper_lora_rank=16
+I 07.05/05:22:38 train_param_fm.py:202 ] => Parameter tokens: tensors=40 tokens=3236 token_size=512 valid_elements=1646592 padded_elements=10240
+I 07.05/05:22:38 train_param_fm.py:211 ] => Guide codes: shape=(100000, 512) max_guide_codes=0
+I 07.05/05:22:38 train_param_fm.py:215 ] => Optimizer: AdamW lr=5e-05 eta_min=1e-06 weight_decay=0 grad_clip=1
+I 07.05/05:22:38 train_param_fm.py:222 ] => Scheduler: warmup_cosine epochs=400 steps_per_epoch=100 total_steps=40000 warmup_steps=4000 warmup_ratio=0.1
+I 07.05/05:22:38 train_param_fm.py:230 ] => Loss: velocity_mse=1.0 endpoint_param_mse=0
+I 07.05/05:22:38 train_param_fm.py:233 ] => Parameters: total=172,363,264 trainable=172,363,264 frozen=0
+I 07.05/05:22:38 logger.py:146 ] 
+name                                                              grad            shape      numel
+----                                                              ----            -----      -----
+condition_extractor.queries                                       True       (512, 512)    262,144
+condition_extractor.code_proj.0.weight                            True           (512,)        512
+condition_extractor.code_proj.0.bias                              True           (512,)        512
+condition_extractor.code_proj.1.weight                            True       (512, 512)    262,144
+condition_extractor.code_proj.1.bias                              True           (512,)        512
+condition_extractor.code_proj.3.weight                            True       (512, 512)    262,144
+condition_extractor.code_proj.3.bias                              True           (512,)        512
+condition_extractor.layers.0.in_proj_weight                       True      (1536, 512)    786,432
+condition_extractor.layers.0.in_proj_bias                         True          (1536,)      1,536
+condition_extractor.layers.0.out_proj.weight                      True       (512, 512)    262,144
+condition_extractor.layers.0.out_proj.bias                        True           (512,)        512
+condition_extractor.layers.1.in_proj_weight                       True      (1536, 512)    786,432
+condition_extractor.layers.1.in_proj_bias                         True          (1536,)      1,536
+condition_extractor.layers.1.out_proj.weight                      True       (512, 512)    262,144
+condition_extractor.layers.1.out_proj.bias                        True           (512,)        512
+condition_extractor.norm.weight                                   True           (512,)        512
+condition_extractor.norm.bias                                     True           (512,)        512
+condition_extractor.out.weight                                    True       (512, 512)    262,144
+condition_extractor.out.bias                                      True           (512,)        512
+condition_encoder.token_mlp.0.weight                              True           (512,)        512
+condition_encoder.token_mlp.0.bias                                True           (512,)        512
+condition_encoder.token_mlp.1.weight                              True      (2048, 512)  1,048,576
+condition_encoder.token_mlp.1.bias                                True          (2048,)      2,048
+condition_encoder.token_mlp.3.weight                              True      (512, 2048)  1,048,576
+condition_encoder.token_mlp.3.bias                                True           (512,)        512
+condition_encoder.pool.0.weight                                   True          (1536,)      1,536
+condition_encoder.pool.0.bias                                     True          (1536,)      1,536
+condition_encoder.pool.1.weight                                   True      (512, 1536)    786,432
+condition_encoder.pool.1.bias                                     True           (512,)        512
+condition_encoder.pool.3.weight                                   True       (512, 512)    262,144
+condition_encoder.pool.3.bias                                     True           (512,)        512
+param_fm.param_proj.weight                                        True      (2048, 512)  1,048,576
+param_fm.param_proj.bias                                          True          (2048,)      2,048
+param_fm.time_proj.0.weight                                       True      (2048, 128)    262,144
+param_fm.time_proj.0.bias                                         True          (2048,)      2,048
+param_fm.time_proj.2.weight                                       True     (2048, 2048)  4,194,304
+param_fm.time_proj.2.bias                                         True          (2048,)      2,048
+param_fm.tensor_embed.weight                                      True       (40, 2048)     81,920
+param_fm.layer_embed.weight                                       True     (1001, 2048)  2,050,048
+param_fm.offset_embed.weight                                      True     (2048, 2048)  4,194,304
+param_fm.cond_proj.weight                                         True      (2048, 512)  1,048,576
+param_fm.cond_proj.bias                                           True          (2048,)      2,048
+param_fm.blocks.0.norm.weight                                     True          (2048,)      2,048
+param_fm.blocks.0.norm.bias                                       True          (2048,)      2,048
+param_fm.blocks.0.net.0.weight                                    True     (8192, 2048) 16,777,216
+param_fm.blocks.0.net.0.bias                                      True          (8192,)      8,192
+param_fm.blocks.0.net.3.weight                                    True     (2048, 8192) 16,777,216
+param_fm.blocks.0.net.3.bias                                      True          (2048,)      2,048
+param_fm.blocks.1.norm.weight                                     True          (2048,)      2,048
+param_fm.blocks.1.norm.bias                                       True          (2048,)      2,048
+param_fm.blocks.1.net.0.weight                                    True     (8192, 2048) 16,777,216
+param_fm.blocks.1.net.0.bias                                      True          (8192,)      8,192
+param_fm.blocks.1.net.3.weight                                    True     (2048, 8192) 16,777,216
+param_fm.blocks.1.net.3.bias                                      True          (2048,)      2,048
+param_fm.blocks.2.norm.weight                                     True          (2048,)      2,048
+param_fm.blocks.2.norm.bias                                       True          (2048,)      2,048
+param_fm.blocks.2.net.0.weight                                    True     (8192, 2048) 16,777,216
+param_fm.blocks.2.net.0.bias                                      True          (8192,)      8,192
+param_fm.blocks.2.net.3.weight                                    True     (2048, 8192) 16,777,216
+param_fm.blocks.2.net.3.bias                                      True          (2048,)      2,048
+param_fm.blocks.3.norm.weight                                     True          (2048,)      2,048
+param_fm.blocks.3.norm.bias                                       True          (2048,)      2,048
+param_fm.blocks.3.net.0.weight                                    True     (8192, 2048) 16,777,216
+param_fm.blocks.3.net.0.bias                                      True          (8192,)      8,192
+param_fm.blocks.3.net.3.weight                                    True     (2048, 8192) 16,777,216
+param_fm.blocks.3.net.3.bias                                      True          (2048,)      2,048
+param_fm.cond_token_proj.weight                                   True      (2048, 512)  1,048,576
+param_fm.cond_token_proj.bias                                     True          (2048,)      2,048
+param_fm.cross_attn.in_proj_weight                                True     (6144, 2048) 12,582,912
+param_fm.cross_attn.in_proj_bias                                  True          (6144,)      6,144
+param_fm.cross_attn.out_proj.weight                               True     (2048, 2048)  4,194,304
+param_fm.cross_attn.out_proj.bias                                 True          (2048,)      2,048
+param_fm.cross_norm.weight                                        True          (2048,)      2,048
+param_fm.cross_norm.bias                                          True          (2048,)      2,048
+param_fm.norm.weight                                              True          (2048,)      2,048
+param_fm.norm.bias                                                True          (2048,)      2,048
+param_fm.out.weight                                               True      (512, 2048)  1,048,576
+param_fm.out.bias                                                 True           (512,)        512
+**********
+total=172,363,264, trainable=172,363,264, frozen=0
+I 07.05/05:23:40 train_param_fm.py:370 ] Epoch [1/400] loss=0.99884111 velocity=0.99884111 endpoint=0.33677049 lr=1.25e-06
+I 07.05/05:24:50 train_param_fm.py:370 ] Epoch [2/400] loss=0.98941049 velocity=0.98941049 endpoint=0.33746400 lr=2.5e-06
+I 07.05/05:26:09 train_param_fm.py:370 ] Epoch [3/400] loss=0.96018600 velocity=0.96018600 endpoint=0.31055753 lr=3.75e-06
+I 07.05/05:28:16 train_param_fm.py:370 ] Epoch [4/400] loss=0.90970178 velocity=0.90970178 endpoint=0.30602374 lr=5e-06
+I 07.05/05:30:38 train_param_fm.py:370 ] Epoch [5/400] loss=0.84140823 velocity=0.84140823 endpoint=0.29778284 lr=6.25e-06
+I 07.05/05:32:48 train_param_fm.py:370 ] Epoch [6/400] loss=0.76993524 velocity=0.76993524 endpoint=0.30572966 lr=7.5e-06
+I 07.05/05:34:52 train_param_fm.py:370 ] Epoch [7/400] loss=0.68366213 velocity=0.68366213 endpoint=0.25619351 lr=8.75e-06
+I 07.05/05:37:26 train_param_fm.py:370 ] Epoch [8/400] loss=0.60636338 velocity=0.60636338 endpoint=0.21147992 lr=1e-05
+I 07.05/05:40:13 train_param_fm.py:370 ] Epoch [9/400] loss=0.54620943 velocity=0.54620943 endpoint=0.20233280 lr=1.125e-05
+I 07.05/05:42:39 train_param_fm.py:370 ] Epoch [10/400] loss=0.49281383 velocity=0.49281383 endpoint=0.18266854 lr=1.25e-05
+I 07.05/05:45:01 train_param_fm.py:370 ] Epoch [11/400] loss=0.43807053 velocity=0.43807053 endpoint=0.14692675 lr=1.375e-05
+I 07.05/05:47:35 train_param_fm.py:370 ] Epoch [12/400] loss=0.39582842 velocity=0.39582842 endpoint=0.14915841 lr=1.5e-05
+I 07.05/05:50:17 train_param_fm.py:370 ] Epoch [13/400] loss=0.35283646 velocity=0.35283646 endpoint=0.13772097 lr=1.625e-05
+I 07.05/05:53:06 train_param_fm.py:370 ] Epoch [14/400] loss=0.30463232 velocity=0.30463232 endpoint=0.11037419 lr=1.75e-05
+I 07.05/05:55:40 train_param_fm.py:370 ] Epoch [15/400] loss=0.26360927 velocity=0.26360927 endpoint=0.09720959 lr=1.875e-05
+I 07.05/05:58:16 train_param_fm.py:370 ] Epoch [16/400] loss=0.22132987 velocity=0.22132987 endpoint=0.07599703 lr=2e-05
+I 07.05/06:01:06 train_param_fm.py:370 ] Epoch [17/400] loss=0.18146323 velocity=0.18146323 endpoint=0.06689616 lr=2.125e-05
+I 07.05/06:03:51 train_param_fm.py:370 ] Epoch [18/400] loss=0.14272829 velocity=0.14272829 endpoint=0.05328613 lr=2.25e-05
+I 07.05/06:06:02 train_param_fm.py:370 ] Epoch [19/400] loss=0.10747737 velocity=0.10747737 endpoint=0.03597630 lr=2.375e-05
+I 07.05/06:08:19 train_param_fm.py:370 ] Epoch [20/400] loss=0.08182543 velocity=0.08182543 endpoint=0.03235304 lr=2.5e-05
+I 07.05/06:10:37 train_param_fm.py:370 ] Epoch [21/400] loss=0.05799472 velocity=0.05799472 endpoint=0.02386524 lr=2.625e-05
+I 07.05/06:13:23 train_param_fm.py:370 ] Epoch [22/400] loss=0.04436455 velocity=0.04436455 endpoint=0.02056252 lr=2.75e-05
+I 07.05/06:16:25 train_param_fm.py:370 ] Epoch [23/400] loss=0.03119901 velocity=0.03119901 endpoint=0.01235681 lr=2.875e-05
+I 07.05/06:19:03 train_param_fm.py:370 ] Epoch [24/400] loss=0.02265283 velocity=0.02265283 endpoint=0.00908634 lr=3e-05
+I 07.05/06:21:43 train_param_fm.py:370 ] Epoch [25/400] loss=0.01817059 velocity=0.01817059 endpoint=0.00788495 lr=3.125e-05
+I 07.05/06:24:28 train_param_fm.py:370 ] Epoch [26/400] loss=0.01635627 velocity=0.01635627 endpoint=0.00762124 lr=3.25e-05
+I 07.05/06:26:46 train_param_fm.py:370 ] Epoch [27/400] loss=0.01238249 velocity=0.01238249 endpoint=0.00603350 lr=3.375e-05
+I 07.05/06:29:04 train_param_fm.py:370 ] Epoch [28/400] loss=0.01015393 velocity=0.01015393 endpoint=0.00416620 lr=3.5e-05
+I 07.05/06:31:45 train_param_fm.py:370 ] Epoch [29/400] loss=0.00799469 velocity=0.00799469 endpoint=0.00340854 lr=3.625e-05
+I 07.05/06:34:39 train_param_fm.py:370 ] Epoch [30/400] loss=0.00675197 velocity=0.00675197 endpoint=0.00294885 lr=3.75e-05
+I 07.05/06:37:56 train_param_fm.py:370 ] Epoch [31/400] loss=0.00700335 velocity=0.00700335 endpoint=0.00321203 lr=3.875e-05
+I 07.05/06:40:14 train_param_fm.py:370 ] Epoch [32/400] loss=0.00656225 velocity=0.00656225 endpoint=0.00257225 lr=4e-05
+I 07.05/06:42:43 train_param_fm.py:370 ] Epoch [33/400] loss=0.00620584 velocity=0.00620584 endpoint=0.00276567 lr=4.125e-05
+I 07.05/06:45:37 train_param_fm.py:370 ] Epoch [34/400] loss=0.00694704 velocity=0.00694704 endpoint=0.00312057 lr=4.25e-05
+I 07.05/06:48:09 train_param_fm.py:370 ] Epoch [35/400] loss=0.00383841 velocity=0.00383841 endpoint=0.00173692 lr=4.375e-05
+I 07.05/06:50:56 train_param_fm.py:370 ] Epoch [36/400] loss=0.00358530 velocity=0.00358530 endpoint=0.00157684 lr=4.5e-05
+I 07.05/06:53:14 train_param_fm.py:370 ] Epoch [37/400] loss=0.00351643 velocity=0.00351643 endpoint=0.00173140 lr=4.625e-05
+I 07.05/06:55:58 train_param_fm.py:370 ] Epoch [38/400] loss=0.00221896 velocity=0.00221896 endpoint=0.00095647 lr=4.75e-05
+I 07.05/06:59:02 train_param_fm.py:370 ] Epoch [39/400] loss=0.00220554 velocity=0.00220554 endpoint=0.00088733 lr=4.875e-05
+I 07.05/07:01:56 train_param_fm.py:370 ] Epoch [40/400] loss=0.00252589 velocity=0.00252589 endpoint=0.00111842 lr=5e-05
+I 07.05/07:04:26 train_param_fm.py:370 ] Epoch [41/400] loss=0.00160774 velocity=0.00160774 endpoint=0.00058288 lr=4.99991e-05
+I 07.05/07:07:10 train_param_fm.py:370 ] Epoch [42/400] loss=0.00118532 velocity=0.00118532 endpoint=0.00049301 lr=4.99963e-05
+I 07.05/07:10:22 train_param_fm.py:370 ] Epoch [43/400] loss=0.00046388 velocity=0.00046388 endpoint=0.00016543 lr=4.99916e-05
+I 07.05/07:13:45 train_param_fm.py:370 ] Epoch [44/400] loss=0.00110767 velocity=0.00110767 endpoint=0.00048926 lr=4.99851e-05
+I 07.05/07:16:37 train_param_fm.py:370 ] Epoch [45/400] loss=0.00245053 velocity=0.00245053 endpoint=0.00097320 lr=4.99767e-05
+I 07.05/07:19:15 train_param_fm.py:370 ] Epoch [46/400] loss=0.00159263 velocity=0.00159263 endpoint=0.00063670 lr=4.99664e-05
+E 07.05/07:20:35 logger.py:18  ] Uncaught exception
+Traceback (most recent call last):
+  File "/storage/hujiacong/zxd/Huawei/UniversalCSI/decoder_param_fm/train_param_fm.py", line 399, in <module>
+    main()
+  File "/storage/hujiacong/zxd/Huawei/UniversalCSI/decoder_param_fm/train_param_fm.py", line 394, in main
+    writer.flush()
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/torch/utils/tensorboard/writer.py", line 1194, in flush
+    writer.flush()
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/torch/utils/tensorboard/writer.py", line 153, in flush
+    self.event_writer.flush()
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/event_file_writer.py", line 125, in flush
+    self._async_writer.flush()
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/event_file_writer.py", line 186, in flush
+    self._check_worker_status()
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/event_file_writer.py", line 212, in _check_worker_status
+    raise exception
+  File "/storage/hujiacong/zxd/Huawei/UniversalCSI/decoder_param_fm/train_param_fm.py", line 350, in main
+    writer.add_scalar("train_step/loss", loss_value, global_step)
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/torch/utils/tensorboard/writer.py", line 381, in add_scalar
+    self._get_file_writer().add_summary(summary, global_step, walltime)
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/torch/utils/tensorboard/writer.py", line 115, in add_summary
+    self.add_event(event, global_step, walltime)
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/torch/utils/tensorboard/writer.py", line 99, in add_event
+    self.event_writer.add_event(event)
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/event_file_writer.py", line 117, in add_event
+    self._async_writer.write(event.SerializeToString())
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/event_file_writer.py", line 171, in write
+    self._check_worker_status()
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/event_file_writer.py", line 212, in _check_worker_status
+    raise exception
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/threading.py", line 1045, in _bootstrap_inner
+    self.run()
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/event_file_writer.py", line 244, in run
+    self._run()
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/event_file_writer.py", line 275, in _run
+    self._record_writer.write(data)
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/summary/writer/record_writer.py", line 40, in write
+    self._writer.write(header + header_crc + data + footer_crc)
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/compat/tensorflow_stub/io/gfile.py", line 775, in write
+    self.fs.append(self.filename, file_content, self.binary_mode)
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/compat/tensorflow_stub/io/gfile.py", line 167, in append
+    self._write(filename, file_content, "ab" if binary_mode else "a")
+  File "/home/hujiacong/zxd/.envs/miniconda3/envs/torch/lib/python3.11/site-packages/tensorboard/compat/tensorflow_stub/io/gfile.py", line 171, in _write
+    with io.open(filename, mode, encoding=encoding) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+BlockingIOError: [Errno 11] Resource temporarily unavailable: b'decoder_param_fm/exps/set_transformer_cross_attention_zscore_tok512_h2048_lr5e-5_ep400_seed42/tensorboard/events.out.tfevents.1783200146.server4.1926714.0'

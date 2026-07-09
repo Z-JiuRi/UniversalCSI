@@ -1,0 +1,3 @@
+saved=decoder_param_fm/exps/random_hyper_lora_rms_tok512_h2048_lr5e-5_ep400_seed42/generated/generated_decoder.pth
+param_mse_normalized=0.00003418
+

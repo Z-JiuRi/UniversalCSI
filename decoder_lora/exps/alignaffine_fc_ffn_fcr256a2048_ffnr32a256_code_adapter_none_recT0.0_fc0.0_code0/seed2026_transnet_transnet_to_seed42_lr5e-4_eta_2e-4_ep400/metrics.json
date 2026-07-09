@@ -1,0 +1,45 @@
+{
+  "best_loss": {
+    "metric": 1.249834935454904e-06,
+    "loss": 1.249834935454904e-06,
+    "rec": 1.249834935454904e-06,
+    "epoch": 399,
+    "selection": "val_external_loss",
+    "train_all": {
+      "decoder_mse": 7.080953096556186e-07,
+      "decoder_nmse": -28.044910430908203,
+      "n": 100000
+    },
+    "val_external": {
+      "decoder_mse": 1.249834935454904e-06,
+      "decoder_nmse": -25.581647872924805,
+      "n": 30000
+    },
+    "test_external": {
+      "decoder_mse": 1.2599785130078089e-06,
+      "decoder_nmse": -25.547178268432617,
+      "n": 20000
+    }
+  },
+  "best_nmse": {
+    "metric": -25.57926368713379,
+    "decoder_mse": 1.2505215864318113e-06,
+    "epoch": 400,
+    "selection": "val_external_decoder_nmse",
+    "train_all": {
+      "decoder_mse": 7.073202693936764e-07,
+      "decoder_nmse": -28.049667358398438,
+      "n": 100000
+    },
+    "val_external": {
+      "decoder_mse": 1.2505215864318113e-06,
+      "decoder_nmse": -25.57926368713379,
+      "n": 30000
+    },
+    "test_external": {
+      "decoder_mse": 1.2610201607458294e-06,
+      "decoder_nmse": -25.543590545654297,
+      "n": 20000
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "best_loss": {
+    "metric": 1.4157808269374073e-06,
+    "loss": 1.4157808269374073e-06,
+    "rec": 1.4157808269374073e-06,
+    "epoch": 396,
+    "selection": "val_external_loss",
+    "train_all": {
+      "decoder_mse": 8.260200998665823e-07,
+      "decoder_nmse": -27.37592315673828,
+      "n": 100000
+    },
+    "val_external": {
+      "decoder_mse": 1.4157808269374073e-06,
+      "decoder_nmse": -25.040218353271484,
+      "n": 30000
+    },
+    "test_external": {
+      "decoder_mse": 1.4351617779539084e-06,
+      "decoder_nmse": -24.981800079345703,
+      "n": 20000
+    }
+  },
+  "best_nmse": {
+    "metric": -25.03365707397461,
+    "decoder_mse": 1.4179205442511982e-06,
+    "epoch": 400,
+    "selection": "val_external_decoder_nmse",
+    "train_all": {
+      "decoder_mse": 8.257797319129167e-07,
+      "decoder_nmse": -27.377187728881836,
+      "n": 100000
+    },
+    "val_external": {
+      "decoder_mse": 1.4179205442511982e-06,
+      "decoder_nmse": -25.03365707397461,
+      "n": 30000
+    },
+    "test_external": {
+      "decoder_mse": 1.4372966177688794e-06,
+      "decoder_nmse": -24.975345611572266,
+      "n": 20000
+    }
+  }
+}

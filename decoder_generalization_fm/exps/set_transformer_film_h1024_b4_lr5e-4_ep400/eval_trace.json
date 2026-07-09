@@ -1,0 +1,26 @@
+{
+  "metrics": {
+    "mean_nmse_db": 30.130171386818958,
+    "n": 3,
+    "rows": [
+      {
+        "encoder": "transnet",
+        "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+        "nmse_db": 30.083078807278135,
+        "seed": 2026
+      },
+      {
+        "encoder": "clnet",
+        "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+        "nmse_db": 29.59533772197765,
+        "seed": 3407
+      },
+      {
+        "encoder": "csinet",
+        "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+        "nmse_db": 30.71209763120109,
+        "seed": 42
+      }
+    ]
+  }
+}

@@ -1,0 +1,577 @@
+I 07.04/10:58:55 logger.py:152 ] => Experiment directory: flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_clnet_transnet_to_seed42_transnet_lr5e-4_ep400
+I 07.04/10:58:55 logger.py:71  ] => Runtime Context:
+I 07.04/10:58:55 logger.py:72  ]    cwd: /storage/hujiacong/zxd/Huawei/UniversalCSI
+I 07.04/10:58:55 logger.py:73  ]    pid: 2563344
+I 07.04/10:58:55 logger.py:74  ]    command: flow_matching/train_flow_matching.py --source_code exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt --target_code exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt --exp_dir flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_clnet_transnet_to_seed42_transnet_lr5e-4_ep400 --epochs 400 --batch_size 512 --workers 0 --lr 5e-4 --weight_decay 1e-4 --scheduler cosine --eta_min 5e-5 --hidden_dim 2048 --num_blocks 4 --time_dim 128 --condition source_start --dropout 0.0 --align_mode affine --align_ridge 1e-4 --val_ratio 0 --max_samples 0 --t_eps 1e-4 --lambda_endpoint 0.0 --ode_steps 16 --ode_method euler --eval_ode_every 10 --eval_decoder_every 10 --eval_decoder_max_samples 0 --decoder_checkpoint exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth --decoder_args_json exps/COST2100/in/seed42/transnet_transnet/args.json --csi_path /storage/hujiacong/zxd/datasets/cost2100/in_train.pt --gpu 4 --seed 2026
+I 07.04/10:58:55 logger.py:75  ]    python: 3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]
+I 07.04/10:58:55 logger.py:76  ]    pytorch: 2.5.1
+I 07.04/10:58:55 logger.py:77  ]    cuda_available: True
+I 07.04/10:58:55 logger.py:79  ]    cuda_version: 12.1
+I 07.04/10:58:55 logger.py:81  ]    CUDA_VISIBLE_DEVICES: 4
+I 07.04/10:58:55 logger.py:91  ]    current_device: not initialized yet
+I 07.04/10:58:55 logger.py:63  ] => Arguments:
+{
+  "align_mode": "affine",
+  "align_ridge": 0.0001,
+  "batch_size": 512,
+  "condition": "source_start",
+  "cpu": false,
+  "csi_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "decoder_channel": null,
+  "decoder_checkpoint": "exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth",
+  "decoder_cr": null,
+  "decoder_d_model": null,
+  "decoder_dim_feedforward": null,
+  "decoder_hidden": null,
+  "decoder_name": null,
+  "decoder_nc": null,
+  "decoder_nt": null,
+  "decoder_num_blocks": null,
+  "dropout": 0.0,
+  "epochs": 400,
+  "eta_min": 5e-05,
+  "eval_decoder_every": 10,
+  "eval_decoder_max_samples": 0,
+  "eval_ode_every": 10,
+  "exp_dir": "flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_clnet_transnet_to_seed42_transnet_lr5e-4_ep400",
+  "gpu": 4,
+  "hidden_dim": 2048,
+  "lambda_endpoint": 0.0,
+  "lr": 0.0005,
+  "max_samples": 0,
+  "num_blocks": 4,
+  "ode_method": "euler",
+  "ode_steps": 16,
+  "save_last": false,
+  "scheduler": "cosine",
+  "seed": 2026,
+  "source_code": "exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt",
+  "t_eps": 0.0001,
+  "target_code": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "time_dim": 128,
+  "val_ratio": 0.0,
+  "weight_decay": 0.0001,
+  "workers": 0
+}
+I 07.04/10:58:55 train_flow_matching.py:438 ] => Checkpoint directory: flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_clnet_transnet_to_seed42_transnet_lr5e-4_ep400/checkpoints
+I 07.04/10:58:55 train_flow_matching.py:439 ] => Codeword directory: flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_clnet_transnet_to_seed42_transnet_lr5e-4_ep400/codewords
+I 07.04/10:58:55 train_flow_matching.py:440 ] => TensorBoard directory: flow_matching/exps/code_only/alignaffine_condsource_start_end0.0_ode16_euler/seed2026_clnet_transnet_to_seed42_transnet_lr5e-4_ep400/tensorboard
+I 07.04/10:59:02 logger.py:146 ] 
+name                                                              grad            shape      numel
+----                                                              ----            -----      -----
+velocity.x_proj.weight                                            True      (2048, 512)  1,048,576
+velocity.x_proj.bias                                              True          (2048,)      2,048
+velocity.t_proj.0.weight                                          True      (2048, 128)    262,144
+velocity.t_proj.0.bias                                            True          (2048,)      2,048
+velocity.t_proj.2.weight                                          True     (2048, 2048)  4,194,304
+velocity.t_proj.2.bias                                            True          (2048,)      2,048
+velocity.cond_proj.weight                                         True     (2048, 1024)  2,097,152
+velocity.cond_proj.bias                                           True          (2048,)      2,048
+velocity.blocks.0.norm.weight                                     True          (2048,)      2,048
+velocity.blocks.0.norm.bias                                       True          (2048,)      2,048
+velocity.blocks.0.net.0.weight                                    True     (8192, 2048) 16,777,216
+velocity.blocks.0.net.0.bias                                      True          (8192,)      8,192
+velocity.blocks.0.net.3.weight                                    True     (2048, 8192) 16,777,216
+velocity.blocks.0.net.3.bias                                      True          (2048,)      2,048
+velocity.blocks.1.norm.weight                                     True          (2048,)      2,048
+velocity.blocks.1.norm.bias                                       True          (2048,)      2,048
+velocity.blocks.1.net.0.weight                                    True     (8192, 2048) 16,777,216
+velocity.blocks.1.net.0.bias                                      True          (8192,)      8,192
+velocity.blocks.1.net.3.weight                                    True     (2048, 8192) 16,777,216
+velocity.blocks.1.net.3.bias                                      True          (2048,)      2,048
+velocity.blocks.2.norm.weight                                     True          (2048,)      2,048
+velocity.blocks.2.norm.bias                                       True          (2048,)      2,048
+velocity.blocks.2.net.0.weight                                    True     (8192, 2048) 16,777,216
+velocity.blocks.2.net.0.bias                                      True          (8192,)      8,192
+velocity.blocks.2.net.3.weight                                    True     (2048, 8192) 16,777,216
+velocity.blocks.2.net.3.bias                                      True          (2048,)      2,048
+velocity.blocks.3.norm.weight                                     True          (2048,)      2,048
+velocity.blocks.3.norm.bias                                       True          (2048,)      2,048
+velocity.blocks.3.net.0.weight                                    True     (8192, 2048) 16,777,216
+velocity.blocks.3.net.0.bias                                      True          (8192,)      8,192
+velocity.blocks.3.net.3.weight                                    True     (2048, 8192) 16,777,216
+velocity.blocks.3.net.3.bias                                      True          (2048,)      2,048
+velocity.norm.weight                                              True          (2048,)      2,048
+velocity.norm.bias                                                True          (2048,)      2,048
+velocity.out.weight                                               True      (512, 2048)  1,048,576
+velocity.out.bias                                                 True           (512,)        512
+**********
+total=142,938,624, trainable=142,938,624, frozen=0
+I 07.04/10:59:02 train_flow_matching.py:480 ] => Alignment buffers: weight=(512, 512) bias=(512,) numel=262656
+I 07.04/10:59:05 train_flow_matching.py:543 ] => Device: cuda
+I 07.04/10:59:05 train_flow_matching.py:544 ] => Source code: exps/COST2100/in/seed2026/clnet_transnet/codewords/train_code.pt
+I 07.04/10:59:05 train_flow_matching.py:545 ] => Target code: exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt
+I 07.04/10:59:05 train_flow_matching.py:546 ] => Code shape: (100000, 512)
+I 07.04/10:59:05 train_flow_matching.py:547 ] => Align mode: affine
+I 07.04/10:59:05 train_flow_matching.py:548 ] => Parameters: 142,938,624
+I 07.04/10:59:05 train_flow_matching.py:549 ] => Dataset sizes: train=100000, val=0, all=100000, code_dim=512
+I 07.04/10:59:05 train_flow_matching.py:555 ] => Loader config: batch_size=512, workers=0, pin_memory=True
+I 07.04/10:59:05 train_flow_matching.py:560 ] => Optimizer: AdamW lr=0.0005 weight_decay=0.0001
+I 07.04/10:59:05 train_flow_matching.py:564 ] => Scheduler: cosine eta_min=5e-05 steps_per_epoch=196 total_steps=78400
+I 07.04/10:59:05 train_flow_matching.py:570 ] => Flow objective: velocity_mse + endpoint*0.0; ode_steps=16 ode_method=euler eval_ode_every=10
+I 07.04/10:59:05 train_flow_matching.py:578 ] => Periodic decoder eval: every=10 max_samples=full decoder_checkpoint=exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth csi_path=/storage/hujiacong/zxd/datasets/cost2100/in_train.pt
+I 07.04/10:59:24 train_flow_matching.py:660 ] Epoch [1/400] lr=1.250000e-05 train_opt_loss=6.725228e-02 train_select_loss=6.725228e-02 train_endpoint=2.390874e-02 train_start=9.855584e-02
+I 07.04/10:59:58 train_flow_matching.py:660 ] Epoch [2/400] lr=2.500000e-05 train_opt_loss=3.723483e-02 train_select_loss=3.723483e-02 train_endpoint=1.319789e-02 train_start=9.855584e-02
+I 07.04/11:00:21 train_flow_matching.py:660 ] Epoch [3/400] lr=3.750000e-05 train_opt_loss=3.245473e-02 train_select_loss=3.245473e-02 train_endpoint=1.164484e-02 train_start=9.855584e-02
+I 07.04/11:00:46 train_flow_matching.py:660 ] Epoch [4/400] lr=5.000000e-05 train_opt_loss=2.815430e-02 train_select_loss=2.815430e-02 train_endpoint=1.044996e-02 train_start=9.855584e-02
+I 07.04/11:01:12 train_flow_matching.py:660 ] Epoch [5/400] lr=6.250000e-05 train_opt_loss=2.340966e-02 train_select_loss=2.340966e-02 train_endpoint=9.216493e-03 train_start=9.855584e-02
+I 07.04/11:01:28 train_flow_matching.py:660 ] Epoch [6/400] lr=7.500000e-05 train_opt_loss=1.898441e-02 train_select_loss=1.898441e-02 train_endpoint=7.872157e-03 train_start=9.855584e-02
+I 07.04/11:01:54 train_flow_matching.py:660 ] Epoch [7/400] lr=8.750000e-05 train_opt_loss=1.539666e-02 train_select_loss=1.539666e-02 train_endpoint=6.701905e-03 train_start=9.855584e-02
+I 07.04/11:02:22 train_flow_matching.py:660 ] Epoch [8/400] lr=1.000000e-04 train_opt_loss=1.265721e-02 train_select_loss=1.265721e-02 train_endpoint=5.703047e-03 train_start=9.855584e-02
+I 07.04/11:02:49 train_flow_matching.py:660 ] Epoch [9/400] lr=1.125000e-04 train_opt_loss=1.086135e-02 train_select_loss=1.086135e-02 train_endpoint=5.098843e-03 train_start=9.855584e-02
+I 07.04/11:04:39 train_flow_matching.py:646 ] Epoch [10/400] true_decoder_eval n=100000 code_mse=2.766111e-02 code_nmse=-13.655dB decoder_mse=9.979444e-06 decoder_nmse=-16.555dB
+I 07.04/11:04:39 train_flow_matching.py:660 ] Epoch [10/400] lr=1.250000e-04 train_opt_loss=9.459672e-03 train_select_loss=9.459672e-03 train_endpoint=4.553758e-03 train_start=9.855584e-02
+I 07.04/11:05:08 train_flow_matching.py:660 ] Epoch [11/400] lr=1.375000e-04 train_opt_loss=8.147330e-03 train_select_loss=8.147330e-03 train_endpoint=3.987085e-03 train_start=9.855584e-02
+I 07.04/11:05:33 train_flow_matching.py:660 ] Epoch [12/400] lr=1.500000e-04 train_opt_loss=7.215854e-03 train_select_loss=7.215854e-03 train_endpoint=3.592451e-03 train_start=9.855584e-02
+I 07.04/11:05:54 train_flow_matching.py:660 ] Epoch [13/400] lr=1.625000e-04 train_opt_loss=6.676552e-03 train_select_loss=6.676552e-03 train_endpoint=3.363525e-03 train_start=9.855584e-02
+I 07.04/11:06:12 train_flow_matching.py:660 ] Epoch [14/400] lr=1.750000e-04 train_opt_loss=5.978464e-03 train_select_loss=5.978464e-03 train_endpoint=3.040223e-03 train_start=9.855584e-02
+I 07.04/11:06:34 train_flow_matching.py:660 ] Epoch [15/400] lr=1.875000e-04 train_opt_loss=5.495465e-03 train_select_loss=5.495465e-03 train_endpoint=2.806928e-03 train_start=9.855584e-02
+I 07.04/11:07:02 train_flow_matching.py:660 ] Epoch [16/400] lr=2.000000e-04 train_opt_loss=5.199181e-03 train_select_loss=5.199181e-03 train_endpoint=2.661785e-03 train_start=9.855584e-02
+I 07.04/11:07:30 train_flow_matching.py:660 ] Epoch [17/400] lr=2.125000e-04 train_opt_loss=4.888837e-03 train_select_loss=4.888837e-03 train_endpoint=2.495633e-03 train_start=9.855584e-02
+I 07.04/11:07:55 train_flow_matching.py:660 ] Epoch [18/400] lr=2.250000e-04 train_opt_loss=4.848538e-03 train_select_loss=4.848538e-03 train_endpoint=2.506475e-03 train_start=9.855584e-02
+I 07.04/11:08:15 train_flow_matching.py:660 ] Epoch [19/400] lr=2.375000e-04 train_opt_loss=4.533431e-03 train_select_loss=4.533431e-03 train_endpoint=2.312151e-03 train_start=9.855584e-02
+I 07.04/11:10:06 train_flow_matching.py:646 ] Epoch [20/400] true_decoder_eval n=100000 code_mse=1.699612e-02 code_nmse=-15.770dB decoder_mse=4.731253e-06 decoder_nmse=-19.796dB
+I 07.04/11:10:06 train_flow_matching.py:660 ] Epoch [20/400] lr=2.500000e-04 train_opt_loss=4.293983e-03 train_select_loss=4.293983e-03 train_endpoint=2.191586e-03 train_start=9.855584e-02
+I 07.04/11:10:22 train_flow_matching.py:660 ] Epoch [21/400] lr=2.625000e-04 train_opt_loss=4.172084e-03 train_select_loss=4.172084e-03 train_endpoint=2.129540e-03 train_start=9.855584e-02
+I 07.04/11:10:47 train_flow_matching.py:660 ] Epoch [22/400] lr=2.750000e-04 train_opt_loss=4.207609e-03 train_select_loss=4.207609e-03 train_endpoint=2.161584e-03 train_start=9.855584e-02
+I 07.04/11:11:02 train_flow_matching.py:660 ] Epoch [23/400] lr=2.875000e-04 train_opt_loss=4.114196e-03 train_select_loss=4.114196e-03 train_endpoint=2.088756e-03 train_start=9.855584e-02
+I 07.04/11:11:21 train_flow_matching.py:660 ] Epoch [24/400] lr=3.000000e-04 train_opt_loss=4.038258e-03 train_select_loss=4.038258e-03 train_endpoint=2.052051e-03 train_start=9.855584e-02
+I 07.04/11:11:42 train_flow_matching.py:660 ] Epoch [25/400] lr=3.125000e-04 train_opt_loss=4.002105e-03 train_select_loss=4.002105e-03 train_endpoint=2.035193e-03 train_start=9.855584e-02
+I 07.04/11:12:05 train_flow_matching.py:660 ] Epoch [26/400] lr=3.250000e-04 train_opt_loss=3.795735e-03 train_select_loss=3.795735e-03 train_endpoint=1.919341e-03 train_start=9.855584e-02
+I 07.04/11:12:22 train_flow_matching.py:660 ] Epoch [27/400] lr=3.375000e-04 train_opt_loss=3.703977e-03 train_select_loss=3.703977e-03 train_endpoint=1.859042e-03 train_start=9.855584e-02
+I 07.04/11:12:43 train_flow_matching.py:660 ] Epoch [28/400] lr=3.500000e-04 train_opt_loss=3.940288e-03 train_select_loss=3.940288e-03 train_endpoint=1.976391e-03 train_start=9.855584e-02
+I 07.04/11:12:57 train_flow_matching.py:660 ] Epoch [29/400] lr=3.625000e-04 train_opt_loss=3.635813e-03 train_select_loss=3.635813e-03 train_endpoint=1.829992e-03 train_start=9.855584e-02
+I 07.04/11:14:47 train_flow_matching.py:646 ] Epoch [30/400] true_decoder_eval n=100000 code_mse=1.279475e-02 code_nmse=-17.003dB decoder_mse=4.057548e-06 decoder_nmse=-20.463dB
+I 07.04/11:14:47 train_flow_matching.py:660 ] Epoch [30/400] lr=3.750000e-04 train_opt_loss=3.522287e-03 train_select_loss=3.522287e-03 train_endpoint=1.765584e-03 train_start=9.855584e-02
+I 07.04/11:15:10 train_flow_matching.py:660 ] Epoch [31/400] lr=3.875000e-04 train_opt_loss=3.567457e-03 train_select_loss=3.567457e-03 train_endpoint=1.774418e-03 train_start=9.855584e-02
+I 07.04/11:15:24 train_flow_matching.py:660 ] Epoch [32/400] lr=4.000000e-04 train_opt_loss=3.600571e-03 train_select_loss=3.600571e-03 train_endpoint=1.795263e-03 train_start=9.855584e-02
+I 07.04/11:15:34 train_flow_matching.py:660 ] Epoch [33/400] lr=4.125000e-04 train_opt_loss=3.479451e-03 train_select_loss=3.479451e-03 train_endpoint=1.726808e-03 train_start=9.855584e-02
+I 07.04/11:15:52 train_flow_matching.py:660 ] Epoch [34/400] lr=4.250000e-04 train_opt_loss=3.565707e-03 train_select_loss=3.565707e-03 train_endpoint=1.768030e-03 train_start=9.855584e-02
+I 07.04/11:16:11 train_flow_matching.py:660 ] Epoch [35/400] lr=4.375000e-04 train_opt_loss=3.472915e-03 train_select_loss=3.472915e-03 train_endpoint=1.723313e-03 train_start=9.855584e-02
+I 07.04/11:16:40 train_flow_matching.py:660 ] Epoch [36/400] lr=4.500000e-04 train_opt_loss=3.355980e-03 train_select_loss=3.355980e-03 train_endpoint=1.661948e-03 train_start=9.855584e-02
+I 07.04/11:17:06 train_flow_matching.py:660 ] Epoch [37/400] lr=4.625000e-04 train_opt_loss=3.610950e-03 train_select_loss=3.610950e-03 train_endpoint=1.780414e-03 train_start=9.855584e-02
+I 07.04/11:17:19 train_flow_matching.py:660 ] Epoch [38/400] lr=4.750000e-04 train_opt_loss=3.528728e-03 train_select_loss=3.528728e-03 train_endpoint=1.749765e-03 train_start=9.855584e-02
+I 07.04/11:17:32 train_flow_matching.py:660 ] Epoch [39/400] lr=4.875000e-04 train_opt_loss=3.408387e-03 train_select_loss=3.408387e-03 train_endpoint=1.673843e-03 train_start=9.855584e-02
+I 07.04/11:18:52 train_flow_matching.py:646 ] Epoch [40/400] true_decoder_eval n=100000 code_mse=1.055018e-02 code_nmse=-17.841dB decoder_mse=3.212072e-06 decoder_nmse=-21.478dB
+I 07.04/11:18:52 train_flow_matching.py:660 ] Epoch [40/400] lr=5.000000e-04 train_opt_loss=3.152303e-03 train_select_loss=3.152303e-03 train_endpoint=1.542904e-03 train_start=9.855584e-02
+I 07.04/11:19:19 train_flow_matching.py:660 ] Epoch [41/400] lr=4.999914e-04 train_opt_loss=3.021210e-03 train_select_loss=3.021210e-03 train_endpoint=1.483698e-03 train_start=9.855584e-02
+I 07.04/11:19:39 train_flow_matching.py:660 ] Epoch [42/400] lr=4.999657e-04 train_opt_loss=2.898794e-03 train_select_loss=2.898794e-03 train_endpoint=1.430528e-03 train_start=9.855584e-02
+I 07.04/11:19:58 train_flow_matching.py:660 ] Epoch [43/400] lr=4.999229e-04 train_opt_loss=2.749240e-03 train_select_loss=2.749240e-03 train_endpoint=1.344805e-03 train_start=9.855584e-02
+I 07.04/11:20:22 train_flow_matching.py:660 ] Epoch [44/400] lr=4.998629e-04 train_opt_loss=2.885224e-03 train_select_loss=2.885224e-03 train_endpoint=1.427260e-03 train_start=9.855584e-02
+I 07.04/11:20:36 train_flow_matching.py:660 ] Epoch [45/400] lr=4.997858e-04 train_opt_loss=3.372602e-03 train_select_loss=3.372602e-03 train_endpoint=1.632916e-03 train_start=9.855584e-02
+I 07.04/11:20:46 train_flow_matching.py:660 ] Epoch [46/400] lr=4.996916e-04 train_opt_loss=2.741596e-03 train_select_loss=2.741596e-03 train_endpoint=1.349074e-03 train_start=9.855584e-02
+I 07.04/11:21:06 train_flow_matching.py:660 ] Epoch [47/400] lr=4.995803e-04 train_opt_loss=2.558115e-03 train_select_loss=2.558115e-03 train_endpoint=1.257201e-03 train_start=9.855584e-02
+I 07.04/11:21:29 train_flow_matching.py:660 ] Epoch [48/400] lr=4.994519e-04 train_opt_loss=2.471290e-03 train_select_loss=2.471290e-03 train_endpoint=1.216602e-03 train_start=9.855584e-02
+I 07.04/11:21:53 train_flow_matching.py:660 ] Epoch [49/400] lr=4.993064e-04 train_opt_loss=2.323860e-03 train_select_loss=2.323860e-03 train_endpoint=1.138395e-03 train_start=9.855584e-02
+I 07.04/11:23:41 train_flow_matching.py:646 ] Epoch [50/400] true_decoder_eval n=100000 code_mse=1.017400e-02 code_nmse=-17.998dB decoder_mse=2.993130e-06 decoder_nmse=-21.785dB
+I 07.04/11:23:41 train_flow_matching.py:660 ] Epoch [50/400] lr=4.991438e-04 train_opt_loss=2.370077e-03 train_select_loss=2.370077e-03 train_endpoint=1.164724e-03 train_start=9.855584e-02
+I 07.04/11:23:56 train_flow_matching.py:660 ] Epoch [51/400] lr=4.989641e-04 train_opt_loss=2.377062e-03 train_select_loss=2.377062e-03 train_endpoint=1.162852e-03 train_start=9.855584e-02
+I 07.04/11:24:15 train_flow_matching.py:660 ] Epoch [52/400] lr=4.987674e-04 train_opt_loss=2.258000e-03 train_select_loss=2.258000e-03 train_endpoint=1.106391e-03 train_start=9.855584e-02
+I 07.04/11:24:37 train_flow_matching.py:660 ] Epoch [53/400] lr=4.985537e-04 train_opt_loss=2.271772e-03 train_select_loss=2.271772e-03 train_endpoint=1.113960e-03 train_start=9.855584e-02
+I 07.04/11:24:52 train_flow_matching.py:660 ] Epoch [54/400] lr=4.983229e-04 train_opt_loss=2.257624e-03 train_select_loss=2.257624e-03 train_endpoint=1.109817e-03 train_start=9.855584e-02
+I 07.04/11:25:10 train_flow_matching.py:660 ] Epoch [55/400] lr=4.980751e-04 train_opt_loss=2.153831e-03 train_select_loss=2.153831e-03 train_endpoint=1.049429e-03 train_start=9.855584e-02
+I 07.04/11:25:31 train_flow_matching.py:660 ] Epoch [56/400] lr=4.978103e-04 train_opt_loss=2.119147e-03 train_select_loss=2.119147e-03 train_endpoint=1.040180e-03 train_start=9.855584e-02
+I 07.04/11:25:55 train_flow_matching.py:660 ] Epoch [57/400] lr=4.975286e-04 train_opt_loss=2.112886e-03 train_select_loss=2.112886e-03 train_endpoint=1.037578e-03 train_start=9.855584e-02
+I 07.04/11:26:20 train_flow_matching.py:660 ] Epoch [58/400] lr=4.972299e-04 train_opt_loss=2.019974e-03 train_select_loss=2.019974e-03 train_endpoint=9.862292e-04 train_start=9.855584e-02
+I 07.04/11:26:44 train_flow_matching.py:660 ] Epoch [59/400] lr=4.969143e-04 train_opt_loss=1.985218e-03 train_select_loss=1.985218e-03 train_endpoint=9.747947e-04 train_start=9.855584e-02
+I 07.04/11:28:13 train_flow_matching.py:646 ] Epoch [60/400] true_decoder_eval n=100000 code_mse=6.090005e-03 code_nmse=-20.227dB decoder_mse=2.125616e-06 decoder_nmse=-23.271dB
+I 07.04/11:28:13 train_flow_matching.py:660 ] Epoch [60/400] lr=4.965817e-04 train_opt_loss=1.932870e-03 train_select_loss=1.932870e-03 train_endpoint=9.469954e-04 train_start=9.855584e-02
+I 07.04/11:28:34 train_flow_matching.py:660 ] Epoch [61/400] lr=4.962324e-04 train_opt_loss=1.909026e-03 train_select_loss=1.909026e-03 train_endpoint=9.335065e-04 train_start=9.855584e-02
+I 07.04/11:28:57 train_flow_matching.py:660 ] Epoch [62/400] lr=4.958661e-04 train_opt_loss=1.883110e-03 train_select_loss=1.883110e-03 train_endpoint=9.192151e-04 train_start=9.855584e-02
+I 07.04/11:29:25 train_flow_matching.py:660 ] Epoch [63/400] lr=4.954831e-04 train_opt_loss=2.009084e-03 train_select_loss=2.009084e-03 train_endpoint=9.843871e-04 train_start=9.855584e-02
+I 07.04/11:29:36 train_flow_matching.py:660 ] Epoch [64/400] lr=4.950832e-04 train_opt_loss=1.875196e-03 train_select_loss=1.875196e-03 train_endpoint=9.155032e-04 train_start=9.855584e-02
+I 07.04/11:29:58 train_flow_matching.py:660 ] Epoch [65/400] lr=4.946666e-04 train_opt_loss=1.830860e-03 train_select_loss=1.830860e-03 train_endpoint=8.907161e-04 train_start=9.855584e-02
+I 07.04/11:30:16 train_flow_matching.py:660 ] Epoch [66/400] lr=4.942333e-04 train_opt_loss=1.754961e-03 train_select_loss=1.754961e-03 train_endpoint=8.557685e-04 train_start=9.855584e-02
+I 07.04/11:30:38 train_flow_matching.py:660 ] Epoch [67/400] lr=4.937832e-04 train_opt_loss=1.736369e-03 train_select_loss=1.736369e-03 train_endpoint=8.460136e-04 train_start=9.855584e-02
+I 07.04/11:31:05 train_flow_matching.py:660 ] Epoch [68/400] lr=4.933165e-04 train_opt_loss=1.685926e-03 train_select_loss=1.685926e-03 train_endpoint=8.223932e-04 train_start=9.855584e-02
+I 07.04/11:31:29 train_flow_matching.py:660 ] Epoch [69/400] lr=4.928332e-04 train_opt_loss=1.674704e-03 train_select_loss=1.674704e-03 train_endpoint=8.211444e-04 train_start=9.855584e-02
+I 07.04/11:33:13 train_flow_matching.py:646 ] Epoch [70/400] true_decoder_eval n=100000 code_mse=4.832222e-03 code_nmse=-21.232dB decoder_mse=1.812810e-06 decoder_nmse=-23.962dB
+I 07.04/11:33:13 train_flow_matching.py:660 ] Epoch [70/400] lr=4.923333e-04 train_opt_loss=1.600405e-03 train_select_loss=1.600405e-03 train_endpoint=7.754564e-04 train_start=9.855584e-02
+I 07.04/11:33:36 train_flow_matching.py:660 ] Epoch [71/400] lr=4.918169e-04 train_opt_loss=1.581147e-03 train_select_loss=1.581147e-03 train_endpoint=7.728664e-04 train_start=9.855584e-02
+I 07.04/11:33:56 train_flow_matching.py:660 ] Epoch [72/400] lr=4.912839e-04 train_opt_loss=1.529591e-03 train_select_loss=1.529591e-03 train_endpoint=7.397717e-04 train_start=9.855584e-02
+I 07.04/11:34:20 train_flow_matching.py:660 ] Epoch [73/400] lr=4.907344e-04 train_opt_loss=1.522283e-03 train_select_loss=1.522283e-03 train_endpoint=7.396863e-04 train_start=9.855584e-02
+I 07.04/11:34:43 train_flow_matching.py:660 ] Epoch [74/400] lr=4.901686e-04 train_opt_loss=1.534672e-03 train_select_loss=1.534672e-03 train_endpoint=7.515236e-04 train_start=9.855584e-02
+I 07.04/11:34:56 train_flow_matching.py:660 ] Epoch [75/400] lr=4.895863e-04 train_opt_loss=1.566388e-03 train_select_loss=1.566388e-03 train_endpoint=7.651071e-04 train_start=9.855584e-02
+I 07.04/11:35:06 train_flow_matching.py:660 ] Epoch [76/400] lr=4.889877e-04 train_opt_loss=1.498021e-03 train_select_loss=1.498021e-03 train_endpoint=7.286404e-04 train_start=9.855584e-02
+I 07.04/11:35:27 train_flow_matching.py:660 ] Epoch [77/400] lr=4.883728e-04 train_opt_loss=1.484001e-03 train_select_loss=1.484001e-03 train_endpoint=7.244868e-04 train_start=9.855584e-02
+I 07.04/11:35:49 train_flow_matching.py:660 ] Epoch [78/400] lr=4.877417e-04 train_opt_loss=1.449684e-03 train_select_loss=1.449684e-03 train_endpoint=7.058299e-04 train_start=9.855584e-02
+I 07.04/11:36:13 train_flow_matching.py:660 ] Epoch [79/400] lr=4.870943e-04 train_opt_loss=1.382228e-03 train_select_loss=1.382228e-03 train_endpoint=6.695249e-04 train_start=9.855584e-02
+I 07.04/11:37:53 train_flow_matching.py:646 ] Epoch [80/400] true_decoder_eval n=100000 code_mse=4.053276e-03 code_nmse=-21.995dB decoder_mse=1.627699e-06 decoder_nmse=-24.430dB
+I 07.04/11:37:53 train_flow_matching.py:660 ] Epoch [80/400] lr=4.864308e-04 train_opt_loss=1.337644e-03 train_select_loss=1.337644e-03 train_endpoint=6.488443e-04 train_start=9.855584e-02
+I 07.04/11:38:19 train_flow_matching.py:660 ] Epoch [81/400] lr=4.857512e-04 train_opt_loss=1.321190e-03 train_select_loss=1.321190e-03 train_endpoint=6.425887e-04 train_start=9.855584e-02
+I 07.04/11:38:41 train_flow_matching.py:660 ] Epoch [82/400] lr=4.850556e-04 train_opt_loss=1.291268e-03 train_select_loss=1.291268e-03 train_endpoint=6.244115e-04 train_start=9.855584e-02
+I 07.04/11:39:05 train_flow_matching.py:660 ] Epoch [83/400] lr=4.843440e-04 train_opt_loss=1.290374e-03 train_select_loss=1.290374e-03 train_endpoint=6.259598e-04 train_start=9.855584e-02
+I 07.04/11:39:22 train_flow_matching.py:660 ] Epoch [84/400] lr=4.836164e-04 train_opt_loss=1.268851e-03 train_select_loss=1.268851e-03 train_endpoint=6.165879e-04 train_start=9.855584e-02
+I 07.04/11:39:45 train_flow_matching.py:660 ] Epoch [85/400] lr=4.828729e-04 train_opt_loss=1.253007e-03 train_select_loss=1.253007e-03 train_endpoint=6.057725e-04 train_start=9.855584e-02
+I 07.04/11:40:16 train_flow_matching.py:660 ] Epoch [86/400] lr=4.821136e-04 train_opt_loss=1.235971e-03 train_select_loss=1.235971e-03 train_endpoint=5.997413e-04 train_start=9.855584e-02
+I 07.04/11:40:41 train_flow_matching.py:660 ] Epoch [87/400] lr=4.813385e-04 train_opt_loss=1.325141e-03 train_select_loss=1.325141e-03 train_endpoint=6.446394e-04 train_start=9.855584e-02
+I 07.04/11:40:51 train_flow_matching.py:660 ] Epoch [88/400] lr=4.805477e-04 train_opt_loss=1.238803e-03 train_select_loss=1.238803e-03 train_endpoint=5.997131e-04 train_start=9.855584e-02
+I 07.04/11:41:12 train_flow_matching.py:660 ] Epoch [89/400] lr=4.797413e-04 train_opt_loss=1.198795e-03 train_select_loss=1.198795e-03 train_endpoint=5.816059e-04 train_start=9.855584e-02
+I 07.04/11:42:54 train_flow_matching.py:646 ] Epoch [90/400] true_decoder_eval n=100000 code_mse=3.244863e-03 code_nmse=-22.961dB decoder_mse=1.357473e-06 decoder_nmse=-25.219dB
+I 07.04/11:42:54 train_flow_matching.py:660 ] Epoch [90/400] lr=4.789193e-04 train_opt_loss=1.132816e-03 train_select_loss=1.132816e-03 train_endpoint=5.463854e-04 train_start=9.855584e-02
+I 07.04/11:43:19 train_flow_matching.py:660 ] Epoch [91/400] lr=4.780817e-04 train_opt_loss=1.116413e-03 train_select_loss=1.116413e-03 train_endpoint=5.380346e-04 train_start=9.855584e-02
+I 07.04/11:43:41 train_flow_matching.py:660 ] Epoch [92/400] lr=4.772287e-04 train_opt_loss=1.101373e-03 train_select_loss=1.101373e-03 train_endpoint=5.309447e-04 train_start=9.855584e-02
+I 07.04/11:44:00 train_flow_matching.py:660 ] Epoch [93/400] lr=4.763602e-04 train_opt_loss=1.081570e-03 train_select_loss=1.081570e-03 train_endpoint=5.242845e-04 train_start=9.855584e-02
+I 07.04/11:44:22 train_flow_matching.py:660 ] Epoch [94/400] lr=4.754765e-04 train_opt_loss=1.063395e-03 train_select_loss=1.063395e-03 train_endpoint=5.123503e-04 train_start=9.855584e-02
+I 07.04/11:44:45 train_flow_matching.py:660 ] Epoch [95/400] lr=4.745774e-04 train_opt_loss=1.056750e-03 train_select_loss=1.056750e-03 train_endpoint=5.094651e-04 train_start=9.855584e-02
+I 07.04/11:45:14 train_flow_matching.py:660 ] Epoch [96/400] lr=4.736632e-04 train_opt_loss=1.044764e-03 train_select_loss=1.044764e-03 train_endpoint=5.013387e-04 train_start=9.855584e-02
+I 07.04/11:45:43 train_flow_matching.py:660 ] Epoch [97/400] lr=4.727339e-04 train_opt_loss=1.012989e-03 train_select_loss=1.012989e-03 train_endpoint=4.872243e-04 train_start=9.855584e-02
+I 07.04/11:46:13 train_flow_matching.py:660 ] Epoch [98/400] lr=4.717894e-04 train_opt_loss=9.849181e-04 train_select_loss=9.849181e-04 train_endpoint=4.733767e-04 train_start=9.855584e-02
+I 07.04/11:46:39 train_flow_matching.py:660 ] Epoch [99/400] lr=4.708300e-04 train_opt_loss=1.020856e-03 train_select_loss=1.020856e-03 train_endpoint=4.933497e-04 train_start=9.855584e-02
+I 07.04/11:48:16 train_flow_matching.py:646 ] Epoch [100/400] true_decoder_eval n=100000 code_mse=2.803597e-03 code_nmse=-23.596dB decoder_mse=1.261829e-06 decoder_nmse=-25.536dB
+I 07.04/11:48:16 train_flow_matching.py:660 ] Epoch [100/400] lr=4.698557e-04 train_opt_loss=9.792281e-04 train_select_loss=9.792281e-04 train_endpoint=4.686217e-04 train_start=9.855584e-02
+I 07.04/11:48:35 train_flow_matching.py:660 ] Epoch [101/400] lr=4.688666e-04 train_opt_loss=9.837484e-04 train_select_loss=9.837484e-04 train_endpoint=4.739761e-04 train_start=9.855584e-02
+I 07.04/11:48:50 train_flow_matching.py:660 ] Epoch [102/400] lr=4.678626e-04 train_opt_loss=9.866014e-04 train_select_loss=9.866014e-04 train_endpoint=4.778470e-04 train_start=9.855584e-02
+I 07.04/11:49:07 train_flow_matching.py:660 ] Epoch [103/400] lr=4.668440e-04 train_opt_loss=9.655115e-04 train_select_loss=9.655115e-04 train_endpoint=4.646890e-04 train_start=9.855584e-02
+I 07.04/11:49:31 train_flow_matching.py:660 ] Epoch [104/400] lr=4.658108e-04 train_opt_loss=9.478290e-04 train_select_loss=9.478290e-04 train_endpoint=4.572385e-04 train_start=9.855584e-02
+I 07.04/11:49:53 train_flow_matching.py:660 ] Epoch [105/400] lr=4.647631e-04 train_opt_loss=9.153266e-04 train_select_loss=9.153266e-04 train_endpoint=4.405035e-04 train_start=9.855584e-02
+I 07.04/11:50:14 train_flow_matching.py:660 ] Epoch [106/400] lr=4.637009e-04 train_opt_loss=9.004240e-04 train_select_loss=9.004240e-04 train_endpoint=4.325354e-04 train_start=9.855584e-02
+I 07.04/11:50:34 train_flow_matching.py:660 ] Epoch [107/400] lr=4.626243e-04 train_opt_loss=8.810468e-04 train_select_loss=8.810468e-04 train_endpoint=4.229535e-04 train_start=9.855584e-02
+I 07.04/11:50:50 train_flow_matching.py:660 ] Epoch [108/400] lr=4.615335e-04 train_opt_loss=8.814371e-04 train_select_loss=8.814371e-04 train_endpoint=4.236404e-04 train_start=9.855584e-02
+I 07.04/11:51:05 train_flow_matching.py:660 ] Epoch [109/400] lr=4.604284e-04 train_opt_loss=8.626115e-04 train_select_loss=8.626115e-04 train_endpoint=4.135068e-04 train_start=9.855584e-02
+I 07.04/11:52:37 train_flow_matching.py:646 ] Epoch [110/400] true_decoder_eval n=100000 code_mse=2.356450e-03 code_nmse=-24.351dB decoder_mse=1.146666e-06 decoder_nmse=-25.951dB
+I 07.04/11:52:37 train_flow_matching.py:660 ] Epoch [110/400] lr=4.593092e-04 train_opt_loss=9.024579e-04 train_select_loss=9.024579e-04 train_endpoint=4.334482e-04 train_start=9.855584e-02
+I 07.04/11:52:49 train_flow_matching.py:660 ] Epoch [111/400] lr=4.581760e-04 train_opt_loss=8.450832e-04 train_select_loss=8.450832e-04 train_endpoint=4.043251e-04 train_start=9.855584e-02
+I 07.04/11:53:12 train_flow_matching.py:660 ] Epoch [112/400] lr=4.570288e-04 train_opt_loss=8.131819e-04 train_select_loss=8.131819e-04 train_endpoint=3.895215e-04 train_start=9.855584e-02
+I 07.04/11:53:35 train_flow_matching.py:660 ] Epoch [113/400] lr=4.558678e-04 train_opt_loss=8.021424e-04 train_select_loss=8.021424e-04 train_endpoint=3.832225e-04 train_start=9.855584e-02
+I 07.04/11:53:58 train_flow_matching.py:660 ] Epoch [114/400] lr=4.546930e-04 train_opt_loss=7.855532e-04 train_select_loss=7.855532e-04 train_endpoint=3.750766e-04 train_start=9.855584e-02
+I 07.04/11:54:22 train_flow_matching.py:660 ] Epoch [115/400] lr=4.535045e-04 train_opt_loss=7.782306e-04 train_select_loss=7.782306e-04 train_endpoint=3.718343e-04 train_start=9.855584e-02
+I 07.04/11:54:47 train_flow_matching.py:660 ] Epoch [116/400] lr=4.523024e-04 train_opt_loss=7.781862e-04 train_select_loss=7.781862e-04 train_endpoint=3.713256e-04 train_start=9.855584e-02
+I 07.04/11:55:13 train_flow_matching.py:660 ] Epoch [117/400] lr=4.510868e-04 train_opt_loss=7.749415e-04 train_select_loss=7.749415e-04 train_endpoint=3.714875e-04 train_start=9.855584e-02
+I 07.04/11:55:31 train_flow_matching.py:660 ] Epoch [118/400] lr=4.498578e-04 train_opt_loss=7.706174e-04 train_select_loss=7.706174e-04 train_endpoint=3.697618e-04 train_start=9.855584e-02
+I 07.04/11:55:54 train_flow_matching.py:660 ] Epoch [119/400] lr=4.486155e-04 train_opt_loss=7.586458e-04 train_select_loss=7.586458e-04 train_endpoint=3.619245e-04 train_start=9.855584e-02
+I 07.04/11:57:44 train_flow_matching.py:646 ] Epoch [120/400] true_decoder_eval n=100000 code_mse=2.070695e-03 code_nmse=-24.912dB decoder_mse=1.053491e-06 decoder_nmse=-26.320dB
+I 07.04/11:57:44 train_flow_matching.py:660 ] Epoch [120/400] lr=4.473600e-04 train_opt_loss=7.364558e-04 train_select_loss=7.364558e-04 train_endpoint=3.508526e-04 train_start=9.855584e-02
+I 07.04/11:58:11 train_flow_matching.py:660 ] Epoch [121/400] lr=4.460913e-04 train_opt_loss=7.299160e-04 train_select_loss=7.299160e-04 train_endpoint=3.482157e-04 train_start=9.855584e-02
+I 07.04/11:58:35 train_flow_matching.py:660 ] Epoch [122/400] lr=4.448097e-04 train_opt_loss=7.279580e-04 train_select_loss=7.279580e-04 train_endpoint=3.476454e-04 train_start=9.855584e-02
+I 07.04/11:59:01 train_flow_matching.py:660 ] Epoch [123/400] lr=4.435150e-04 train_opt_loss=7.089649e-04 train_select_loss=7.089649e-04 train_endpoint=3.381750e-04 train_start=9.855584e-02
+I 07.04/11:59:25 train_flow_matching.py:660 ] Epoch [124/400] lr=4.422076e-04 train_opt_loss=7.086235e-04 train_select_loss=7.086235e-04 train_endpoint=3.378723e-04 train_start=9.855584e-02
+I 07.04/11:59:48 train_flow_matching.py:660 ] Epoch [125/400] lr=4.408874e-04 train_opt_loss=7.032086e-04 train_select_loss=7.032086e-04 train_endpoint=3.362611e-04 train_start=9.855584e-02
+I 07.04/12:00:14 train_flow_matching.py:660 ] Epoch [126/400] lr=4.395546e-04 train_opt_loss=6.886804e-04 train_select_loss=6.886804e-04 train_endpoint=3.268443e-04 train_start=9.855584e-02
+I 07.04/12:00:32 train_flow_matching.py:660 ] Epoch [127/400] lr=4.382092e-04 train_opt_loss=6.785415e-04 train_select_loss=6.785415e-04 train_endpoint=3.245294e-04 train_start=9.855584e-02
+I 07.04/12:00:56 train_flow_matching.py:660 ] Epoch [128/400] lr=4.368515e-04 train_opt_loss=6.696903e-04 train_select_loss=6.696903e-04 train_endpoint=3.195805e-04 train_start=9.855584e-02
+I 07.04/12:01:18 train_flow_matching.py:660 ] Epoch [129/400] lr=4.354814e-04 train_opt_loss=6.565873e-04 train_select_loss=6.565873e-04 train_endpoint=3.110216e-04 train_start=9.855584e-02
+I 07.04/12:03:06 train_flow_matching.py:646 ] Epoch [130/400] true_decoder_eval n=100000 code_mse=1.709781e-03 code_nmse=-25.744dB decoder_mse=1.006810e-06 decoder_nmse=-26.516dB
+I 07.04/12:03:06 train_flow_matching.py:660 ] Epoch [130/400] lr=4.340990e-04 train_opt_loss=6.560889e-04 train_select_loss=6.560889e-04 train_endpoint=3.146449e-04 train_start=9.855584e-02
+I 07.04/12:03:25 train_flow_matching.py:660 ] Epoch [131/400] lr=4.327046e-04 train_opt_loss=6.456297e-04 train_select_loss=6.456297e-04 train_endpoint=3.061137e-04 train_start=9.855584e-02
+I 07.04/12:03:48 train_flow_matching.py:660 ] Epoch [132/400] lr=4.312981e-04 train_opt_loss=6.536797e-04 train_select_loss=6.536797e-04 train_endpoint=3.120638e-04 train_start=9.855584e-02
+I 07.04/12:04:04 train_flow_matching.py:660 ] Epoch [133/400] lr=4.298798e-04 train_opt_loss=6.271392e-04 train_select_loss=6.271392e-04 train_endpoint=2.984059e-04 train_start=9.855584e-02
+I 07.04/12:04:28 train_flow_matching.py:660 ] Epoch [134/400] lr=4.284496e-04 train_opt_loss=6.189023e-04 train_select_loss=6.189023e-04 train_endpoint=2.950368e-04 train_start=9.855584e-02
+I 07.04/12:04:52 train_flow_matching.py:660 ] Epoch [135/400] lr=4.270078e-04 train_opt_loss=6.134170e-04 train_select_loss=6.134170e-04 train_endpoint=2.921633e-04 train_start=9.855584e-02
+I 07.04/12:05:13 train_flow_matching.py:660 ] Epoch [136/400] lr=4.255544e-04 train_opt_loss=6.011137e-04 train_select_loss=6.011137e-04 train_endpoint=2.846555e-04 train_start=9.855584e-02
+I 07.04/12:05:31 train_flow_matching.py:660 ] Epoch [137/400] lr=4.240895e-04 train_opt_loss=5.932484e-04 train_select_loss=5.932484e-04 train_endpoint=2.815433e-04 train_start=9.855584e-02
+I 07.04/12:05:52 train_flow_matching.py:660 ] Epoch [138/400] lr=4.226133e-04 train_opt_loss=5.834551e-04 train_select_loss=5.834551e-04 train_endpoint=2.762528e-04 train_start=9.855584e-02
+I 07.04/12:06:16 train_flow_matching.py:660 ] Epoch [139/400] lr=4.211258e-04 train_opt_loss=5.726523e-04 train_select_loss=5.726523e-04 train_endpoint=2.718589e-04 train_start=9.855584e-02
+I 07.04/12:07:39 train_flow_matching.py:646 ] Epoch [140/400] true_decoder_eval n=100000 code_mse=1.471160e-03 code_nmse=-26.397dB decoder_mse=9.167410e-07 decoder_nmse=-26.923dB
+I 07.04/12:07:39 train_flow_matching.py:660 ] Epoch [140/400] lr=4.196272e-04 train_opt_loss=5.733116e-04 train_select_loss=5.733116e-04 train_endpoint=2.730135e-04 train_start=9.855584e-02
+I 07.04/12:07:51 train_flow_matching.py:660 ] Epoch [141/400] lr=4.181176e-04 train_opt_loss=5.720687e-04 train_select_loss=5.720687e-04 train_endpoint=2.712922e-04 train_start=9.855584e-02
+I 07.04/12:08:17 train_flow_matching.py:660 ] Epoch [142/400] lr=4.165971e-04 train_opt_loss=5.555108e-04 train_select_loss=5.555108e-04 train_endpoint=2.632794e-04 train_start=9.855584e-02
+I 07.04/12:08:37 train_flow_matching.py:660 ] Epoch [143/400] lr=4.150658e-04 train_opt_loss=5.442362e-04 train_select_loss=5.442362e-04 train_endpoint=2.573352e-04 train_start=9.855584e-02
+I 07.04/12:08:58 train_flow_matching.py:660 ] Epoch [144/400] lr=4.135238e-04 train_opt_loss=5.312910e-04 train_select_loss=5.312910e-04 train_endpoint=2.512449e-04 train_start=9.855584e-02
+I 07.04/12:09:21 train_flow_matching.py:660 ] Epoch [145/400] lr=4.119713e-04 train_opt_loss=5.267873e-04 train_select_loss=5.267873e-04 train_endpoint=2.485662e-04 train_start=9.855584e-02
+I 07.04/12:09:51 train_flow_matching.py:660 ] Epoch [146/400] lr=4.104084e-04 train_opt_loss=5.276217e-04 train_select_loss=5.276217e-04 train_endpoint=2.477667e-04 train_start=9.855584e-02
+I 07.04/12:10:10 train_flow_matching.py:660 ] Epoch [147/400] lr=4.088351e-04 train_opt_loss=5.265637e-04 train_select_loss=5.265637e-04 train_endpoint=2.497612e-04 train_start=9.855584e-02
+I 07.04/12:10:26 train_flow_matching.py:660 ] Epoch [148/400] lr=4.072517e-04 train_opt_loss=5.181709e-04 train_select_loss=5.181709e-04 train_endpoint=2.439466e-04 train_start=9.855584e-02
+I 07.04/12:10:48 train_flow_matching.py:660 ] Epoch [149/400] lr=4.056582e-04 train_opt_loss=5.217021e-04 train_select_loss=5.217021e-04 train_endpoint=2.478740e-04 train_start=9.855584e-02
+I 07.04/12:12:13 train_flow_matching.py:646 ] Epoch [150/400] true_decoder_eval n=100000 code_mse=1.272599e-03 code_nmse=-27.026dB decoder_mse=8.855810e-07 decoder_nmse=-27.074dB
+I 07.04/12:12:13 train_flow_matching.py:660 ] Epoch [150/400] lr=4.040547e-04 train_opt_loss=5.058452e-04 train_select_loss=5.058452e-04 train_endpoint=2.384575e-04 train_start=9.855584e-02
+I 07.04/12:12:37 train_flow_matching.py:660 ] Epoch [151/400] lr=4.024414e-04 train_opt_loss=5.127270e-04 train_select_loss=5.127270e-04 train_endpoint=2.442546e-04 train_start=9.855584e-02
+I 07.04/12:12:49 train_flow_matching.py:660 ] Epoch [152/400] lr=4.008184e-04 train_opt_loss=5.016830e-04 train_select_loss=5.016830e-04 train_endpoint=2.380253e-04 train_start=9.855584e-02
+I 07.04/12:13:13 train_flow_matching.py:660 ] Epoch [153/400] lr=3.991858e-04 train_opt_loss=4.821729e-04 train_select_loss=4.821729e-04 train_endpoint=2.259200e-04 train_start=9.855584e-02
+I 07.04/12:13:33 train_flow_matching.py:660 ] Epoch [154/400] lr=3.975438e-04 train_opt_loss=4.708784e-04 train_select_loss=4.708784e-04 train_endpoint=2.216286e-04 train_start=9.855584e-02
+I 07.04/12:13:55 train_flow_matching.py:660 ] Epoch [155/400] lr=3.958924e-04 train_opt_loss=4.722822e-04 train_select_loss=4.722822e-04 train_endpoint=2.236672e-04 train_start=9.855584e-02
+I 07.04/12:14:09 train_flow_matching.py:660 ] Epoch [156/400] lr=3.942318e-04 train_opt_loss=4.683515e-04 train_select_loss=4.683515e-04 train_endpoint=2.215821e-04 train_start=9.855584e-02
+I 07.04/12:14:32 train_flow_matching.py:660 ] Epoch [157/400] lr=3.925622e-04 train_opt_loss=4.633688e-04 train_select_loss=4.633688e-04 train_endpoint=2.186739e-04 train_start=9.855584e-02
+I 07.04/12:15:00 train_flow_matching.py:660 ] Epoch [158/400] lr=3.908836e-04 train_opt_loss=4.592596e-04 train_select_loss=4.592596e-04 train_endpoint=2.167367e-04 train_start=9.855584e-02
+I 07.04/12:15:25 train_flow_matching.py:660 ] Epoch [159/400] lr=3.891961e-04 train_opt_loss=4.603517e-04 train_select_loss=4.603517e-04 train_endpoint=2.180166e-04 train_start=9.855584e-02
+I 07.04/12:17:08 train_flow_matching.py:646 ] Epoch [160/400] true_decoder_eval n=100000 code_mse=1.097347e-03 code_nmse=-27.670dB decoder_mse=8.286016e-07 decoder_nmse=-27.362dB
+I 07.04/12:17:08 train_flow_matching.py:660 ] Epoch [160/400] lr=3.875000e-04 train_opt_loss=4.543431e-04 train_select_loss=4.543431e-04 train_endpoint=2.147465e-04 train_start=9.855584e-02
+I 07.04/12:17:34 train_flow_matching.py:660 ] Epoch [161/400] lr=3.857953e-04 train_opt_loss=4.416632e-04 train_select_loss=4.416632e-04 train_endpoint=2.089575e-04 train_start=9.855584e-02
+I 07.04/12:17:53 train_flow_matching.py:660 ] Epoch [162/400] lr=3.840822e-04 train_opt_loss=4.349341e-04 train_select_loss=4.349341e-04 train_endpoint=2.045563e-04 train_start=9.855584e-02
+I 07.04/12:18:16 train_flow_matching.py:660 ] Epoch [163/400] lr=3.823607e-04 train_opt_loss=4.326860e-04 train_select_loss=4.326860e-04 train_endpoint=2.041653e-04 train_start=9.855584e-02
+I 07.04/12:18:34 train_flow_matching.py:660 ] Epoch [164/400] lr=3.806311e-04 train_opt_loss=4.317468e-04 train_select_loss=4.317468e-04 train_endpoint=2.041473e-04 train_start=9.855584e-02
+I 07.04/12:18:57 train_flow_matching.py:660 ] Epoch [165/400] lr=3.788934e-04 train_opt_loss=4.233540e-04 train_select_loss=4.233540e-04 train_endpoint=1.995786e-04 train_start=9.855584e-02
+I 07.04/12:19:21 train_flow_matching.py:660 ] Epoch [166/400] lr=3.771479e-04 train_opt_loss=4.087071e-04 train_select_loss=4.087071e-04 train_endpoint=1.913574e-04 train_start=9.855584e-02
+I 07.04/12:19:43 train_flow_matching.py:660 ] Epoch [167/400] lr=3.753945e-04 train_opt_loss=4.128298e-04 train_select_loss=4.128298e-04 train_endpoint=1.947023e-04 train_start=9.855584e-02
+I 07.04/12:19:51 train_flow_matching.py:660 ] Epoch [168/400] lr=3.736335e-04 train_opt_loss=4.049312e-04 train_select_loss=4.049312e-04 train_endpoint=1.908050e-04 train_start=9.855584e-02
+I 07.04/12:20:15 train_flow_matching.py:660 ] Epoch [169/400] lr=3.718650e-04 train_opt_loss=4.012183e-04 train_select_loss=4.012183e-04 train_endpoint=1.885786e-04 train_start=9.855584e-02
+I 07.04/12:21:59 train_flow_matching.py:646 ] Epoch [170/400] true_decoder_eval n=100000 code_mse=9.564119e-04 code_nmse=-28.267dB decoder_mse=7.827202e-07 decoder_nmse=-27.610dB
+I 07.04/12:21:59 train_flow_matching.py:660 ] Epoch [170/400] lr=3.700891e-04 train_opt_loss=3.932803e-04 train_select_loss=3.932803e-04 train_endpoint=1.846005e-04 train_start=9.855584e-02
+I 07.04/12:22:33 train_flow_matching.py:660 ] Epoch [171/400] lr=3.683060e-04 train_opt_loss=3.930489e-04 train_select_loss=3.930489e-04 train_endpoint=1.849915e-04 train_start=9.855584e-02
+I 07.04/12:22:45 train_flow_matching.py:660 ] Epoch [172/400] lr=3.665157e-04 train_opt_loss=3.956511e-04 train_select_loss=3.956511e-04 train_endpoint=1.859102e-04 train_start=9.855584e-02
+I 07.04/12:23:05 train_flow_matching.py:660 ] Epoch [173/400] lr=3.647185e-04 train_opt_loss=3.957871e-04 train_select_loss=3.957871e-04 train_endpoint=1.863094e-04 train_start=9.855584e-02
+I 07.04/12:23:19 train_flow_matching.py:660 ] Epoch [174/400] lr=3.629145e-04 train_opt_loss=3.889556e-04 train_select_loss=3.889556e-04 train_endpoint=1.833916e-04 train_start=9.855584e-02
+I 07.04/12:23:41 train_flow_matching.py:660 ] Epoch [175/400] lr=3.611038e-04 train_opt_loss=3.816302e-04 train_select_loss=3.816302e-04 train_endpoint=1.789088e-04 train_start=9.855584e-02
+I 07.04/12:24:02 train_flow_matching.py:660 ] Epoch [176/400] lr=3.592865e-04 train_opt_loss=3.765092e-04 train_select_loss=3.765092e-04 train_endpoint=1.773692e-04 train_start=9.855584e-02
+I 07.04/12:24:25 train_flow_matching.py:660 ] Epoch [177/400] lr=3.574628e-04 train_opt_loss=3.661460e-04 train_select_loss=3.661460e-04 train_endpoint=1.718794e-04 train_start=9.855584e-02
+I 07.04/12:24:48 train_flow_matching.py:660 ] Epoch [178/400] lr=3.556328e-04 train_opt_loss=3.611385e-04 train_select_loss=3.611385e-04 train_endpoint=1.687587e-04 train_start=9.855584e-02
+I 07.04/12:25:15 train_flow_matching.py:660 ] Epoch [179/400] lr=3.537967e-04 train_opt_loss=3.694791e-04 train_select_loss=3.694791e-04 train_endpoint=1.745770e-04 train_start=9.855584e-02
+I 07.04/12:26:41 train_flow_matching.py:646 ] Epoch [180/400] true_decoder_eval n=100000 code_mse=8.611269e-04 code_nmse=-28.723dB decoder_mse=7.707172e-07 decoder_nmse=-27.677dB
+I 07.04/12:26:41 train_flow_matching.py:660 ] Epoch [180/400] lr=3.519545e-04 train_opt_loss=3.561850e-04 train_select_loss=3.561850e-04 train_endpoint=1.663498e-04 train_start=9.855584e-02
+I 07.04/12:27:05 train_flow_matching.py:660 ] Epoch [181/400] lr=3.501065e-04 train_opt_loss=3.501613e-04 train_select_loss=3.501613e-04 train_endpoint=1.631002e-04 train_start=9.855584e-02
+I 07.04/12:27:26 train_flow_matching.py:660 ] Epoch [182/400] lr=3.482528e-04 train_opt_loss=3.469400e-04 train_select_loss=3.469400e-04 train_endpoint=1.620528e-04 train_start=9.855584e-02
+I 07.04/12:27:46 train_flow_matching.py:660 ] Epoch [183/400] lr=3.463935e-04 train_opt_loss=3.492941e-04 train_select_loss=3.492941e-04 train_endpoint=1.634688e-04 train_start=9.855584e-02
+I 07.04/12:27:59 train_flow_matching.py:660 ] Epoch [184/400] lr=3.445288e-04 train_opt_loss=3.392100e-04 train_select_loss=3.392100e-04 train_endpoint=1.593530e-04 train_start=9.855584e-02
+I 07.04/12:28:22 train_flow_matching.py:660 ] Epoch [185/400] lr=3.426588e-04 train_opt_loss=3.395619e-04 train_select_loss=3.395619e-04 train_endpoint=1.597375e-04 train_start=9.855584e-02
+I 07.04/12:28:33 train_flow_matching.py:660 ] Epoch [186/400] lr=3.407836e-04 train_opt_loss=3.320625e-04 train_select_loss=3.320625e-04 train_endpoint=1.548794e-04 train_start=9.855584e-02
+I 07.04/12:28:54 train_flow_matching.py:660 ] Epoch [187/400] lr=3.389035e-04 train_opt_loss=3.271560e-04 train_select_loss=3.271560e-04 train_endpoint=1.532682e-04 train_start=9.855584e-02
+I 07.04/12:29:17 train_flow_matching.py:660 ] Epoch [188/400] lr=3.370184e-04 train_opt_loss=3.175291e-04 train_select_loss=3.175291e-04 train_endpoint=1.483825e-04 train_start=9.855584e-02
+I 07.04/12:29:40 train_flow_matching.py:660 ] Epoch [189/400] lr=3.351286e-04 train_opt_loss=3.174212e-04 train_select_loss=3.174212e-04 train_endpoint=1.488701e-04 train_start=9.855584e-02
+I 07.04/12:31:12 train_flow_matching.py:646 ] Epoch [190/400] true_decoder_eval n=100000 code_mse=7.248679e-04 code_nmse=-29.471dB decoder_mse=7.281212e-07 decoder_nmse=-27.924dB
+I 07.04/12:31:12 train_flow_matching.py:660 ] Epoch [190/400] lr=3.332343e-04 train_opt_loss=3.170804e-04 train_select_loss=3.170804e-04 train_endpoint=1.487001e-04 train_start=9.855584e-02
+I 07.04/12:31:29 train_flow_matching.py:660 ] Epoch [191/400] lr=3.313355e-04 train_opt_loss=3.118419e-04 train_select_loss=3.118419e-04 train_endpoint=1.454379e-04 train_start=9.855584e-02
+I 07.04/12:31:49 train_flow_matching.py:660 ] Epoch [192/400] lr=3.294324e-04 train_opt_loss=3.111103e-04 train_select_loss=3.111103e-04 train_endpoint=1.454571e-04 train_start=9.855584e-02
+I 07.04/12:32:08 train_flow_matching.py:660 ] Epoch [193/400] lr=3.275252e-04 train_opt_loss=3.056671e-04 train_select_loss=3.056671e-04 train_endpoint=1.423797e-04 train_start=9.855584e-02
+I 07.04/12:32:27 train_flow_matching.py:660 ] Epoch [194/400] lr=3.256140e-04 train_opt_loss=3.015351e-04 train_select_loss=3.015351e-04 train_endpoint=1.412723e-04 train_start=9.855584e-02
+I 07.04/12:32:47 train_flow_matching.py:660 ] Epoch [195/400] lr=3.236989e-04 train_opt_loss=3.001394e-04 train_select_loss=3.001394e-04 train_endpoint=1.395246e-04 train_start=9.855584e-02
+I 07.04/12:33:14 train_flow_matching.py:660 ] Epoch [196/400] lr=3.217801e-04 train_opt_loss=2.944799e-04 train_select_loss=2.944799e-04 train_endpoint=1.374774e-04 train_start=9.855584e-02
+I 07.04/12:33:34 train_flow_matching.py:660 ] Epoch [197/400] lr=3.198578e-04 train_opt_loss=2.923090e-04 train_select_loss=2.923090e-04 train_endpoint=1.361107e-04 train_start=9.855584e-02
+I 07.04/12:33:56 train_flow_matching.py:660 ] Epoch [198/400] lr=3.179320e-04 train_opt_loss=2.882779e-04 train_select_loss=2.882779e-04 train_endpoint=1.342839e-04 train_start=9.855584e-02
+I 07.04/12:34:20 train_flow_matching.py:660 ] Epoch [199/400] lr=3.160030e-04 train_opt_loss=2.871169e-04 train_select_loss=2.871169e-04 train_endpoint=1.339223e-04 train_start=9.855584e-02
+I 07.04/12:35:42 train_flow_matching.py:646 ] Epoch [200/400] true_decoder_eval n=100000 code_mse=6.453799e-04 code_nmse=-29.975dB decoder_mse=7.049706e-07 decoder_nmse=-28.064dB
+I 07.04/12:35:42 train_flow_matching.py:660 ] Epoch [200/400] lr=3.140708e-04 train_opt_loss=2.790114e-04 train_select_loss=2.790114e-04 train_endpoint=1.292791e-04 train_start=9.855584e-02
+I 07.04/12:36:06 train_flow_matching.py:660 ] Epoch [201/400] lr=3.121357e-04 train_opt_loss=2.795699e-04 train_select_loss=2.795699e-04 train_endpoint=1.296895e-04 train_start=9.855584e-02
+I 07.04/12:36:19 train_flow_matching.py:660 ] Epoch [202/400] lr=3.101978e-04 train_opt_loss=2.755326e-04 train_select_loss=2.755326e-04 train_endpoint=1.282027e-04 train_start=9.855584e-02
+I 07.04/12:36:46 train_flow_matching.py:660 ] Epoch [203/400] lr=3.082571e-04 train_opt_loss=2.719506e-04 train_select_loss=2.719506e-04 train_endpoint=1.260914e-04 train_start=9.855584e-02
+I 07.04/12:37:16 train_flow_matching.py:660 ] Epoch [204/400] lr=3.063139e-04 train_opt_loss=2.684006e-04 train_select_loss=2.684006e-04 train_endpoint=1.241427e-04 train_start=9.855584e-02
+I 07.04/12:37:49 train_flow_matching.py:660 ] Epoch [205/400] lr=3.043684e-04 train_opt_loss=2.657717e-04 train_select_loss=2.657717e-04 train_endpoint=1.233346e-04 train_start=9.855584e-02
+I 07.04/12:38:17 train_flow_matching.py:660 ] Epoch [206/400] lr=3.024206e-04 train_opt_loss=2.621888e-04 train_select_loss=2.621888e-04 train_endpoint=1.215209e-04 train_start=9.855584e-02
+I 07.04/12:38:44 train_flow_matching.py:660 ] Epoch [207/400] lr=3.004707e-04 train_opt_loss=2.639634e-04 train_select_loss=2.639634e-04 train_endpoint=1.232389e-04 train_start=9.855584e-02
+I 07.04/12:38:58 train_flow_matching.py:660 ] Epoch [208/400] lr=2.985189e-04 train_opt_loss=2.585099e-04 train_select_loss=2.585099e-04 train_endpoint=1.198839e-04 train_start=9.855584e-02
+I 07.04/12:39:23 train_flow_matching.py:660 ] Epoch [209/400] lr=2.965653e-04 train_opt_loss=2.568171e-04 train_select_loss=2.568171e-04 train_endpoint=1.198132e-04 train_start=9.855584e-02
+I 07.04/12:40:58 train_flow_matching.py:646 ] Epoch [210/400] true_decoder_eval n=100000 code_mse=5.449860e-04 code_nmse=-30.709dB decoder_mse=6.760748e-07 decoder_nmse=-28.246dB
+I 07.04/12:40:58 train_flow_matching.py:660 ] Epoch [210/400] lr=2.946100e-04 train_opt_loss=2.564824e-04 train_select_loss=2.564824e-04 train_endpoint=1.197066e-04 train_start=9.855584e-02
+I 07.04/12:41:24 train_flow_matching.py:660 ] Epoch [211/400] lr=2.926533e-04 train_opt_loss=2.492682e-04 train_select_loss=2.492682e-04 train_endpoint=1.152706e-04 train_start=9.855584e-02
+I 07.04/12:41:45 train_flow_matching.py:660 ] Epoch [212/400] lr=2.906952e-04 train_opt_loss=2.472119e-04 train_select_loss=2.472119e-04 train_endpoint=1.151093e-04 train_start=9.855584e-02
+I 07.04/12:42:12 train_flow_matching.py:660 ] Epoch [213/400] lr=2.887359e-04 train_opt_loss=2.438126e-04 train_select_loss=2.438126e-04 train_endpoint=1.135161e-04 train_start=9.855584e-02
+I 07.04/12:42:34 train_flow_matching.py:660 ] Epoch [214/400] lr=2.867756e-04 train_opt_loss=2.444485e-04 train_select_loss=2.444485e-04 train_endpoint=1.137035e-04 train_start=9.855584e-02
+I 07.04/12:42:46 train_flow_matching.py:660 ] Epoch [215/400] lr=2.848144e-04 train_opt_loss=2.360077e-04 train_select_loss=2.360077e-04 train_endpoint=1.091169e-04 train_start=9.855584e-02
+I 07.04/12:43:16 train_flow_matching.py:660 ] Epoch [216/400] lr=2.828524e-04 train_opt_loss=2.363495e-04 train_select_loss=2.363495e-04 train_endpoint=1.094436e-04 train_start=9.855584e-02
+I 07.04/12:43:29 train_flow_matching.py:660 ] Epoch [217/400] lr=2.808898e-04 train_opt_loss=2.311388e-04 train_select_loss=2.311388e-04 train_endpoint=1.062878e-04 train_start=9.855584e-02
+I 07.04/12:43:53 train_flow_matching.py:660 ] Epoch [218/400] lr=2.789268e-04 train_opt_loss=2.266966e-04 train_select_loss=2.266966e-04 train_endpoint=1.042939e-04 train_start=9.855584e-02
+I 07.04/12:44:18 train_flow_matching.py:660 ] Epoch [219/400] lr=2.769635e-04 train_opt_loss=2.242326e-04 train_select_loss=2.242326e-04 train_endpoint=1.030783e-04 train_start=9.855584e-02
+I 07.04/12:45:47 train_flow_matching.py:646 ] Epoch [220/400] true_decoder_eval n=100000 code_mse=4.702229e-04 code_nmse=-31.350dB decoder_mse=6.560167e-07 decoder_nmse=-28.377dB
+I 07.04/12:45:47 train_flow_matching.py:660 ] Epoch [220/400] lr=2.750000e-04 train_opt_loss=2.277499e-04 train_select_loss=2.277499e-04 train_endpoint=1.060938e-04 train_start=9.855584e-02
+I 07.04/12:46:00 train_flow_matching.py:660 ] Epoch [221/400] lr=2.730365e-04 train_opt_loss=2.254801e-04 train_select_loss=2.254801e-04 train_endpoint=1.047065e-04 train_start=9.855584e-02
+I 07.04/12:46:09 train_flow_matching.py:660 ] Epoch [222/400] lr=2.710732e-04 train_opt_loss=2.233592e-04 train_select_loss=2.233592e-04 train_endpoint=1.029662e-04 train_start=9.855584e-02
+I 07.04/12:46:27 train_flow_matching.py:660 ] Epoch [223/400] lr=2.691102e-04 train_opt_loss=2.194738e-04 train_select_loss=2.194738e-04 train_endpoint=1.014461e-04 train_start=9.855584e-02
+I 07.04/12:46:48 train_flow_matching.py:660 ] Epoch [224/400] lr=2.671476e-04 train_opt_loss=2.183526e-04 train_select_loss=2.183526e-04 train_endpoint=1.013064e-04 train_start=9.855584e-02
+I 07.04/12:47:18 train_flow_matching.py:660 ] Epoch [225/400] lr=2.651856e-04 train_opt_loss=2.174576e-04 train_select_loss=2.174576e-04 train_endpoint=1.006788e-04 train_start=9.855584e-02
+I 07.04/12:47:41 train_flow_matching.py:660 ] Epoch [226/400] lr=2.632244e-04 train_opt_loss=2.122252e-04 train_select_loss=2.122252e-04 train_endpoint=9.822055e-05 train_start=9.855584e-02
+I 07.04/12:48:10 train_flow_matching.py:660 ] Epoch [227/400] lr=2.612641e-04 train_opt_loss=2.120643e-04 train_select_loss=2.120643e-04 train_endpoint=9.830622e-05 train_start=9.855584e-02
+I 07.04/12:48:25 train_flow_matching.py:660 ] Epoch [228/400] lr=2.593048e-04 train_opt_loss=2.078718e-04 train_select_loss=2.078718e-04 train_endpoint=9.553626e-05 train_start=9.855584e-02
+I 07.04/12:48:49 train_flow_matching.py:660 ] Epoch [229/400] lr=2.573467e-04 train_opt_loss=2.043112e-04 train_select_loss=2.043112e-04 train_endpoint=9.442531e-05 train_start=9.855584e-02
+I 07.04/12:50:10 train_flow_matching.py:646 ] Epoch [230/400] true_decoder_eval n=100000 code_mse=4.218610e-04 code_nmse=-31.822dB decoder_mse=6.529493e-07 decoder_nmse=-28.397dB
+I 07.04/12:50:10 train_flow_matching.py:660 ] Epoch [230/400] lr=2.553900e-04 train_opt_loss=2.020624e-04 train_select_loss=2.020624e-04 train_endpoint=9.310691e-05 train_start=9.855584e-02
+I 07.04/12:50:29 train_flow_matching.py:660 ] Epoch [231/400] lr=2.534347e-04 train_opt_loss=2.009727e-04 train_select_loss=2.009727e-04 train_endpoint=9.216218e-05 train_start=9.855584e-02
+I 07.04/12:50:50 train_flow_matching.py:660 ] Epoch [232/400] lr=2.514811e-04 train_opt_loss=2.004355e-04 train_select_loss=2.004355e-04 train_endpoint=9.279415e-05 train_start=9.855584e-02
+I 07.04/12:51:13 train_flow_matching.py:660 ] Epoch [233/400] lr=2.495293e-04 train_opt_loss=1.975744e-04 train_select_loss=1.975744e-04 train_endpoint=9.110076e-05 train_start=9.855584e-02
+I 07.04/12:51:36 train_flow_matching.py:660 ] Epoch [234/400] lr=2.475794e-04 train_opt_loss=1.967224e-04 train_select_loss=1.967224e-04 train_endpoint=9.113696e-05 train_start=9.855584e-02
+I 07.04/12:51:58 train_flow_matching.py:660 ] Epoch [235/400] lr=2.456316e-04 train_opt_loss=1.926382e-04 train_select_loss=1.926382e-04 train_endpoint=8.846417e-05 train_start=9.855584e-02
+I 07.04/12:52:29 train_flow_matching.py:660 ] Epoch [236/400] lr=2.436861e-04 train_opt_loss=1.900079e-04 train_select_loss=1.900079e-04 train_endpoint=8.749588e-05 train_start=9.855584e-02
+I 07.04/12:52:55 train_flow_matching.py:660 ] Epoch [237/400] lr=2.417429e-04 train_opt_loss=1.900286e-04 train_select_loss=1.900286e-04 train_endpoint=8.822404e-05 train_start=9.855584e-02
+I 07.04/12:53:12 train_flow_matching.py:660 ] Epoch [238/400] lr=2.398022e-04 train_opt_loss=1.866036e-04 train_select_loss=1.866036e-04 train_endpoint=8.592114e-05 train_start=9.855584e-02
+I 07.04/12:53:33 train_flow_matching.py:660 ] Epoch [239/400] lr=2.378643e-04 train_opt_loss=1.901318e-04 train_select_loss=1.901318e-04 train_endpoint=8.806477e-05 train_start=9.855584e-02
+I 07.04/12:55:14 train_flow_matching.py:646 ] Epoch [240/400] true_decoder_eval n=100000 code_mse=3.703953e-04 code_nmse=-32.387dB decoder_mse=6.312388e-07 decoder_nmse=-28.544dB
+I 07.04/12:55:14 train_flow_matching.py:660 ] Epoch [240/400] lr=2.359292e-04 train_opt_loss=1.818879e-04 train_select_loss=1.818879e-04 train_endpoint=8.390331e-05 train_start=9.855584e-02
+I 07.04/12:55:38 train_flow_matching.py:660 ] Epoch [241/400] lr=2.339970e-04 train_opt_loss=1.797815e-04 train_select_loss=1.797815e-04 train_endpoint=8.283207e-05 train_start=9.855584e-02
+I 07.04/12:55:58 train_flow_matching.py:660 ] Epoch [242/400] lr=2.320680e-04 train_opt_loss=1.777604e-04 train_select_loss=1.777604e-04 train_endpoint=8.160591e-05 train_start=9.855584e-02
+I 07.04/12:56:18 train_flow_matching.py:660 ] Epoch [243/400] lr=2.301422e-04 train_opt_loss=1.764493e-04 train_select_loss=1.764493e-04 train_endpoint=8.124986e-05 train_start=9.855584e-02
+I 07.04/12:56:41 train_flow_matching.py:660 ] Epoch [244/400] lr=2.282199e-04 train_opt_loss=1.740825e-04 train_select_loss=1.740825e-04 train_endpoint=7.983755e-05 train_start=9.855584e-02
+I 07.04/12:57:01 train_flow_matching.py:660 ] Epoch [245/400] lr=2.263011e-04 train_opt_loss=1.721580e-04 train_select_loss=1.721580e-04 train_endpoint=7.899510e-05 train_start=9.855584e-02
+I 07.04/12:57:23 train_flow_matching.py:660 ] Epoch [246/400] lr=2.243860e-04 train_opt_loss=1.698726e-04 train_select_loss=1.698726e-04 train_endpoint=7.767594e-05 train_start=9.855584e-02
+I 07.04/12:57:47 train_flow_matching.py:660 ] Epoch [247/400] lr=2.224748e-04 train_opt_loss=1.687014e-04 train_select_loss=1.687014e-04 train_endpoint=7.776839e-05 train_start=9.855584e-02
+I 07.04/12:58:09 train_flow_matching.py:660 ] Epoch [248/400] lr=2.205676e-04 train_opt_loss=1.675705e-04 train_select_loss=1.675705e-04 train_endpoint=7.703887e-05 train_start=9.855584e-02
+I 07.04/12:58:32 train_flow_matching.py:660 ] Epoch [249/400] lr=2.186645e-04 train_opt_loss=1.670018e-04 train_select_loss=1.670018e-04 train_endpoint=7.669389e-05 train_start=9.855584e-02
+I 07.04/13:00:08 train_flow_matching.py:646 ] Epoch [250/400] true_decoder_eval n=100000 code_mse=3.152918e-04 code_nmse=-33.086dB decoder_mse=6.184594e-07 decoder_nmse=-28.633dB
+I 07.04/13:00:08 train_flow_matching.py:660 ] Epoch [250/400] lr=2.167657e-04 train_opt_loss=1.638159e-04 train_select_loss=1.638159e-04 train_endpoint=7.492502e-05 train_start=9.855584e-02
+I 07.04/13:00:28 train_flow_matching.py:660 ] Epoch [251/400] lr=2.148714e-04 train_opt_loss=1.612155e-04 train_select_loss=1.612155e-04 train_endpoint=7.384407e-05 train_start=9.855584e-02
+I 07.04/13:00:48 train_flow_matching.py:660 ] Epoch [252/400] lr=2.129816e-04 train_opt_loss=1.588297e-04 train_select_loss=1.588297e-04 train_endpoint=7.233061e-05 train_start=9.855584e-02
+I 07.04/13:01:13 train_flow_matching.py:660 ] Epoch [253/400] lr=2.110965e-04 train_opt_loss=1.575315e-04 train_select_loss=1.575315e-04 train_endpoint=7.221252e-05 train_start=9.855584e-02
+I 07.04/13:01:39 train_flow_matching.py:660 ] Epoch [254/400] lr=2.092164e-04 train_opt_loss=1.577191e-04 train_select_loss=1.577191e-04 train_endpoint=7.229571e-05 train_start=9.855584e-02
+I 07.04/13:01:48 train_flow_matching.py:660 ] Epoch [255/400] lr=2.073412e-04 train_opt_loss=1.568815e-04 train_select_loss=1.568815e-04 train_endpoint=7.181652e-05 train_start=9.855584e-02
+I 07.04/13:02:12 train_flow_matching.py:660 ] Epoch [256/400] lr=2.054712e-04 train_opt_loss=1.547425e-04 train_select_loss=1.547425e-04 train_endpoint=7.112547e-05 train_start=9.855584e-02
+I 07.04/13:02:38 train_flow_matching.py:660 ] Epoch [257/400] lr=2.036065e-04 train_opt_loss=1.540141e-04 train_select_loss=1.540141e-04 train_endpoint=7.050611e-05 train_start=9.855584e-02
+I 07.04/13:02:59 train_flow_matching.py:660 ] Epoch [258/400] lr=2.017472e-04 train_opt_loss=1.513760e-04 train_select_loss=1.513760e-04 train_endpoint=6.936023e-05 train_start=9.855584e-02
+I 07.04/13:03:25 train_flow_matching.py:660 ] Epoch [259/400] lr=1.998935e-04 train_opt_loss=1.494415e-04 train_select_loss=1.494415e-04 train_endpoint=6.819707e-05 train_start=9.855584e-02
+I 07.04/13:04:49 train_flow_matching.py:646 ] Epoch [260/400] true_decoder_eval n=100000 code_mse=2.852943e-04 code_nmse=-33.520dB decoder_mse=6.074911e-07 decoder_nmse=-28.710dB
+I 07.04/13:04:49 train_flow_matching.py:660 ] Epoch [260/400] lr=1.980455e-04 train_opt_loss=1.479822e-04 train_select_loss=1.479822e-04 train_endpoint=6.759362e-05 train_start=9.855584e-02
+I 07.04/13:05:15 train_flow_matching.py:660 ] Epoch [261/400] lr=1.962033e-04 train_opt_loss=1.474205e-04 train_select_loss=1.474205e-04 train_endpoint=6.764349e-05 train_start=9.855584e-02
+I 07.04/13:05:31 train_flow_matching.py:660 ] Epoch [262/400] lr=1.943672e-04 train_opt_loss=1.461520e-04 train_select_loss=1.461520e-04 train_endpoint=6.693687e-05 train_start=9.855584e-02
+I 07.04/13:05:52 train_flow_matching.py:660 ] Epoch [263/400] lr=1.925372e-04 train_opt_loss=1.453199e-04 train_select_loss=1.453199e-04 train_endpoint=6.659288e-05 train_start=9.855584e-02
+I 07.04/13:06:14 train_flow_matching.py:660 ] Epoch [264/400] lr=1.907135e-04 train_opt_loss=1.442875e-04 train_select_loss=1.442875e-04 train_endpoint=6.639866e-05 train_start=9.855584e-02
+I 07.04/13:06:37 train_flow_matching.py:660 ] Epoch [265/400] lr=1.888962e-04 train_opt_loss=1.417407e-04 train_select_loss=1.417407e-04 train_endpoint=6.465032e-05 train_start=9.855584e-02
+I 07.04/13:07:07 train_flow_matching.py:660 ] Epoch [266/400] lr=1.870855e-04 train_opt_loss=1.397166e-04 train_select_loss=1.397166e-04 train_endpoint=6.371243e-05 train_start=9.855584e-02
+I 07.04/13:07:35 train_flow_matching.py:660 ] Epoch [267/400] lr=1.852815e-04 train_opt_loss=1.395662e-04 train_select_loss=1.395662e-04 train_endpoint=6.415619e-05 train_start=9.855584e-02
+I 07.04/13:07:56 train_flow_matching.py:660 ] Epoch [268/400] lr=1.834843e-04 train_opt_loss=1.373129e-04 train_select_loss=1.373129e-04 train_endpoint=6.283188e-05 train_start=9.855584e-02
+I 07.04/13:08:23 train_flow_matching.py:660 ] Epoch [269/400] lr=1.816940e-04 train_opt_loss=1.365758e-04 train_select_loss=1.365758e-04 train_endpoint=6.217064e-05 train_start=9.855584e-02
+I 07.04/13:10:07 train_flow_matching.py:646 ] Epoch [270/400] true_decoder_eval n=100000 code_mse=2.514843e-04 code_nmse=-34.068dB decoder_mse=6.003753e-07 decoder_nmse=-28.762dB
+I 07.04/13:10:07 train_flow_matching.py:660 ] Epoch [270/400] lr=1.799109e-04 train_opt_loss=1.345980e-04 train_select_loss=1.345980e-04 train_endpoint=6.119185e-05 train_start=9.855584e-02
+I 07.04/13:10:30 train_flow_matching.py:660 ] Epoch [271/400] lr=1.781350e-04 train_opt_loss=1.323644e-04 train_select_loss=1.323644e-04 train_endpoint=6.011561e-05 train_start=9.855584e-02
+I 07.04/13:10:53 train_flow_matching.py:660 ] Epoch [272/400] lr=1.763665e-04 train_opt_loss=1.317082e-04 train_select_loss=1.317082e-04 train_endpoint=6.003137e-05 train_start=9.855584e-02
+I 07.04/13:11:17 train_flow_matching.py:660 ] Epoch [273/400] lr=1.746055e-04 train_opt_loss=1.308008e-04 train_select_loss=1.308008e-04 train_endpoint=5.957270e-05 train_start=9.855584e-02
+I 07.04/13:11:35 train_flow_matching.py:660 ] Epoch [274/400] lr=1.728521e-04 train_opt_loss=1.296044e-04 train_select_loss=1.296044e-04 train_endpoint=5.917532e-05 train_start=9.855584e-02
+I 07.04/13:11:55 train_flow_matching.py:660 ] Epoch [275/400] lr=1.711066e-04 train_opt_loss=1.284004e-04 train_select_loss=1.284004e-04 train_endpoint=5.851139e-05 train_start=9.855584e-02
+I 07.04/13:12:20 train_flow_matching.py:660 ] Epoch [276/400] lr=1.693689e-04 train_opt_loss=1.280682e-04 train_select_loss=1.280682e-04 train_endpoint=5.842837e-05 train_start=9.855584e-02
+I 07.04/13:12:42 train_flow_matching.py:660 ] Epoch [277/400] lr=1.676393e-04 train_opt_loss=1.266211e-04 train_select_loss=1.266211e-04 train_endpoint=5.754159e-05 train_start=9.855584e-02
+I 07.04/13:13:02 train_flow_matching.py:660 ] Epoch [278/400] lr=1.659178e-04 train_opt_loss=1.253474e-04 train_select_loss=1.253474e-04 train_endpoint=5.715838e-05 train_start=9.855584e-02
+I 07.04/13:13:25 train_flow_matching.py:660 ] Epoch [279/400] lr=1.642047e-04 train_opt_loss=1.246557e-04 train_select_loss=1.246557e-04 train_endpoint=5.710419e-05 train_start=9.855584e-02
+I 07.04/13:15:00 train_flow_matching.py:646 ] Epoch [280/400] true_decoder_eval n=100000 code_mse=2.183221e-04 code_nmse=-34.682dB decoder_mse=5.930845e-07 decoder_nmse=-28.815dB
+I 07.04/13:15:00 train_flow_matching.py:660 ] Epoch [280/400] lr=1.625000e-04 train_opt_loss=1.235757e-04 train_select_loss=1.235757e-04 train_endpoint=5.641547e-05 train_start=9.855584e-02
+I 07.04/13:15:24 train_flow_matching.py:660 ] Epoch [281/400] lr=1.608039e-04 train_opt_loss=1.205018e-04 train_select_loss=1.205018e-04 train_endpoint=5.452183e-05 train_start=9.855584e-02
+I 07.04/13:15:49 train_flow_matching.py:660 ] Epoch [282/400] lr=1.591164e-04 train_opt_loss=1.210350e-04 train_select_loss=1.210350e-04 train_endpoint=5.520094e-05 train_start=9.855584e-02
+I 07.04/13:15:58 train_flow_matching.py:660 ] Epoch [283/400] lr=1.574378e-04 train_opt_loss=1.199735e-04 train_select_loss=1.199735e-04 train_endpoint=5.458428e-05 train_start=9.855584e-02
+I 07.04/13:16:19 train_flow_matching.py:660 ] Epoch [284/400] lr=1.557682e-04 train_opt_loss=1.189052e-04 train_select_loss=1.189052e-04 train_endpoint=5.389769e-05 train_start=9.855584e-02
+I 07.04/13:16:47 train_flow_matching.py:660 ] Epoch [285/400] lr=1.541076e-04 train_opt_loss=1.172112e-04 train_select_loss=1.172112e-04 train_endpoint=5.320670e-05 train_start=9.855584e-02
+I 07.04/13:17:15 train_flow_matching.py:660 ] Epoch [286/400] lr=1.524562e-04 train_opt_loss=1.167615e-04 train_select_loss=1.167615e-04 train_endpoint=5.314316e-05 train_start=9.855584e-02
+I 07.04/13:17:39 train_flow_matching.py:660 ] Epoch [287/400] lr=1.508142e-04 train_opt_loss=1.166574e-04 train_select_loss=1.166574e-04 train_endpoint=5.317573e-05 train_start=9.855584e-02
+I 07.04/13:17:58 train_flow_matching.py:660 ] Epoch [288/400] lr=1.491816e-04 train_opt_loss=1.156138e-04 train_select_loss=1.156138e-04 train_endpoint=5.253903e-05 train_start=9.855584e-02
+I 07.04/13:18:24 train_flow_matching.py:660 ] Epoch [289/400] lr=1.475586e-04 train_opt_loss=1.143276e-04 train_select_loss=1.143276e-04 train_endpoint=5.200370e-05 train_start=9.855584e-02
+I 07.04/13:20:18 train_flow_matching.py:646 ] Epoch [290/400] true_decoder_eval n=100000 code_mse=1.994214e-04 code_nmse=-35.076dB decoder_mse=5.875034e-07 decoder_nmse=-28.856dB
+I 07.04/13:20:18 train_flow_matching.py:660 ] Epoch [290/400] lr=1.459453e-04 train_opt_loss=1.134625e-04 train_select_loss=1.134625e-04 train_endpoint=5.140810e-05 train_start=9.855584e-02
+I 07.04/13:20:41 train_flow_matching.py:660 ] Epoch [291/400] lr=1.443418e-04 train_opt_loss=1.124160e-04 train_select_loss=1.124160e-04 train_endpoint=5.095506e-05 train_start=9.855584e-02
+I 07.04/13:21:09 train_flow_matching.py:660 ] Epoch [292/400] lr=1.427483e-04 train_opt_loss=1.109862e-04 train_select_loss=1.109862e-04 train_endpoint=5.016734e-05 train_start=9.855584e-02
+I 07.04/13:21:32 train_flow_matching.py:660 ] Epoch [293/400] lr=1.411649e-04 train_opt_loss=1.104791e-04 train_select_loss=1.104791e-04 train_endpoint=5.003686e-05 train_start=9.855584e-02
+I 07.04/13:21:56 train_flow_matching.py:660 ] Epoch [294/400] lr=1.395916e-04 train_opt_loss=1.093332e-04 train_select_loss=1.093332e-04 train_endpoint=4.952935e-05 train_start=9.855584e-02
+I 07.04/13:22:20 train_flow_matching.py:660 ] Epoch [295/400] lr=1.380287e-04 train_opt_loss=1.095664e-04 train_select_loss=1.095664e-04 train_endpoint=4.988019e-05 train_start=9.855584e-02
+I 07.04/13:22:34 train_flow_matching.py:660 ] Epoch [296/400] lr=1.364762e-04 train_opt_loss=1.076850e-04 train_select_loss=1.076850e-04 train_endpoint=4.877622e-05 train_start=9.855584e-02
+I 07.04/13:22:57 train_flow_matching.py:660 ] Epoch [297/400] lr=1.349342e-04 train_opt_loss=1.076602e-04 train_select_loss=1.076602e-04 train_endpoint=4.900734e-05 train_start=9.855584e-02
+I 07.04/13:23:19 train_flow_matching.py:660 ] Epoch [298/400] lr=1.334029e-04 train_opt_loss=1.066752e-04 train_select_loss=1.066752e-04 train_endpoint=4.840254e-05 train_start=9.855584e-02
+I 07.04/13:23:45 train_flow_matching.py:660 ] Epoch [299/400] lr=1.318824e-04 train_opt_loss=1.052241e-04 train_select_loss=1.052241e-04 train_endpoint=4.754499e-05 train_start=9.855584e-02
+I 07.04/13:25:30 train_flow_matching.py:646 ] Epoch [300/400] true_decoder_eval n=100000 code_mse=1.711794e-04 code_nmse=-35.739dB decoder_mse=5.815235e-07 decoder_nmse=-28.900dB
+I 07.04/13:25:31 train_flow_matching.py:660 ] Epoch [300/400] lr=1.303728e-04 train_opt_loss=1.042291e-04 train_select_loss=1.042291e-04 train_endpoint=4.712589e-05 train_start=9.855584e-02
+I 07.04/13:25:55 train_flow_matching.py:660 ] Epoch [301/400] lr=1.288742e-04 train_opt_loss=1.038401e-04 train_select_loss=1.038401e-04 train_endpoint=4.699420e-05 train_start=9.855584e-02
+I 07.04/13:26:21 train_flow_matching.py:660 ] Epoch [302/400] lr=1.273867e-04 train_opt_loss=1.030947e-04 train_select_loss=1.030947e-04 train_endpoint=4.669768e-05 train_start=9.855584e-02
+I 07.04/13:26:42 train_flow_matching.py:660 ] Epoch [303/400] lr=1.259105e-04 train_opt_loss=1.016322e-04 train_select_loss=1.016322e-04 train_endpoint=4.566729e-05 train_start=9.855584e-02
+I 07.04/13:27:01 train_flow_matching.py:660 ] Epoch [304/400] lr=1.244456e-04 train_opt_loss=1.008580e-04 train_select_loss=1.008580e-04 train_endpoint=4.535018e-05 train_start=9.855584e-02
+I 07.04/13:27:24 train_flow_matching.py:660 ] Epoch [305/400] lr=1.229922e-04 train_opt_loss=1.008152e-04 train_select_loss=1.008152e-04 train_endpoint=4.562695e-05 train_start=9.855584e-02
+I 07.04/13:27:44 train_flow_matching.py:660 ] Epoch [306/400] lr=1.215504e-04 train_opt_loss=1.004332e-04 train_select_loss=1.004332e-04 train_endpoint=4.547803e-05 train_start=9.855584e-02
+I 07.04/13:28:01 train_flow_matching.py:660 ] Epoch [307/400] lr=1.201202e-04 train_opt_loss=9.924589e-05 train_select_loss=9.924589e-05 train_endpoint=4.486835e-05 train_start=9.855584e-02
+I 07.04/13:28:27 train_flow_matching.py:660 ] Epoch [308/400] lr=1.187019e-04 train_opt_loss=9.903867e-05 train_select_loss=9.903867e-05 train_endpoint=4.484982e-05 train_start=9.855584e-02
+I 07.04/13:28:53 train_flow_matching.py:660 ] Epoch [309/400] lr=1.172954e-04 train_opt_loss=9.849586e-05 train_select_loss=9.849586e-05 train_endpoint=4.482324e-05 train_start=9.855584e-02
+I 07.04/13:30:31 train_flow_matching.py:646 ] Epoch [310/400] true_decoder_eval n=100000 code_mse=1.574741e-04 code_nmse=-36.101dB decoder_mse=5.779582e-07 decoder_nmse=-28.927dB
+I 07.04/13:30:32 train_flow_matching.py:660 ] Epoch [310/400] lr=1.159010e-04 train_opt_loss=9.717141e-05 train_select_loss=9.717141e-05 train_endpoint=4.372508e-05 train_start=9.855584e-02
+I 07.04/13:30:58 train_flow_matching.py:660 ] Epoch [311/400] lr=1.145186e-04 train_opt_loss=9.678617e-05 train_select_loss=9.678617e-05 train_endpoint=4.370729e-05 train_start=9.855584e-02
+I 07.04/13:31:23 train_flow_matching.py:660 ] Epoch [312/400] lr=1.131485e-04 train_opt_loss=9.628189e-05 train_select_loss=9.628189e-05 train_endpoint=4.349182e-05 train_start=9.855584e-02
+I 07.04/13:31:49 train_flow_matching.py:660 ] Epoch [313/400] lr=1.117908e-04 train_opt_loss=9.546183e-05 train_select_loss=9.546183e-05 train_endpoint=4.292236e-05 train_start=9.855584e-02
+I 07.04/13:32:18 train_flow_matching.py:660 ] Epoch [314/400] lr=1.104454e-04 train_opt_loss=9.481103e-05 train_select_loss=9.481103e-05 train_endpoint=4.282779e-05 train_start=9.855584e-02
+I 07.04/13:32:45 train_flow_matching.py:660 ] Epoch [315/400] lr=1.091126e-04 train_opt_loss=9.443572e-05 train_select_loss=9.443572e-05 train_endpoint=4.253429e-05 train_start=9.855584e-02
+I 07.04/13:33:10 train_flow_matching.py:660 ] Epoch [316/400] lr=1.077924e-04 train_opt_loss=9.334135e-05 train_select_loss=9.334135e-05 train_endpoint=4.201207e-05 train_start=9.855584e-02
+I 07.04/13:33:34 train_flow_matching.py:660 ] Epoch [317/400] lr=1.064850e-04 train_opt_loss=9.295815e-05 train_select_loss=9.295815e-05 train_endpoint=4.180181e-05 train_start=9.855584e-02
+I 07.04/13:33:53 train_flow_matching.py:660 ] Epoch [318/400] lr=1.051903e-04 train_opt_loss=9.249777e-05 train_select_loss=9.249777e-05 train_endpoint=4.167830e-05 train_start=9.855584e-02
+I 07.04/13:34:17 train_flow_matching.py:660 ] Epoch [319/400] lr=1.039087e-04 train_opt_loss=9.208970e-05 train_select_loss=9.208970e-05 train_endpoint=4.153732e-05 train_start=9.855584e-02
+I 07.04/13:36:02 train_flow_matching.py:646 ] Epoch [320/400] true_decoder_eval n=100000 code_mse=1.487856e-04 code_nmse=-36.348dB decoder_mse=5.758748e-07 decoder_nmse=-28.943dB
+I 07.04/13:36:02 train_flow_matching.py:660 ] Epoch [320/400] lr=1.026400e-04 train_opt_loss=9.160527e-05 train_select_loss=9.160527e-05 train_endpoint=4.141314e-05 train_start=9.855584e-02
+I 07.04/13:36:21 train_flow_matching.py:660 ] Epoch [321/400] lr=1.013845e-04 train_opt_loss=9.044427e-05 train_select_loss=9.044427e-05 train_endpoint=4.061320e-05 train_start=9.855584e-02
+I 07.04/13:36:39 train_flow_matching.py:660 ] Epoch [322/400] lr=1.001422e-04 train_opt_loss=9.047264e-05 train_select_loss=9.047264e-05 train_endpoint=4.091009e-05 train_start=9.855584e-02
+I 07.04/13:36:49 train_flow_matching.py:660 ] Epoch [323/400] lr=9.891316e-05 train_opt_loss=8.984510e-05 train_select_loss=8.984510e-05 train_endpoint=4.047795e-05 train_start=9.855584e-02
+I 07.04/13:37:18 train_flow_matching.py:660 ] Epoch [324/400] lr=9.769758e-05 train_opt_loss=8.913163e-05 train_select_loss=8.913163e-05 train_endpoint=4.013954e-05 train_start=9.855584e-02
+I 07.04/13:37:44 train_flow_matching.py:660 ] Epoch [325/400] lr=9.649550e-05 train_opt_loss=8.893489e-05 train_select_loss=8.893489e-05 train_endpoint=4.002042e-05 train_start=9.855584e-02
+I 07.04/13:38:10 train_flow_matching.py:660 ] Epoch [326/400] lr=9.530701e-05 train_opt_loss=8.792149e-05 train_select_loss=8.792149e-05 train_endpoint=3.939227e-05 train_start=9.855584e-02
+I 07.04/13:38:33 train_flow_matching.py:660 ] Epoch [327/400] lr=9.413221e-05 train_opt_loss=8.777768e-05 train_select_loss=8.777768e-05 train_endpoint=3.946659e-05 train_start=9.855584e-02
+I 07.04/13:38:53 train_flow_matching.py:660 ] Epoch [328/400] lr=9.297118e-05 train_opt_loss=8.698801e-05 train_select_loss=8.698801e-05 train_endpoint=3.892953e-05 train_start=9.855584e-02
+I 07.04/13:39:17 train_flow_matching.py:660 ] Epoch [329/400] lr=9.182401e-05 train_opt_loss=8.673922e-05 train_select_loss=8.673922e-05 train_endpoint=3.901892e-05 train_start=9.855584e-02
+I 07.04/13:40:45 train_flow_matching.py:646 ] Epoch [330/400] true_decoder_eval n=100000 code_mse=1.321925e-04 code_nmse=-36.861dB decoder_mse=5.729503e-07 decoder_nmse=-28.965dB
+I 07.04/13:40:45 train_flow_matching.py:660 ] Epoch [330/400] lr=9.069079e-05 train_opt_loss=8.610241e-05 train_select_loss=8.610241e-05 train_endpoint=3.864559e-05 train_start=9.855584e-02
+I 07.04/13:41:09 train_flow_matching.py:660 ] Epoch [331/400] lr=8.957161e-05 train_opt_loss=8.592834e-05 train_select_loss=8.592834e-05 train_endpoint=3.874288e-05 train_start=9.855584e-02
+I 07.04/13:41:20 train_flow_matching.py:660 ] Epoch [332/400] lr=8.846655e-05 train_opt_loss=8.541706e-05 train_select_loss=8.541706e-05 train_endpoint=3.825986e-05 train_start=9.855584e-02
+I 07.04/13:41:39 train_flow_matching.py:660 ] Epoch [333/400] lr=8.737569e-05 train_opt_loss=8.467383e-05 train_select_loss=8.467383e-05 train_endpoint=3.792085e-05 train_start=9.855584e-02
+I 07.04/13:41:56 train_flow_matching.py:660 ] Epoch [334/400] lr=8.629912e-05 train_opt_loss=8.442975e-05 train_select_loss=8.442975e-05 train_endpoint=3.779327e-05 train_start=9.855584e-02
+I 07.04/13:42:14 train_flow_matching.py:660 ] Epoch [335/400] lr=8.523692e-05 train_opt_loss=8.487072e-05 train_select_loss=8.487072e-05 train_endpoint=3.825452e-05 train_start=9.855584e-02
+I 07.04/13:42:26 train_flow_matching.py:660 ] Epoch [336/400] lr=8.418918e-05 train_opt_loss=8.348595e-05 train_select_loss=8.348595e-05 train_endpoint=3.742217e-05 train_start=9.855584e-02
+I 07.04/13:42:48 train_flow_matching.py:660 ] Epoch [337/400] lr=8.315596e-05 train_opt_loss=8.305119e-05 train_select_loss=8.305119e-05 train_endpoint=3.717418e-05 train_start=9.855584e-02
+I 07.04/13:43:14 train_flow_matching.py:660 ] Epoch [338/400] lr=8.213736e-05 train_opt_loss=8.275014e-05 train_select_loss=8.275014e-05 train_endpoint=3.704307e-05 train_start=9.855584e-02
+I 07.04/13:43:39 train_flow_matching.py:660 ] Epoch [339/400] lr=8.113344e-05 train_opt_loss=8.251657e-05 train_select_loss=8.251657e-05 train_endpoint=3.708190e-05 train_start=9.855584e-02
+I 07.04/13:45:00 train_flow_matching.py:646 ] Epoch [340/400] true_decoder_eval n=100000 code_mse=1.256094e-04 code_nmse=-37.083dB decoder_mse=5.720982e-07 decoder_nmse=-28.971dB
+I 07.04/13:45:00 train_flow_matching.py:660 ] Epoch [340/400] lr=8.014428e-05 train_opt_loss=8.229002e-05 train_select_loss=8.229002e-05 train_endpoint=3.705841e-05 train_start=9.855584e-02
+I 07.04/13:45:17 train_flow_matching.py:660 ] Epoch [341/400] lr=7.916997e-05 train_opt_loss=8.158012e-05 train_select_loss=8.158012e-05 train_endpoint=3.650832e-05 train_start=9.855584e-02
+I 07.04/13:45:41 train_flow_matching.py:660 ] Epoch [342/400] lr=7.821057e-05 train_opt_loss=8.158514e-05 train_select_loss=8.158514e-05 train_endpoint=3.670980e-05 train_start=9.855584e-02
+I 07.04/13:45:51 train_flow_matching.py:660 ] Epoch [343/400] lr=7.726615e-05 train_opt_loss=8.131088e-05 train_select_loss=8.131088e-05 train_endpoint=3.665866e-05 train_start=9.855584e-02
+I 07.04/13:46:09 train_flow_matching.py:660 ] Epoch [344/400] lr=7.633679e-05 train_opt_loss=7.996576e-05 train_select_loss=7.996576e-05 train_endpoint=3.555398e-05 train_start=9.855584e-02
+I 07.04/13:46:24 train_flow_matching.py:660 ] Epoch [345/400] lr=7.542256e-05 train_opt_loss=8.025586e-05 train_select_loss=8.025586e-05 train_endpoint=3.600211e-05 train_start=9.855584e-02
+I 07.04/13:46:39 train_flow_matching.py:660 ] Epoch [346/400] lr=7.452353e-05 train_opt_loss=8.000586e-05 train_select_loss=8.000586e-05 train_endpoint=3.596783e-05 train_start=9.855584e-02
+I 07.04/13:46:52 train_flow_matching.py:660 ] Epoch [347/400] lr=7.363977e-05 train_opt_loss=7.951696e-05 train_select_loss=7.951696e-05 train_endpoint=3.568053e-05 train_start=9.855584e-02
+I 07.04/13:47:11 train_flow_matching.py:660 ] Epoch [348/400] lr=7.277134e-05 train_opt_loss=7.913645e-05 train_select_loss=7.913645e-05 train_endpoint=3.548081e-05 train_start=9.855584e-02
+I 07.04/13:47:32 train_flow_matching.py:660 ] Epoch [349/400] lr=7.191831e-05 train_opt_loss=7.900055e-05 train_select_loss=7.900055e-05 train_endpoint=3.540738e-05 train_start=9.855584e-02
+I 07.04/13:49:04 train_flow_matching.py:646 ] Epoch [350/400] true_decoder_eval n=100000 code_mse=1.159744e-04 code_nmse=-37.430dB decoder_mse=5.699522e-07 decoder_nmse=-28.987dB
+I 07.04/13:49:04 train_flow_matching.py:660 ] Epoch [350/400] lr=7.108075e-05 train_opt_loss=7.856900e-05 train_select_loss=7.856900e-05 train_endpoint=3.527706e-05 train_start=9.855584e-02
+I 07.04/13:49:28 train_flow_matching.py:660 ] Epoch [351/400] lr=7.025871e-05 train_opt_loss=7.798230e-05 train_select_loss=7.798230e-05 train_endpoint=3.479634e-05 train_start=9.855584e-02
+I 07.04/13:49:50 train_flow_matching.py:660 ] Epoch [352/400] lr=6.945227e-05 train_opt_loss=7.776948e-05 train_select_loss=7.776948e-05 train_endpoint=3.479377e-05 train_start=9.855584e-02
+I 07.04/13:50:16 train_flow_matching.py:660 ] Epoch [353/400] lr=6.866148e-05 train_opt_loss=7.771323e-05 train_select_loss=7.771323e-05 train_endpoint=3.477800e-05 train_start=9.855584e-02
+I 07.04/13:50:43 train_flow_matching.py:660 ] Epoch [354/400] lr=6.788641e-05 train_opt_loss=7.763586e-05 train_select_loss=7.763586e-05 train_endpoint=3.498909e-05 train_start=9.855584e-02
+I 07.04/13:51:03 train_flow_matching.py:660 ] Epoch [355/400] lr=6.712711e-05 train_opt_loss=7.706887e-05 train_select_loss=7.706887e-05 train_endpoint=3.452479e-05 train_start=9.855584e-02
+I 07.04/13:51:21 train_flow_matching.py:660 ] Epoch [356/400] lr=6.638363e-05 train_opt_loss=7.682397e-05 train_select_loss=7.682397e-05 train_endpoint=3.442274e-05 train_start=9.855584e-02
+I 07.04/13:51:41 train_flow_matching.py:660 ] Epoch [357/400] lr=6.565605e-05 train_opt_loss=7.628096e-05 train_select_loss=7.628096e-05 train_endpoint=3.403274e-05 train_start=9.855584e-02
+I 07.04/13:52:01 train_flow_matching.py:660 ] Epoch [358/400] lr=6.494440e-05 train_opt_loss=7.615147e-05 train_select_loss=7.615147e-05 train_endpoint=3.403671e-05 train_start=9.855584e-02
+I 07.04/13:52:18 train_flow_matching.py:660 ] Epoch [359/400] lr=6.424876e-05 train_opt_loss=7.580531e-05 train_select_loss=7.580531e-05 train_endpoint=3.379330e-05 train_start=9.855584e-02
+I 07.04/13:53:46 train_flow_matching.py:646 ] Epoch [360/400] true_decoder_eval n=100000 code_mse=1.096442e-04 code_nmse=-37.673dB decoder_mse=5.705546e-07 decoder_nmse=-28.983dB
+I 07.04/13:53:47 train_flow_matching.py:660 ] Epoch [360/400] lr=6.356916e-05 train_opt_loss=7.539180e-05 train_select_loss=7.539180e-05 train_endpoint=3.370446e-05 train_start=9.855584e-02
+I 07.04/13:54:15 train_flow_matching.py:660 ] Epoch [361/400] lr=6.290566e-05 train_opt_loss=7.505365e-05 train_select_loss=7.505365e-05 train_endpoint=3.345860e-05 train_start=9.855584e-02
+I 07.04/13:54:37 train_flow_matching.py:660 ] Epoch [362/400] lr=6.225832e-05 train_opt_loss=7.518984e-05 train_select_loss=7.518984e-05 train_endpoint=3.371820e-05 train_start=9.855584e-02
+I 07.04/13:54:45 train_flow_matching.py:660 ] Epoch [363/400] lr=6.162718e-05 train_opt_loss=7.483443e-05 train_select_loss=7.483443e-05 train_endpoint=3.344063e-05 train_start=9.855584e-02
+I 07.04/13:55:08 train_flow_matching.py:660 ] Epoch [364/400] lr=6.101228e-05 train_opt_loss=7.460260e-05 train_select_loss=7.460260e-05 train_endpoint=3.331624e-05 train_start=9.855584e-02
+I 07.04/13:55:29 train_flow_matching.py:660 ] Epoch [365/400] lr=6.041369e-05 train_opt_loss=7.419059e-05 train_select_loss=7.419059e-05 train_endpoint=3.301343e-05 train_start=9.855584e-02
+I 07.04/13:55:49 train_flow_matching.py:660 ] Epoch [366/400] lr=5.983143e-05 train_opt_loss=7.415966e-05 train_select_loss=7.415966e-05 train_endpoint=3.322488e-05 train_start=9.855584e-02
+I 07.04/13:56:08 train_flow_matching.py:660 ] Epoch [367/400] lr=5.926556e-05 train_opt_loss=7.384769e-05 train_select_loss=7.384769e-05 train_endpoint=3.286837e-05 train_start=9.855584e-02
+I 07.04/13:56:28 train_flow_matching.py:660 ] Epoch [368/400] lr=5.871612e-05 train_opt_loss=7.362660e-05 train_select_loss=7.362660e-05 train_endpoint=3.292257e-05 train_start=9.855584e-02
+I 07.04/13:56:45 train_flow_matching.py:660 ] Epoch [369/400] lr=5.818315e-05 train_opt_loss=7.346876e-05 train_select_loss=7.346876e-05 train_endpoint=3.270304e-05 train_start=9.855584e-02
+I 07.04/13:57:54 train_flow_matching.py:646 ] Epoch [370/400] true_decoder_eval n=100000 code_mse=1.062924e-04 code_nmse=-37.808dB decoder_mse=5.679000e-07 decoder_nmse=-29.003dB
+I 07.04/13:57:55 train_flow_matching.py:660 ] Epoch [370/400] lr=5.766669e-05 train_opt_loss=7.322675e-05 train_select_loss=7.322675e-05 train_endpoint=3.273303e-05 train_start=9.855584e-02
+I 07.04/13:58:13 train_flow_matching.py:660 ] Epoch [371/400] lr=5.716678e-05 train_opt_loss=7.320480e-05 train_select_loss=7.320480e-05 train_endpoint=3.279881e-05 train_start=9.855584e-02
+I 07.04/13:58:30 train_flow_matching.py:660 ] Epoch [372/400] lr=5.668346e-05 train_opt_loss=7.314391e-05 train_select_loss=7.314391e-05 train_endpoint=3.283308e-05 train_start=9.855584e-02
+I 07.04/13:58:50 train_flow_matching.py:660 ] Epoch [373/400] lr=5.621677e-05 train_opt_loss=7.286748e-05 train_select_loss=7.286748e-05 train_endpoint=3.267348e-05 train_start=9.855584e-02
+I 07.04/13:59:15 train_flow_matching.py:660 ] Epoch [374/400] lr=5.576674e-05 train_opt_loss=7.262874e-05 train_select_loss=7.262874e-05 train_endpoint=3.250855e-05 train_start=9.855584e-02
+I 07.04/13:59:36 train_flow_matching.py:660 ] Epoch [375/400] lr=5.533340e-05 train_opt_loss=7.226746e-05 train_select_loss=7.226746e-05 train_endpoint=3.232567e-05 train_start=9.855584e-02
+I 07.04/13:59:58 train_flow_matching.py:660 ] Epoch [376/400] lr=5.491679e-05 train_opt_loss=7.221411e-05 train_select_loss=7.221411e-05 train_endpoint=3.232277e-05 train_start=9.855584e-02
+I 07.04/14:00:20 train_flow_matching.py:660 ] Epoch [377/400] lr=5.451694e-05 train_opt_loss=7.225855e-05 train_select_loss=7.225855e-05 train_endpoint=3.242158e-05 train_start=9.855584e-02
+I 07.04/14:00:34 train_flow_matching.py:660 ] Epoch [378/400] lr=5.413388e-05 train_opt_loss=7.174220e-05 train_select_loss=7.174220e-05 train_endpoint=3.205942e-05 train_start=9.855584e-02
+I 07.04/14:00:53 train_flow_matching.py:660 ] Epoch [379/400] lr=5.376765e-05 train_opt_loss=7.165781e-05 train_select_loss=7.165781e-05 train_endpoint=3.200997e-05 train_start=9.855584e-02
+I 07.04/14:02:22 train_flow_matching.py:646 ] Epoch [380/400] true_decoder_eval n=100000 code_mse=1.019407e-04 code_nmse=-37.990dB decoder_mse=5.671151e-07 decoder_nmse=-29.009dB
+I 07.04/14:02:22 train_flow_matching.py:660 ] Epoch [380/400] lr=5.341826e-05 train_opt_loss=7.125550e-05 train_select_loss=7.125550e-05 train_endpoint=3.172643e-05 train_start=9.855584e-02
+I 07.04/14:02:46 train_flow_matching.py:660 ] Epoch [381/400] lr=5.308574e-05 train_opt_loss=7.121299e-05 train_select_loss=7.121299e-05 train_endpoint=3.190036e-05 train_start=9.855584e-02
+I 07.04/14:02:59 train_flow_matching.py:660 ] Epoch [382/400] lr=5.277012e-05 train_opt_loss=7.106903e-05 train_select_loss=7.106903e-05 train_endpoint=3.174448e-05 train_start=9.855584e-02
+I 07.04/14:03:14 train_flow_matching.py:660 ] Epoch [383/400] lr=5.247143e-05 train_opt_loss=7.079679e-05 train_select_loss=7.079679e-05 train_endpoint=3.157397e-05 train_start=9.855584e-02
+I 07.04/14:03:37 train_flow_matching.py:660 ] Epoch [384/400] lr=5.218968e-05 train_opt_loss=7.090704e-05 train_select_loss=7.090704e-05 train_endpoint=3.177698e-05 train_start=9.855584e-02
+I 07.04/14:03:47 train_flow_matching.py:660 ] Epoch [385/400] lr=5.192491e-05 train_opt_loss=7.059850e-05 train_select_loss=7.059850e-05 train_endpoint=3.158399e-05 train_start=9.855584e-02
+I 07.04/14:04:08 train_flow_matching.py:660 ] Epoch [386/400] lr=5.167712e-05 train_opt_loss=7.053197e-05 train_select_loss=7.053197e-05 train_endpoint=3.156194e-05 train_start=9.855584e-02
+I 07.04/14:04:32 train_flow_matching.py:660 ] Epoch [387/400] lr=5.144633e-05 train_opt_loss=7.032070e-05 train_select_loss=7.032070e-05 train_endpoint=3.139125e-05 train_start=9.855584e-02
+I 07.04/14:04:52 train_flow_matching.py:660 ] Epoch [388/400] lr=5.123257e-05 train_opt_loss=7.011965e-05 train_select_loss=7.011965e-05 train_endpoint=3.123174e-05 train_start=9.855584e-02
+I 07.04/14:05:15 train_flow_matching.py:660 ] Epoch [389/400] lr=5.103586e-05 train_opt_loss=6.995817e-05 train_select_loss=6.995817e-05 train_endpoint=3.116182e-05 train_start=9.855584e-02
+I 07.04/14:06:54 train_flow_matching.py:646 ] Epoch [390/400] true_decoder_eval n=100000 code_mse=9.987212e-05 code_nmse=-38.079dB decoder_mse=5.675559e-07 decoder_nmse=-29.006dB
+I 07.04/14:06:54 train_flow_matching.py:660 ] Epoch [390/400] lr=5.085619e-05 train_opt_loss=6.969217e-05 train_select_loss=6.969217e-05 train_endpoint=3.097047e-05 train_start=9.855584e-02
+I 07.04/14:07:15 train_flow_matching.py:660 ] Epoch [391/400] lr=5.069360e-05 train_opt_loss=6.978724e-05 train_select_loss=6.978724e-05 train_endpoint=3.116707e-05 train_start=9.855584e-02
+I 07.04/14:07:27 train_flow_matching.py:660 ] Epoch [392/400] lr=5.054809e-05 train_opt_loss=6.984648e-05 train_select_loss=6.984648e-05 train_endpoint=3.128344e-05 train_start=9.855584e-02
+I 07.04/14:07:39 train_flow_matching.py:660 ] Epoch [393/400] lr=5.041967e-05 train_opt_loss=6.942982e-05 train_select_loss=6.942982e-05 train_endpoint=3.094422e-05 train_start=9.855584e-02
+I 07.04/14:08:05 train_flow_matching.py:660 ] Epoch [394/400] lr=5.030835e-05 train_opt_loss=6.947689e-05 train_select_loss=6.947689e-05 train_endpoint=3.102804e-05 train_start=9.855584e-02
+I 07.04/14:08:18 train_flow_matching.py:660 ] Epoch [395/400] lr=5.021415e-05 train_opt_loss=6.931576e-05 train_select_loss=6.931576e-05 train_endpoint=3.092265e-05 train_start=9.855584e-02
+I 07.04/14:08:38 train_flow_matching.py:660 ] Epoch [396/400] lr=5.013706e-05 train_opt_loss=6.958917e-05 train_select_loss=6.958917e-05 train_endpoint=3.126130e-05 train_start=9.855584e-02
+I 07.04/14:08:50 train_flow_matching.py:660 ] Epoch [397/400] lr=5.007710e-05 train_opt_loss=6.881724e-05 train_select_loss=6.881724e-05 train_endpoint=3.056819e-05 train_start=9.855584e-02
+I 07.04/14:09:12 train_flow_matching.py:660 ] Epoch [398/400] lr=5.003427e-05 train_opt_loss=6.906181e-05 train_select_loss=6.906181e-05 train_endpoint=3.086322e-05 train_start=9.855584e-02
+I 07.04/14:09:23 train_flow_matching.py:660 ] Epoch [399/400] lr=5.000857e-05 train_opt_loss=6.910971e-05 train_select_loss=6.910971e-05 train_endpoint=3.092203e-05 train_start=9.855584e-02
+I 07.04/14:10:45 train_flow_matching.py:646 ] Epoch [400/400] true_decoder_eval n=100000 code_mse=9.773541e-05 code_nmse=-38.173dB decoder_mse=5.665778e-07 decoder_nmse=-29.013dB
+I 07.04/14:10:45 train_flow_matching.py:660 ] Epoch [400/400] lr=5.000000e-05 train_opt_loss=6.884489e-05 train_select_loss=6.884489e-05 train_endpoint=3.072390e-05 train_start=9.855584e-02
+I 07.04/14:12:37 train_flow_matching.py:721 ] => Final metrics: {
+  "best_loss": {
+    "mse": 9.733604383654892e-05,
+    "rmse": 0.009865903295576572,
+    "cos": 0.999903678894043,
+    "nmse": -38.190616607666016,
+    "start_mse": 0.09855583310127258,
+    "start_rmse": 0.3139360249042511,
+    "start_cos": 0.9253010749816895,
+    "start_nmse": -8.136528015136719,
+    "epoch": 397
+  },
+  "best_mse": {
+    "mse": 9.733604383654892e-05,
+    "rmse": 0.009865903295576572,
+    "cos": 0.999903678894043,
+    "nmse": -38.190616607666016,
+    "start_mse": 0.09855583310127258,
+    "start_rmse": 0.3139360249042511,
+    "start_cos": 0.9253010749816895,
+    "start_nmse": -8.136528015136719,
+    "epoch": 397
+  }
+}

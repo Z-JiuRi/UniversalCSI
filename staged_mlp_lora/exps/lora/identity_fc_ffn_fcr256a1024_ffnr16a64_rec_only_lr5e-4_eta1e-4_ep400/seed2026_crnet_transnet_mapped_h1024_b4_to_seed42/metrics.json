@@ -1,0 +1,25 @@
+{
+  "best_loss": {
+    "metric": 1.4135474443173736e-06,
+    "loss": 1.4135474443173736e-06,
+    "rec": 1.4135474443173736e-06,
+    "epoch": 399,
+    "selection": "train_loss",
+    "all": {
+      "decoder_mse": 1.4049651866662317e-06,
+      "decoder_nmse": -25.069171905517578,
+      "n": 100000
+    }
+  },
+  "best_nmse": {
+    "metric": -25.067180633544922,
+    "decoder_mse": 1.405609677785833e-06,
+    "epoch": 400,
+    "selection": "true_decoder_nmse",
+    "all": {
+      "decoder_mse": 1.405609677785833e-06,
+      "decoder_nmse": -25.067180633544922,
+      "n": 100000
+    }
+  }
+}
