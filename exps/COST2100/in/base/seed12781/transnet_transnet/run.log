@@ -1,0 +1,256 @@
+I 07.06/06:57:51 init.py:13  ] Random seed set to 12781
+I 07.06/06:57:56 init.py:81  ] Running on GPU 0
+I 07.06/06:57:56 logger.py:152 ] => Experiment directory: /nfs5/zxd/Huawei/UniversalCSI/exps/COST2100/in/base/seed12781/transnet_transnet
+I 07.06/06:57:56 logger.py:71  ] => Runtime Context:
+I 07.06/06:57:56 logger.py:72  ]    cwd: /nfs5/zxd/Huawei/UniversalCSI
+I 07.06/06:57:56 logger.py:73  ]    pid: 1228
+I 07.06/06:57:56 logger.py:74  ]    command: main.py --exp_name COST2100/in/base/seed12781/transnet_transnet --train_path /nfs5/zxd/Huawei/datasets/COST2100/in_train.pt --val_path /nfs5/zxd/Huawei/datasets/COST2100/in_val.pt --test_path /nfs5/zxd/Huawei/datasets/COST2100/in_test.pt --epochs 400 --d_model 64 --nt 32 --nc 32 --dim_feedforward 2048 --hidden 16 --num_blocks 2 --batch_size 256 --workers 0 --cr 4 --encoder transnet --decoder transnet --scheduler cosine --lr_init 2e-4 --weight_decay 1e-3 --gpu 0 --seed 12781
+I 07.06/06:57:56 logger.py:75  ]    python: 3.11.14 | packaged by conda-forge | (main, Oct 22 2025, 22:46:25) [GCC 14.3.0]
+I 07.06/06:57:56 logger.py:76  ]    pytorch: 2.6.0+cu124
+I 07.06/06:57:56 logger.py:77  ]    cuda_available: True
+I 07.06/06:57:56 logger.py:79  ]    cuda_version: 12.4
+I 07.06/06:57:56 logger.py:81  ]    CUDA_VISIBLE_DEVICES: 0
+I 07.06/06:57:56 logger.py:91  ]    current_device: not initialized yet
+I 07.06/06:57:56 logger.py:63  ] => Arguments:
+{
+  "adapter": null,
+  "adapter_gate_init": 0.1,
+  "adapter_hidden_dim": 2048,
+  "adapter_rank": 32,
+  "anchor_loss": "mse",
+  "anchor_target": "none",
+  "batch_size": 256,
+  "canonical_anchor_seed": 0,
+  "canonical_codebook_size": 1024,
+  "canonical_codebook_temperature": 1.0,
+  "canonical_head": "none",
+  "canonical_lowrank_rank": 0,
+  "canonical_lowrank_scale": 0.0,
+  "channel": 2,
+  "code_var_tau": 256.0,
+  "cpu": false,
+  "cpu_affinity": null,
+  "cr": 4,
+  "d_model": 64,
+  "decoder": "transnet",
+  "dim_feedforward": 2048,
+  "encoder": "transnet",
+  "epochs": 400,
+  "evaluate": false,
+  "exp_name": "COST2100/in/base/seed12781/transnet_transnet",
+  "gpu": 0,
+  "hidden": 16,
+  "lambda_anchor": 0.0,
+  "lambda_code": 0.0,
+  "lambda_code_cov": 0.0,
+  "lambda_code_l1": 0.0,
+  "lambda_code_mean": 0.0,
+  "lambda_code_var": 0.0,
+  "lambda_fc": 0.0,
+  "lambda_recT": 0.0,
+  "lambda_recon": 1.0,
+  "lambda_teacher_pca": 0.0,
+  "lambda_teacher_whiten": 0.0,
+  "lr_init": 0.0002,
+  "nc": 32,
+  "nt": 32,
+  "num_blocks": 2,
+  "pretrained": null,
+  "pretrained_decoder": null,
+  "pretrained_encoder": null,
+  "resume": null,
+  "scheduler": "cosine",
+  "seed": 12781,
+  "teacher_code": null,
+  "teacher_pca_dim": 0,
+  "test_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_test.pt",
+  "train_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_train.pt",
+  "val_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_val.pt",
+  "weight_decay": 0.001,
+  "workers": 0
+}
+I 07.06/06:57:56 main.py:57  ] => Checkpoint directory: /nfs5/zxd/Huawei/UniversalCSI/exps/COST2100/in/base/seed12781/transnet_transnet/checkpoints
+I 07.06/06:57:56 main.py:58  ] => TensorBoard directory: /nfs5/zxd/Huawei/UniversalCSI/exps/COST2100/in/base/seed12781/transnet_transnet/tensorboard
+I 07.06/06:57:56 main.py:59  ] => PyTorch Version: 2.6.0+cu124
+I 07.06/06:58:00 main.py:75  ] => Dataset sizes: train=100000, val=30000, test=20000
+I 07.06/06:58:00 main.py:80  ] => Loader config: batch_size=256, workers=0, pin_memory=True
+I 07.06/06:58:00 init.py:143 ] => Model Name: UniversalCSI [pretrained: None; pretrained_decoder: None; pretrained_encoder: None; adapter: None; adapter_hidden_dim: 2048; canonical_head: none; canonical_anchor_seed: 0]
+I 07.06/06:58:00 init.py:150 ] => Model Config: compression ratio=1/4; encoder=transnet; decoder=transnet; input shape=(2, 32, 32); input dim=2048
+I 07.06/06:58:00 init.py:155 ] => Model Flops: 3.5742e+01M
+I 07.06/06:58:00 init.py:156 ] => Model Params Num: 3.1581e+00M
+
+I 07.06/06:58:00 init.py:157 ] 
+**********
+UniversalCSIModel(
+  (encoder): TransNetEncoder(
+    (encoder): TransformerEncoder(
+      (layers): ModuleList(
+        (0-1): 2 x TransformerEncoderLayer(
+          (self_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+          )
+          (linear1): Linear(in_features=64, out_features=2048, bias=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+          (linear2): Linear(in_features=2048, out_features=64, bias=True)
+          (norm1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.0, inplace=False)
+          (dropout2): Dropout(p=0.0, inplace=False)
+        )
+      )
+    )
+    (fc): Linear(in_features=2048, out_features=512, bias=True)
+  )
+  (decoder): TransNetDecoder(
+    (fc_decoder): Linear(in_features=512, out_features=2048, bias=True)
+    (decoder): TransformerDecoder(
+      (layers): ModuleList(
+        (0-1): 2 x TransformerDecoderLayer(
+          (self_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+          )
+          (multihead_attn): MultiheadAttention(
+            (out_proj): NonDynamicallyQuantizableLinear(in_features=64, out_features=64, bias=True)
+          )
+          (linear1): Linear(in_features=64, out_features=2048, bias=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+          (linear2): Linear(in_features=2048, out_features=64, bias=True)
+          (norm1): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (norm2): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (norm3): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+          (dropout1): Dropout(p=0.0, inplace=False)
+          (dropout2): Dropout(p=0.0, inplace=False)
+          (dropout3): Dropout(p=0.0, inplace=False)
+        )
+      )
+      (norm): LayerNorm((64,), eps=1e-05, elementwise_affine=True)
+    )
+  )
+)
+**********
+
+I 07.06/06:58:00 logger.py:146 ] 
+name                                                              grad           shape     numel
+----                                                              ----           -----     -----
+encoder.encoder.layers.0.self_attn.in_proj_weight                 True       (192, 64)    12,288
+encoder.encoder.layers.0.self_attn.in_proj_bias                   True          (192,)       192
+encoder.encoder.layers.0.self_attn.out_proj.weight                True        (64, 64)     4,096
+encoder.encoder.layers.0.self_attn.out_proj.bias                  True           (64,)        64
+encoder.encoder.layers.0.linear1.weight                           True      (2048, 64)   131,072
+encoder.encoder.layers.0.linear1.bias                             True         (2048,)     2,048
+encoder.encoder.layers.0.linear2.weight                           True      (64, 2048)   131,072
+encoder.encoder.layers.0.linear2.bias                             True           (64,)        64
+encoder.encoder.layers.0.norm1.weight                             True           (64,)        64
+encoder.encoder.layers.0.norm1.bias                               True           (64,)        64
+encoder.encoder.layers.0.norm2.weight                             True           (64,)        64
+encoder.encoder.layers.0.norm2.bias                               True           (64,)        64
+encoder.encoder.layers.1.self_attn.in_proj_weight                 True       (192, 64)    12,288
+encoder.encoder.layers.1.self_attn.in_proj_bias                   True          (192,)       192
+encoder.encoder.layers.1.self_attn.out_proj.weight                True        (64, 64)     4,096
+encoder.encoder.layers.1.self_attn.out_proj.bias                  True           (64,)        64
+encoder.encoder.layers.1.linear1.weight                           True      (2048, 64)   131,072
+encoder.encoder.layers.1.linear1.bias                             True         (2048,)     2,048
+encoder.encoder.layers.1.linear2.weight                           True      (64, 2048)   131,072
+encoder.encoder.layers.1.linear2.bias                             True           (64,)        64
+encoder.encoder.layers.1.norm1.weight                             True           (64,)        64
+encoder.encoder.layers.1.norm1.bias                               True           (64,)        64
+encoder.encoder.layers.1.norm2.weight                             True           (64,)        64
+encoder.encoder.layers.1.norm2.bias                               True           (64,)        64
+encoder.fc.weight                                                 True     (512, 2048) 1,048,576
+encoder.fc.bias                                                   True          (512,)       512
+decoder.fc_decoder.weight                                         True     (2048, 512) 1,048,576
+decoder.fc_decoder.bias                                           True         (2048,)     2,048
+decoder.decoder.layers.0.self_attn.in_proj_weight                 True       (192, 64)    12,288
+decoder.decoder.layers.0.self_attn.in_proj_bias                   True          (192,)       192
+decoder.decoder.layers.0.self_attn.out_proj.weight                True        (64, 64)     4,096
+decoder.decoder.layers.0.self_attn.out_proj.bias                  True           (64,)        64
+decoder.decoder.layers.0.multihead_attn.in_proj_weight            True       (192, 64)    12,288
+decoder.decoder.layers.0.multihead_attn.in_proj_bias              True          (192,)       192
+decoder.decoder.layers.0.multihead_attn.out_proj.weight           True        (64, 64)     4,096
+decoder.decoder.layers.0.multihead_attn.out_proj.bias             True           (64,)        64
+decoder.decoder.layers.0.linear1.weight                           True      (2048, 64)   131,072
+decoder.decoder.layers.0.linear1.bias                             True         (2048,)     2,048
+decoder.decoder.layers.0.linear2.weight                           True      (64, 2048)   131,072
+decoder.decoder.layers.0.linear2.bias                             True           (64,)        64
+decoder.decoder.layers.0.norm1.weight                             True           (64,)        64
+decoder.decoder.layers.0.norm1.bias                               True           (64,)        64
+decoder.decoder.layers.0.norm2.weight                             True           (64,)        64
+decoder.decoder.layers.0.norm2.bias                               True           (64,)        64
+decoder.decoder.layers.0.norm3.weight                             True           (64,)        64
+decoder.decoder.layers.0.norm3.bias                               True           (64,)        64
+decoder.decoder.layers.1.self_attn.in_proj_weight                 True       (192, 64)    12,288
+decoder.decoder.layers.1.self_attn.in_proj_bias                   True          (192,)       192
+decoder.decoder.layers.1.self_attn.out_proj.weight                True        (64, 64)     4,096
+decoder.decoder.layers.1.self_attn.out_proj.bias                  True           (64,)        64
+decoder.decoder.layers.1.multihead_attn.in_proj_weight            True       (192, 64)    12,288
+decoder.decoder.layers.1.multihead_attn.in_proj_bias              True          (192,)       192
+decoder.decoder.layers.1.multihead_attn.out_proj.weight           True        (64, 64)     4,096
+decoder.decoder.layers.1.multihead_attn.out_proj.bias             True           (64,)        64
+decoder.decoder.layers.1.linear1.weight                           True      (2048, 64)   131,072
+decoder.decoder.layers.1.linear1.bias                             True         (2048,)     2,048
+decoder.decoder.layers.1.linear2.weight                           True      (64, 2048)   131,072
+decoder.decoder.layers.1.linear2.bias                             True           (64,)        64
+decoder.decoder.layers.1.norm1.weight                             True           (64,)        64
+decoder.decoder.layers.1.norm1.bias                               True           (64,)        64
+decoder.decoder.layers.1.norm2.weight                             True           (64,)        64
+decoder.decoder.layers.1.norm2.bias                               True           (64,)        64
+decoder.decoder.layers.1.norm3.weight                             True           (64,)        64
+decoder.decoder.layers.1.norm3.bias                               True           (64,)        64
+decoder.decoder.norm.weight                                       True           (64,)        64
+decoder.decoder.norm.bias                                         True           (64,)        64
+**********
+total=3,257,984, trainable=3,257,984, frozen=0
+I 07.06/06:58:03 main.py:138 ] => Optimizer: AdamW lr=0.0002 weight_decay=0.001 decay_params=3244032 no_decay_params=13952
+I 07.06/06:58:03 main.py:155 ] => Scheduler: cosine T_max=156400 T_warmup=15640.0 eta_min=5e-05
+I 07.06/06:58:11 solver.py:324 ] Epoch: [1/400][20/391] lr: 2.56e-07 | recon: 1.0004e+00 total: 1.0004e+00 | time: 0.408
+I 07.06/06:58:21 solver.py:324 ] Epoch: [1/400][40/391] lr: 5.12e-07 | recon: 1.0004e+00 total: 1.0004e+00 | time: 0.456
+I 07.06/06:58:27 solver.py:324 ] Epoch: [1/400][60/391] lr: 7.67e-07 | recon: 1.0004e+00 total: 1.0004e+00 | time: 0.404
+I 07.06/06:58:34 solver.py:324 ] Epoch: [1/400][80/391] lr: 1.02e-06 | recon: 1.0003e+00 total: 1.0003e+00 | time: 0.395
+I 07.06/06:58:40 solver.py:324 ] Epoch: [1/400][100/391] lr: 1.28e-06 | recon: 1.0003e+00 total: 1.0003e+00 | time: 0.377
+I 07.06/06:58:48 solver.py:324 ] Epoch: [1/400][120/391] lr: 1.53e-06 | recon: 1.0002e+00 total: 1.0002e+00 | time: 0.376
+I 07.06/06:58:54 solver.py:324 ] Epoch: [1/400][140/391] lr: 1.79e-06 | recon: 1.0001e+00 total: 1.0001e+00 | time: 0.366
+I 07.06/06:59:00 solver.py:324 ] Epoch: [1/400][160/391] lr: 2.05e-06 | recon: 1.0001e+00 total: 1.0001e+00 | time: 0.360
+I 07.06/06:59:07 solver.py:324 ] Epoch: [1/400][180/391] lr: 2.30e-06 | recon: 9.9998e-01 total: 9.9998e-01 | time: 0.357
+I 07.06/06:59:13 solver.py:324 ] Epoch: [1/400][200/391] lr: 2.56e-06 | recon: 9.9987e-01 total: 9.9987e-01 | time: 0.351
+I 07.06/06:59:19 solver.py:324 ] Epoch: [1/400][220/391] lr: 2.81e-06 | recon: 9.9976e-01 total: 9.9976e-01 | time: 0.348
+I 07.06/06:59:25 solver.py:324 ] Epoch: [1/400][240/391] lr: 3.07e-06 | recon: 9.9963e-01 total: 9.9963e-01 | time: 0.345
+I 07.06/06:59:33 solver.py:324 ] Epoch: [1/400][260/391] lr: 3.32e-06 | recon: 9.9949e-01 total: 9.9949e-01 | time: 0.347
+I 07.06/06:59:39 solver.py:324 ] Epoch: [1/400][280/391] lr: 3.58e-06 | recon: 9.9933e-01 total: 9.9933e-01 | time: 0.345
+I 07.06/06:59:47 solver.py:324 ] Epoch: [1/400][300/391] lr: 3.84e-06 | recon: 9.9916e-01 total: 9.9916e-01 | time: 0.347
+I 07.06/06:59:53 solver.py:324 ] Epoch: [1/400][320/391] lr: 4.09e-06 | recon: 9.9898e-01 total: 9.9898e-01 | time: 0.345
+I 07.06/06:59:59 solver.py:324 ] Epoch: [1/400][340/391] lr: 4.35e-06 | recon: 9.9878e-01 total: 9.9878e-01 | time: 0.341
+I 07.06/07:00:06 solver.py:324 ] Epoch: [1/400][360/391] lr: 4.60e-06 | recon: 9.9857e-01 total: 9.9857e-01 | time: 0.342
+I 07.06/07:00:13 solver.py:324 ] Epoch: [1/400][380/391] lr: 4.86e-06 | recon: 9.9834e-01 total: 9.9834e-01 | time: 0.343
+I 07.06/07:00:17 solver.py:372 ] => Train  Recon loss: 9.9821e-01 | Total: 9.9821e-01
+
+I 07.06/07:00:24 solver.py:324 ] Epoch: [2/400][20/391] lr: 5.26e-06 | recon: 9.9314e-01 total: 9.9314e-01 | time: 0.330
+I 07.06/07:00:32 solver.py:324 ] Epoch: [2/400][40/391] lr: 5.51e-06 | recon: 9.9277e-01 total: 9.9277e-01 | time: 0.357
+I 07.06/07:00:38 solver.py:324 ] Epoch: [2/400][60/391] lr: 5.77e-06 | recon: 9.9239e-01 total: 9.9239e-01 | time: 0.353
+I 07.06/07:00:47 solver.py:324 ] Epoch: [2/400][80/391] lr: 6.02e-06 | recon: 9.9201e-01 total: 9.9201e-01 | time: 0.373
+I 07.06/07:00:54 solver.py:324 ] Epoch: [2/400][100/391] lr: 6.28e-06 | recon: 9.9161e-01 total: 9.9161e-01 | time: 0.371
+I 07.06/07:01:03 solver.py:324 ] Epoch: [2/400][120/391] lr: 6.53e-06 | recon: 9.9122e-01 total: 9.9122e-01 | time: 0.381
+I 07.06/07:01:10 solver.py:324 ] Epoch: [2/400][140/391] lr: 6.79e-06 | recon: 9.9083e-01 total: 9.9083e-01 | time: 0.380
+I 07.06/07:01:25 solver.py:324 ] Epoch: [2/400][160/391] lr: 7.05e-06 | recon: 9.9043e-01 total: 9.9043e-01 | time: 0.425
+I 07.06/07:01:38 solver.py:324 ] Epoch: [2/400][180/391] lr: 7.30e-06 | recon: 9.9005e-01 total: 9.9005e-01 | time: 0.446
+I 07.06/07:01:48 solver.py:324 ] Epoch: [2/400][200/391] lr: 7.56e-06 | recon: 9.8965e-01 total: 9.8965e-01 | time: 0.452
+I 07.06/07:01:56 solver.py:324 ] Epoch: [2/400][220/391] lr: 7.81e-06 | recon: 9.8927e-01 total: 9.8927e-01 | time: 0.448
+I 07.06/07:02:03 solver.py:324 ] Epoch: [2/400][240/391] lr: 8.07e-06 | recon: 9.8888e-01 total: 9.8888e-01 | time: 0.440
+I 07.06/07:02:10 solver.py:324 ] Epoch: [2/400][260/391] lr: 8.32e-06 | recon: 9.8851e-01 total: 9.8851e-01 | time: 0.432
+I 07.06/07:02:16 solver.py:324 ] Epoch: [2/400][280/391] lr: 8.58e-06 | recon: 9.8813e-01 total: 9.8813e-01 | time: 0.423
+I 07.06/07:02:33 solver.py:324 ] Epoch: [2/400][300/391] lr: 8.84e-06 | recon: 9.8775e-01 total: 9.8775e-01 | time: 0.453
+I 07.06/07:02:45 solver.py:324 ] Epoch: [2/400][320/391] lr: 9.09e-06 | recon: 9.8737e-01 total: 9.8737e-01 | time: 0.463
+I 07.06/07:02:57 solver.py:324 ] Epoch: [2/400][340/391] lr: 9.35e-06 | recon: 9.8699e-01 total: 9.8699e-01 | time: 0.471
+I 07.06/07:03:08 solver.py:324 ] Epoch: [2/400][360/391] lr: 9.60e-06 | recon: 9.8661e-01 total: 9.8661e-01 | time: 0.476
+I 07.06/07:03:20 solver.py:324 ] Epoch: [2/400][380/391] lr: 9.86e-06 | recon: 9.8623e-01 total: 9.8623e-01 | time: 0.482
+I 07.06/07:03:27 solver.py:372 ] => Train  Recon loss: 9.8602e-01 | Total: 9.8602e-01
+
+I 07.06/07:03:40 solver.py:324 ] Epoch: [3/400][20/391] lr: 1.03e-05 | recon: 9.7810e-01 total: 9.7810e-01 | time: 0.610
+I 07.06/07:03:49 solver.py:324 ] Epoch: [3/400][40/391] lr: 1.05e-05 | recon: 9.7768e-01 total: 9.7768e-01 | time: 0.542
+I 07.06/07:04:00 solver.py:324 ] Epoch: [3/400][60/391] lr: 1.08e-05 | recon: 9.7725e-01 total: 9.7725e-01 | time: 0.538
+I 07.06/07:04:10 solver.py:324 ] Epoch: [3/400][80/391] lr: 1.10e-05 | recon: 9.7684e-01 total: 9.7684e-01 | time: 0.530
+I 07.06/07:04:23 solver.py:324 ] Epoch: [3/400][100/391] lr: 1.13e-05 | recon: 9.7642e-01 total: 9.7642e-01 | time: 0.550
+I 07.06/07:04:35 solver.py:324 ] Epoch: [3/400][120/391] lr: 1.15e-05 | recon: 9.7597e-01 total: 9.7597e-01 | time: 0.559
+I 07.06/07:04:51 solver.py:324 ] Epoch: [3/400][140/391] lr: 1.18e-05 | recon: 9.7554e-01 total: 9.7554e-01 | time: 0.594
+I 07.06/07:05:00 solver.py:324 ] Epoch: [3/400][160/391] lr: 1.20e-05 | recon: 9.7509e-01 total: 9.7509e-01 | time: 0.577
+I 07.06/07:05:11 solver.py:324 ] Epoch: [3/400][180/391] lr: 1.23e-05 | recon: 9.7464e-01 total: 9.7464e-01 | time: 0.573
+I 07.06/07:05:21 solver.py:324 ] Epoch: [3/400][200/391] lr: 1.26e-05 | recon: 9.7415e-01 total: 9.7415e-01 | time: 0.565
