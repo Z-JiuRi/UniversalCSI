@@ -46,6 +46,6 @@
   "residual_scale": 0.35,
   "lambda_recon": 900.0,
   "lambda_encoder_consistency": 0.0,
-  "gpu": 0,
+  "gpu": 1,
   "exp_dir": "adapter/exps/exp7/07_baseline_rs0p35_rec900"
 }

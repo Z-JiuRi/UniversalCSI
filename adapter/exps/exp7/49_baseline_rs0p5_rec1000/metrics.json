@@ -1,0 +1,32 @@
+{
+  "val_code_mse": {
+    "metric": 0.0042718560678263505,
+    "epoch": 380,
+    "metrics": {
+      "code_loss": 0.0042718560678263505,
+      "code_mse": 0.0042718560678263505,
+      "feature_mse": 0.0029753219092885654,
+      "encoder_consistency_mse": 0.0,
+      "code_nmse": -21.056489944458008,
+      "code_cos": 0.9965311127026876,
+      "decoder_mse": 2.2824429123526594e-06,
+      "decoder_nmse": -22.966176986694336,
+      "n": 30000
+    }
+  },
+  "val_decoder_nmse": {
+    "metric": -22.972606658935547,
+    "epoch": 400,
+    "metrics": {
+      "code_loss": 0.004276625266919533,
+      "code_mse": 0.004276625266919533,
+      "feature_mse": 0.0029955495270589986,
+      "encoder_consistency_mse": 0.0,
+      "code_nmse": -21.051645278930664,
+      "code_cos": 0.9965290546417236,
+      "decoder_mse": 2.2790655558007227e-06,
+      "decoder_nmse": -22.972606658935547,
+      "n": 30000
+    }
+  }
+}

@@ -1,0 +1,5722 @@
+[
+  {
+    "endpoint_mse": 0.8486179947853089,
+    "epoch": 1,
+    "loss": 1.9984151601791382,
+    "lr": 1.25e-05,
+    "velocity_mse": 1.9984151601791382
+  },
+  {
+    "endpoint_mse": 0.8083830237388611,
+    "epoch": 2,
+    "loss": 1.9922627687454224,
+    "lr": 2.5e-05,
+    "velocity_mse": 1.9922627687454224
+  },
+  {
+    "endpoint_mse": 0.7889728844165802,
+    "epoch": 3,
+    "loss": 2.000815200805664,
+    "lr": 3.75e-05,
+    "velocity_mse": 2.000815200805664
+  },
+  {
+    "endpoint_mse": 0.5725762754678726,
+    "epoch": 4,
+    "loss": 1.998187518119812,
+    "lr": 5e-05,
+    "velocity_mse": 1.998187518119812
+  },
+  {
+    "endpoint_mse": 0.6331146508455276,
+    "epoch": 5,
+    "loss": 1.997513198852539,
+    "lr": 6.25e-05,
+    "velocity_mse": 1.997513198852539
+  },
+  {
+    "endpoint_mse": 0.701339739561081,
+    "epoch": 6,
+    "loss": 2.0033734321594237,
+    "lr": 7.5e-05,
+    "velocity_mse": 2.0033734321594237
+  },
+  {
+    "endpoint_mse": 0.6875279784202576,
+    "epoch": 7,
+    "loss": 2.0015851974487306,
+    "lr": 8.750000000000001e-05,
+    "velocity_mse": 2.0015851974487306
+  },
+  {
+    "endpoint_mse": 0.5200356602668762,
+    "epoch": 8,
+    "loss": 1.994472861289978,
+    "lr": 0.0001,
+    "velocity_mse": 1.994472861289978
+  },
+  {
+    "endpoint_mse": 0.5722686946392059,
+    "epoch": 9,
+    "loss": 1.9960084676742553,
+    "lr": 0.0001125,
+    "velocity_mse": 1.9960084676742553
+  },
+  {
+    "endpoint_mse": 0.8725134193897247,
+    "epoch": 10,
+    "loss": 1.9915224075317384,
+    "lr": 0.000125,
+    "velocity_mse": 1.9915224075317384
+  },
+  {
+    "endpoint_mse": 0.6651598036289215,
+    "epoch": 11,
+    "loss": 2.0027819156646727,
+    "lr": 0.0001375,
+    "velocity_mse": 2.0027819156646727
+  },
+  {
+    "endpoint_mse": 0.48346382677555083,
+    "epoch": 12,
+    "loss": 1.9952789306640626,
+    "lr": 0.00015,
+    "velocity_mse": 1.9952789306640626
+  },
+  {
+    "endpoint_mse": 0.696991217136383,
+    "epoch": 13,
+    "loss": 1.993155598640442,
+    "lr": 0.0001625,
+    "velocity_mse": 1.993155598640442
+  },
+  {
+    "endpoint_mse": 0.5575108766555786,
+    "epoch": 14,
+    "loss": 1.9887267827987671,
+    "lr": 0.00017500000000000003,
+    "velocity_mse": 1.9887267827987671
+  },
+  {
+    "endpoint_mse": 0.6022267997264862,
+    "epoch": 15,
+    "loss": 1.9936817646026612,
+    "lr": 0.0001875,
+    "velocity_mse": 1.9936817646026612
+  },
+  {
+    "endpoint_mse": 0.7616732299327851,
+    "epoch": 16,
+    "loss": 1.9974340200424194,
+    "lr": 0.0002,
+    "velocity_mse": 1.9974340200424194
+  },
+  {
+    "endpoint_mse": 0.5732960522174835,
+    "epoch": 17,
+    "loss": 1.993281626701355,
+    "lr": 0.00021250000000000002,
+    "velocity_mse": 1.993281626701355
+  },
+  {
+    "endpoint_mse": 0.5167917907238007,
+    "epoch": 18,
+    "loss": 1.9936331033706665,
+    "lr": 0.000225,
+    "velocity_mse": 1.9936331033706665
+  },
+  {
+    "endpoint_mse": 0.597172212600708,
+    "epoch": 19,
+    "loss": 1.997633409500122,
+    "lr": 0.0002375,
+    "velocity_mse": 1.997633409500122
+  },
+  {
+    "endpoint_mse": 0.6233470946550369,
+    "epoch": 20,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.15142376259567,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.551673244688267,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 30.65917175808275,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.24342628501599,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.17526128384076,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 31.11012988463729,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 29.973339404778464,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.642453798199195,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.12609562325755,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 29.607463023755457,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 29.873872921910337,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.32957243896229,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 29.78182688098635,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.62244927561865,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.755428112142646,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 29.90285517211578,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.00584474757888,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.312499602859905,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 29.070301922879853,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 31.207730339634935,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.11329234729832,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 29.351698631312303,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 29.81188549114995,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.731224773896358,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.999991273880005,
+    "lr": 0.00025,
+    "velocity_mse": 1.999991273880005
+  },
+  {
+    "endpoint_mse": 0.4176773250102997,
+    "epoch": 21,
+    "loss": 1.9855947017669677,
+    "lr": 0.0002625,
+    "velocity_mse": 1.9855947017669677
+  },
+  {
+    "endpoint_mse": 0.7209607303142548,
+    "epoch": 22,
+    "loss": 1.9979784727096557,
+    "lr": 0.000275,
+    "velocity_mse": 1.9979784727096557
+  },
+  {
+    "endpoint_mse": 0.6097352027893066,
+    "epoch": 23,
+    "loss": 1.992209553718567,
+    "lr": 0.0002875,
+    "velocity_mse": 1.992209553718567
+  },
+  {
+    "endpoint_mse": 0.584448117017746,
+    "epoch": 24,
+    "loss": 2.0046470403671264,
+    "lr": 0.0003,
+    "velocity_mse": 2.0046470403671264
+  },
+  {
+    "endpoint_mse": 0.8350568890571595,
+    "epoch": 25,
+    "loss": 2.0046102523803713,
+    "lr": 0.0003125,
+    "velocity_mse": 2.0046102523803713
+  },
+  {
+    "endpoint_mse": 0.7663545727729797,
+    "epoch": 26,
+    "loss": 2.00006582736969,
+    "lr": 0.000325,
+    "velocity_mse": 2.00006582736969
+  },
+  {
+    "endpoint_mse": 0.5383248776197433,
+    "epoch": 27,
+    "loss": 1.9901368141174316,
+    "lr": 0.0003375,
+    "velocity_mse": 1.9901368141174316
+  },
+  {
+    "endpoint_mse": 0.8057050049304962,
+    "epoch": 28,
+    "loss": 1.9976881742477417,
+    "lr": 0.00035000000000000005,
+    "velocity_mse": 1.9976881742477417
+  },
+  {
+    "endpoint_mse": 0.6018845558166503,
+    "epoch": 29,
+    "loss": 1.9881297111511231,
+    "lr": 0.0003625,
+    "velocity_mse": 1.9881297111511231
+  },
+  {
+    "endpoint_mse": 0.799302339553833,
+    "epoch": 30,
+    "loss": 1.9928956985473634,
+    "lr": 0.000375,
+    "velocity_mse": 1.9928956985473634
+  },
+  {
+    "endpoint_mse": 0.5083758026361466,
+    "epoch": 31,
+    "loss": 1.9908977508544923,
+    "lr": 0.0003875,
+    "velocity_mse": 1.9908977508544923
+  },
+  {
+    "endpoint_mse": 0.5390030354261398,
+    "epoch": 32,
+    "loss": 1.9768950939178467,
+    "lr": 0.0004,
+    "velocity_mse": 1.9768950939178467
+  },
+  {
+    "endpoint_mse": 0.7964620113372802,
+    "epoch": 33,
+    "loss": 1.991574215888977,
+    "lr": 0.0004125,
+    "velocity_mse": 1.991574215888977
+  },
+  {
+    "endpoint_mse": 0.7316545665264129,
+    "epoch": 34,
+    "loss": 1.981274962425232,
+    "lr": 0.00042500000000000003,
+    "velocity_mse": 1.981274962425232
+  },
+  {
+    "endpoint_mse": 0.5803541660308837,
+    "epoch": 35,
+    "loss": 1.9864089012145996,
+    "lr": 0.00043750000000000006,
+    "velocity_mse": 1.9864089012145996
+  },
+  {
+    "endpoint_mse": 0.6812780559062958,
+    "epoch": 36,
+    "loss": 1.995570683479309,
+    "lr": 0.00045,
+    "velocity_mse": 1.995570683479309
+  },
+  {
+    "endpoint_mse": 0.4927718847990036,
+    "epoch": 37,
+    "loss": 2.010073351860046,
+    "lr": 0.0004625,
+    "velocity_mse": 2.010073351860046
+  },
+  {
+    "endpoint_mse": 0.8742358684539795,
+    "epoch": 38,
+    "loss": 2.0148409843444823,
+    "lr": 0.000475,
+    "velocity_mse": 2.0148409843444823
+  },
+  {
+    "endpoint_mse": 0.9040613651275635,
+    "epoch": 39,
+    "loss": 2.0054131031036375,
+    "lr": 0.00048750000000000003,
+    "velocity_mse": 2.0054131031036375
+  },
+  {
+    "endpoint_mse": 0.6373446881771088,
+    "epoch": 40,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.287425821086373,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.482494447289863,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 29.959454795285836,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 30.420328220683423,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.44894546487767,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.375924997217616,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.08640065746375,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.377987561801824,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.05453009842874,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 30.249646339792918,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 30.601563673151905,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.98182386111509,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.344951709468397,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.735277664362695,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.76210587070696,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.61316851280172,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.0945619465462,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.15408826631475,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.620801641245148,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.46620957210449,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.306266814724133,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.59319649768159,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.969612755582382,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.141845392165312,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.9976053476333617,
+    "lr": 0.0005,
+    "velocity_mse": 1.9976053476333617
+  },
+  {
+    "endpoint_mse": 0.5850326538085937,
+    "epoch": 41,
+    "loss": 1.9977067947387694,
+    "lr": 0.0004999904998045107,
+    "velocity_mse": 1.9977067947387694
+  },
+  {
+    "endpoint_mse": 0.6458788573741913,
+    "epoch": 42,
+    "loss": 2.003604197502136,
+    "lr": 0.0004999619999415196,
+    "velocity_mse": 2.003604197502136
+  },
+  {
+    "endpoint_mse": 0.8551826357841492,
+    "epoch": 43,
+    "loss": 2.001879858970642,
+    "lr": 0.0004999145025814015,
+    "velocity_mse": 2.001879858970642
+  },
+  {
+    "endpoint_mse": 0.5553897857666016,
+    "epoch": 44,
+    "loss": 1.9975374221801758,
+    "lr": 0.0004998480113412644,
+    "velocity_mse": 1.9975374221801758
+  },
+  {
+    "endpoint_mse": 0.5976776838302612,
+    "epoch": 45,
+    "loss": 1.9965373277664185,
+    "lr": 0.0004997625312846735,
+    "velocity_mse": 1.9965373277664185
+  },
+  {
+    "endpoint_mse": 0.7508952617645264,
+    "epoch": 46,
+    "loss": 2.0029809951782225,
+    "lr": 0.0004996580689212662,
+    "velocity_mse": 2.0029809951782225
+  },
+  {
+    "endpoint_mse": 0.634411197900772,
+    "epoch": 47,
+    "loss": 2.0098498582839968,
+    "lr": 0.0004995346322062558,
+    "velocity_mse": 2.0098498582839968
+  },
+  {
+    "endpoint_mse": 0.617409884929657,
+    "epoch": 48,
+    "loss": 1.9986490249633788,
+    "lr": 0.0004993922305398261,
+    "velocity_mse": 1.9986490249633788
+  },
+  {
+    "endpoint_mse": 0.9173792839050293,
+    "epoch": 49,
+    "loss": 1.9954522609710694,
+    "lr": 0.0004992308747664155,
+    "velocity_mse": 1.9954522609710694
+  },
+  {
+    "endpoint_mse": 0.5884107649326324,
+    "epoch": 50,
+    "loss": 2.000434398651123,
+    "lr": 0.0004990505771738905,
+    "velocity_mse": 2.000434398651123
+  },
+  {
+    "endpoint_mse": 0.6820587992668152,
+    "epoch": 51,
+    "loss": 2.0006875514984133,
+    "lr": 0.0004988513514926111,
+    "velocity_mse": 2.0006875514984133
+  },
+  {
+    "endpoint_mse": 0.7581300258636474,
+    "epoch": 52,
+    "loss": 1.9944980144500732,
+    "lr": 0.0004986332128943842,
+    "velocity_mse": 1.9944980144500732
+  },
+  {
+    "endpoint_mse": 0.7960187256336212,
+    "epoch": 53,
+    "loss": 1.9969591617584228,
+    "lr": 0.0004983961779913086,
+    "velocity_mse": 1.9969591617584228
+  },
+  {
+    "endpoint_mse": 0.6714101254940033,
+    "epoch": 54,
+    "loss": 1.9946918964385987,
+    "lr": 0.0004981402648345099,
+    "velocity_mse": 1.9946918964385987
+  },
+  {
+    "endpoint_mse": 0.742708957195282,
+    "epoch": 55,
+    "loss": 1.9952642917633057,
+    "lr": 0.0004978654929127657,
+    "velocity_mse": 1.9952642917633057
+  },
+  {
+    "endpoint_mse": 0.7333482503890991,
+    "epoch": 56,
+    "loss": 2.0017656564712523,
+    "lr": 0.0004975718831510219,
+    "velocity_mse": 2.0017656564712523
+  },
+  {
+    "endpoint_mse": 0.7404881358146668,
+    "epoch": 57,
+    "loss": 1.9978803396224976,
+    "lr": 0.0004972594579087982,
+    "velocity_mse": 1.9978803396224976
+  },
+  {
+    "endpoint_mse": 0.6382981896400451,
+    "epoch": 58,
+    "loss": 1.9960870027542115,
+    "lr": 0.0004969282409784868,
+    "velocity_mse": 1.9960870027542115
+  },
+  {
+    "endpoint_mse": 1.1093173027038574,
+    "epoch": 59,
+    "loss": 2.003654432296753,
+    "lr": 0.0004965782575835393,
+    "velocity_mse": 2.003654432296753
+  },
+  {
+    "endpoint_mse": 0.7948179602622986,
+    "epoch": 60,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.422261806212152,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.655690535222853,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 30.1913220853003,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 30.41977279811331,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.391720219956053,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.757661525342183,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.139551303016887,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.112039959649568,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.704734516232794,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 30.896312988342338,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 29.378005784478603,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.46368733625714,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.04518580759761,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 31.18958869717037,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 31.192406757213725,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.883578768364693,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.325430910179932,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 29.74659644699048,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.183596632692065,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.227571787544836,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.78014464694871,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 29.58273807400486,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.694327512782287,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.139524724355855,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.9995729684829713,
+    "lr": 0.0004962095343765459,
+    "velocity_mse": 1.9995729684829713
+  },
+  {
+    "endpoint_mse": 0.7798454523086548,
+    "epoch": 61,
+    "loss": 2.002560091018677,
+    "lr": 0.0004958220994372067,
+    "velocity_mse": 2.002560091018677
+  },
+  {
+    "endpoint_mse": 0.49850190579891207,
+    "epoch": 62,
+    "loss": 1.96405131816864,
+    "lr": 0.0004954159822701922,
+    "velocity_mse": 1.96405131816864
+  },
+  {
+    "endpoint_mse": 0.580037385225296,
+    "epoch": 63,
+    "loss": 1.9914693355560302,
+    "lr": 0.000494991213802897,
+    "velocity_mse": 1.9914693355560302
+  },
+  {
+    "endpoint_mse": 0.6473385155200958,
+    "epoch": 64,
+    "loss": 1.9998047351837158,
+    "lr": 0.0004945478263830845,
+    "velocity_mse": 1.9998047351837158
+  },
+  {
+    "endpoint_mse": 0.6567210257053375,
+    "epoch": 65,
+    "loss": 1.961874532699585,
+    "lr": 0.0004940858537764234,
+    "velocity_mse": 1.961874532699585
+  },
+  {
+    "endpoint_mse": 0.6430559873580932,
+    "epoch": 66,
+    "loss": 1.97611563205719,
+    "lr": 0.0004936053311639162,
+    "velocity_mse": 1.97611563205719
+  },
+  {
+    "endpoint_mse": 0.6355404257774353,
+    "epoch": 67,
+    "loss": 1.8996978998184204,
+    "lr": 0.0004931062951392203,
+    "velocity_mse": 1.8996978998184204
+  },
+  {
+    "endpoint_mse": 0.40368239879608153,
+    "epoch": 68,
+    "loss": 1.8421887397766112,
+    "lr": 0.0004925887837058611,
+    "velocity_mse": 1.8421887397766112
+  },
+  {
+    "endpoint_mse": 0.6899426519870758,
+    "epoch": 69,
+    "loss": 1.8492972135543824,
+    "lr": 0.0004920528362743378,
+    "velocity_mse": 1.8492972135543824
+  },
+  {
+    "endpoint_mse": 0.5562546238303184,
+    "epoch": 70,
+    "loss": 1.831310248374939,
+    "lr": 0.0004914984936591225,
+    "velocity_mse": 1.831310248374939
+  },
+  {
+    "endpoint_mse": 0.5396207630634308,
+    "epoch": 71,
+    "loss": 1.8531126737594605,
+    "lr": 0.0004909257980755514,
+    "velocity_mse": 1.8531126737594605
+  },
+  {
+    "endpoint_mse": 0.6620589137077332,
+    "epoch": 72,
+    "loss": 1.8596460103988648,
+    "lr": 0.0004903347931366106,
+    "velocity_mse": 1.8596460103988648
+  },
+  {
+    "endpoint_mse": 0.4418683797121048,
+    "epoch": 73,
+    "loss": 1.7168802976608277,
+    "lr": 0.0004897255238496142,
+    "velocity_mse": 1.7168802976608277
+  },
+  {
+    "endpoint_mse": 0.6807409644126892,
+    "epoch": 74,
+    "loss": 1.8472792863845826,
+    "lr": 0.0004890980366127774,
+    "velocity_mse": 1.8472792863845826
+  },
+  {
+    "endpoint_mse": 0.7676238358020783,
+    "epoch": 75,
+    "loss": 1.825689697265625,
+    "lr": 0.0004884523792116826,
+    "velocity_mse": 1.825689697265625
+  },
+  {
+    "endpoint_mse": 0.6497934460639954,
+    "epoch": 76,
+    "loss": 1.8545750617980956,
+    "lr": 0.00048778860081564085,
+    "velocity_mse": 1.8545750617980956
+  },
+  {
+    "endpoint_mse": 0.6283631920814514,
+    "epoch": 77,
+    "loss": 1.8578959465026856,
+    "lr": 0.0004871067519739467,
+    "velocity_mse": 1.8578959465026856
+  },
+  {
+    "endpoint_mse": 0.8477795839309692,
+    "epoch": 78,
+    "loss": 1.8412078619003296,
+    "lr": 0.0004864068846120296,
+    "velocity_mse": 1.8412078619003296
+  },
+  {
+    "endpoint_mse": 0.6650617837905883,
+    "epoch": 79,
+    "loss": 1.8075749635696412,
+    "lr": 0.00048568905202749855,
+    "velocity_mse": 1.8075749635696412
+  },
+  {
+    "endpoint_mse": 0.5379766583442688,
+    "epoch": 80,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 31.11258670982687,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 31.359736966549153,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 30.66287391408846,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 31.315149248843007,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 31.148488514738602,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.966895125008705,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.85906234486253,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 31.011674241565395,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.797447027692037,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 30.853882983438336,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 31.938274556463377,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 31.414536246842562,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.694231704624535,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 31.6636135114515,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 31.01640851118357,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 31.014452726063546,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 31.27838855224614,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.53747932361512,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.27084098975523,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 31.525499876223574,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 32.16131135303171,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.906980049752896,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 31.078415399036437,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 31.831887257176238,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.8027525663375854,
+    "lr": 0.0004849533088860842,
+    "velocity_mse": 1.8027525663375854
+  },
+  {
+    "endpoint_mse": 0.8904982209205627,
+    "epoch": 81,
+    "loss": 1.9266842365264893,
+    "lr": 0.0004841997112174752,
+    "velocity_mse": 1.9266842365264893
+  },
+  {
+    "endpoint_mse": 0.5892823755741119,
+    "epoch": 82,
+    "loss": 1.7911520719528198,
+    "lr": 0.0004834283164110518,
+    "velocity_mse": 1.7911520719528198
+  },
+  {
+    "endpoint_mse": 0.556664377450943,
+    "epoch": 83,
+    "loss": 1.759467601776123,
+    "lr": 0.0004826391832115151,
+    "velocity_mse": 1.759467601776123
+  },
+  {
+    "endpoint_mse": 0.5093571439385414,
+    "epoch": 84,
+    "loss": 1.6651122093200683,
+    "lr": 0.0004818323717144135,
+    "velocity_mse": 1.6651122093200683
+  },
+  {
+    "endpoint_mse": 0.6723829537630082,
+    "epoch": 85,
+    "loss": 1.7588635206222534,
+    "lr": 0.00048100794336156604,
+    "velocity_mse": 1.7588635206222534
+  },
+  {
+    "endpoint_mse": 0.6332973837852478,
+    "epoch": 86,
+    "loss": 1.8721497535705567,
+    "lr": 0.0004801659609363839,
+    "velocity_mse": 1.8721497535705567
+  },
+  {
+    "endpoint_mse": 0.5930603444576263,
+    "epoch": 87,
+    "loss": 1.8555566310882567,
+    "lr": 0.00047930648855908846,
+    "velocity_mse": 1.8555566310882567
+  },
+  {
+    "endpoint_mse": 0.680183756351471,
+    "epoch": 88,
+    "loss": 1.825207805633545,
+    "lr": 0.0004784295916818289,
+    "velocity_mse": 1.825207805633545
+  },
+  {
+    "endpoint_mse": 0.732623302936554,
+    "epoch": 89,
+    "loss": 1.7649769544601441,
+    "lr": 0.00047753533708369756,
+    "velocity_mse": 1.7649769544601441
+  },
+  {
+    "endpoint_mse": 0.7017314791679382,
+    "epoch": 90,
+    "loss": 1.8099334001541139,
+    "lr": 0.0004766237928656442,
+    "velocity_mse": 1.8099334001541139
+  },
+  {
+    "endpoint_mse": 0.5934288799762726,
+    "epoch": 91,
+    "loss": 1.740046215057373,
+    "lr": 0.0004756950284452903,
+    "velocity_mse": 1.740046215057373
+  },
+  {
+    "endpoint_mse": 0.6318795889616012,
+    "epoch": 92,
+    "loss": 1.6957206010818482,
+    "lr": 0.0004747491145516422,
+    "velocity_mse": 1.6957206010818482
+  },
+  {
+    "endpoint_mse": 0.5927026271820068,
+    "epoch": 93,
+    "loss": 1.8647570133209228,
+    "lr": 0.0004737861232197053,
+    "velocity_mse": 1.8647570133209228
+  },
+  {
+    "endpoint_mse": 0.42178998291492464,
+    "epoch": 94,
+    "loss": 1.7484675407409669,
+    "lr": 0.0004728061277849978,
+    "velocity_mse": 1.7484675407409669
+  },
+  {
+    "endpoint_mse": 0.7919693946838379,
+    "epoch": 95,
+    "loss": 1.9119826555252075,
+    "lr": 0.0004718092028779663,
+    "velocity_mse": 1.9119826555252075
+  },
+  {
+    "endpoint_mse": 0.797284734249115,
+    "epoch": 96,
+    "loss": 1.8905349731445313,
+    "lr": 0.0004707954244183023,
+    "velocity_mse": 1.8905349731445313
+  },
+  {
+    "endpoint_mse": 0.7635393738746643,
+    "epoch": 97,
+    "loss": 1.8200799465179442,
+    "lr": 0.00046976486960916035,
+    "velocity_mse": 1.8200799465179442
+  },
+  {
+    "endpoint_mse": 0.8169799089431763,
+    "epoch": 98,
+    "loss": 1.8517444372177123,
+    "lr": 0.0004687176169312793,
+    "velocity_mse": 1.8517444372177123
+  },
+  {
+    "endpoint_mse": 0.4701586656272411,
+    "epoch": 99,
+    "loss": 1.725407338142395,
+    "lr": 0.000467653746137005,
+    "velocity_mse": 1.725407338142395
+  },
+  {
+    "endpoint_mse": 0.6673973083496094,
+    "epoch": 100,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 31.376868127280186,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 31.37838106982667,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 31.589305611488108,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 31.16291770052578,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 31.520191562129053,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 31.767337664519676,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 32.39484533253404,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 31.077321498860854,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 31.03377949308311,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 29.34797840400874,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 31.487459977252858,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 31.335323664419654,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 32.402274765282556,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 31.895560129581714,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 31.622889463260627,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 32.42153177906803,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 31.350591922428176,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 31.306679378566553,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 31.33625568996967,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 31.92776518250706,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 31.81035705420873,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 31.535372625792412,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 31.514326439350295,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 31.31598921575725,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.7592488288879395,
+    "lr": 0.0004665733382442175,
+    "velocity_mse": 1.7592488288879395
+  },
+  {
+    "endpoint_mse": 0.8853790760040283,
+    "epoch": 101,
+    "loss": 1.8733340978622437,
+    "lr": 0.0004654764755301607,
+    "velocity_mse": 1.8733340978622437
+  },
+  {
+    "endpoint_mse": 0.5141085594892502,
+    "epoch": 102,
+    "loss": 1.7371823072433472,
+    "lr": 0.00046436324152517705,
+    "velocity_mse": 1.7371823072433472
+  },
+  {
+    "endpoint_mse": 0.6197220325469971,
+    "epoch": 103,
+    "loss": 1.8089953422546388,
+    "lr": 0.000463233721006346,
+    "velocity_mse": 1.8089953422546388
+  },
+  {
+    "endpoint_mse": 0.685434079170227,
+    "epoch": 104,
+    "loss": 1.8396982669830322,
+    "lr": 0.00046208799999102827,
+    "velocity_mse": 1.8396982669830322
+  },
+  {
+    "endpoint_mse": 0.7760238528251648,
+    "epoch": 105,
+    "loss": 1.8452677965164184,
+    "lr": 0.000460926165730315,
+    "velocity_mse": 1.8452677965164184
+  },
+  {
+    "endpoint_mse": 0.7310894012451172,
+    "epoch": 106,
+    "loss": 1.7858286857604981,
+    "lr": 0.00045974830670238333,
+    "velocity_mse": 1.7858286857604981
+  },
+  {
+    "endpoint_mse": 0.4404821515083313,
+    "epoch": 107,
+    "loss": 1.6811772108078002,
+    "lr": 0.0004585545126057585,
+    "velocity_mse": 1.6811772108078002
+  },
+  {
+    "endpoint_mse": 0.5077784955501556,
+    "epoch": 108,
+    "loss": 1.667097020149231,
+    "lr": 0.0004573448743524829,
+    "velocity_mse": 1.667097020149231
+  },
+  {
+    "endpoint_mse": 0.6575982391834259,
+    "epoch": 109,
+    "loss": 1.7793842792510985,
+    "lr": 0.0004561194840611929,
+    "velocity_mse": 1.7793842792510985
+  },
+  {
+    "endpoint_mse": 0.6326733946800231,
+    "epoch": 110,
+    "loss": 1.759696650505066,
+    "lr": 0.0004548784350501035,
+    "velocity_mse": 1.759696650505066
+  },
+  {
+    "endpoint_mse": 0.5212029725313186,
+    "epoch": 111,
+    "loss": 1.721683669090271,
+    "lr": 0.0004536218218299017,
+    "velocity_mse": 1.721683669090271
+  },
+  {
+    "endpoint_mse": 0.5472138822078705,
+    "epoch": 112,
+    "loss": 1.7380233764648438,
+    "lr": 0.0004523497400965494,
+    "velocity_mse": 1.7380233764648438
+  },
+  {
+    "endpoint_mse": 0.4818863093852997,
+    "epoch": 113,
+    "loss": 1.7228107452392578,
+    "lr": 0.0004510622867239957,
+    "velocity_mse": 1.7228107452392578
+  },
+  {
+    "endpoint_mse": 0.7925414800643921,
+    "epoch": 114,
+    "loss": 1.8561863660812379,
+    "lr": 0.00044975955975679955,
+    "velocity_mse": 1.8561863660812379
+  },
+  {
+    "endpoint_mse": 0.502912637591362,
+    "epoch": 115,
+    "loss": 1.7025502920150757,
+    "lr": 0.00044844165840266317,
+    "velocity_mse": 1.7025502920150757
+  },
+  {
+    "endpoint_mse": 0.5779810130596161,
+    "epoch": 116,
+    "loss": 1.7803193092346192,
+    "lr": 0.0004471086830248771,
+    "velocity_mse": 1.7803193092346192
+  },
+  {
+    "endpoint_mse": 0.579954308271408,
+    "epoch": 117,
+    "loss": 1.662585401535034,
+    "lr": 0.00044576073513467727,
+    "velocity_mse": 1.662585401535034
+  },
+  {
+    "endpoint_mse": 0.5537819683551788,
+    "epoch": 118,
+    "loss": 1.7545697689056396,
+    "lr": 0.00044439791738351423,
+    "velocity_mse": 1.7545697689056396
+  },
+  {
+    "endpoint_mse": 0.6396049380302429,
+    "epoch": 119,
+    "loss": 1.8101379156112671,
+    "lr": 0.00044302033355523614,
+    "velocity_mse": 1.8101379156112671
+  },
+  {
+    "endpoint_mse": 0.8537388920783997,
+    "epoch": 120,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 32.080416557184016,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 32.13252724205915,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 31.667093918552226,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 32.44162851094067,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 32.12089710473057,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 31.75942251666886,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 32.92470597045637,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 32.640045739689356,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 31.71323236037564,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 32.11903534321205,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 32.756618579698795,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 32.77836651811943,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 32.080144904266,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 31.6893277110421,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 32.36204629169687,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 31.94809175575468,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 31.499536164287633,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 32.00685529348251,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 31.875878031617813,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 32.01499118967996,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 31.84928985358093,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 32.19816023574697,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 32.182462153207624,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 31.898834377297256,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.9278940916061402,
+    "lr": 0.000441628088558185,
+    "velocity_mse": 1.9278940916061402
+  },
+  {
+    "endpoint_mse": 0.6823579430580139,
+    "epoch": 121,
+    "loss": 1.8053985834121704,
+    "lr": 0.00044022128841720773,
+    "velocity_mse": 1.8053985834121704
+  },
+  {
+    "endpoint_mse": 0.5958617508411408,
+    "epoch": 122,
+    "loss": 1.87306866645813,
+    "lr": 0.00043880004026558165,
+    "velocity_mse": 1.87306866645813
+  },
+  {
+    "endpoint_mse": 0.5424243777990341,
+    "epoch": 123,
+    "loss": 1.76794536113739,
+    "lr": 0.0004373644523368561,
+    "velocity_mse": 1.76794536113739
+  },
+  {
+    "endpoint_mse": 0.6973034083843231,
+    "epoch": 124,
+    "loss": 1.713434910774231,
+    "lr": 0.0004359146339566099,
+    "velocity_mse": 1.713434910774231
+  },
+  {
+    "endpoint_mse": 0.6459707856178284,
+    "epoch": 125,
+    "loss": 1.779987621307373,
+    "lr": 0.00043445069553412597,
+    "velocity_mse": 1.779987621307373
+  },
+  {
+    "endpoint_mse": 0.7079974412918091,
+    "epoch": 126,
+    "loss": 1.801265811920166,
+    "lr": 0.0004329727485539831,
+    "velocity_mse": 1.801265811920166
+  },
+  {
+    "endpoint_mse": 0.6266139209270477,
+    "epoch": 127,
+    "loss": 1.6644424676895142,
+    "lr": 0.00043148090556756574,
+    "velocity_mse": 1.6644424676895142
+  },
+  {
+    "endpoint_mse": 0.820362675189972,
+    "epoch": 128,
+    "loss": 1.7232770919799805,
+    "lr": 0.0004299752801844935,
+    "velocity_mse": 1.7232770919799805
+  },
+  {
+    "endpoint_mse": 0.7793225646018982,
+    "epoch": 129,
+    "loss": 1.8059873819351195,
+    "lr": 0.0004284559870639683,
+    "velocity_mse": 1.8059873819351195
+  },
+  {
+    "endpoint_mse": 0.7720597147941589,
+    "epoch": 130,
+    "loss": 1.8094087362289428,
+    "lr": 0.0004269231419060436,
+    "velocity_mse": 1.8094087362289428
+  },
+  {
+    "endpoint_mse": 0.7527900099754333,
+    "epoch": 131,
+    "loss": 1.7495753765106201,
+    "lr": 0.0004253768614428128,
+    "velocity_mse": 1.7495753765106201
+  },
+  {
+    "endpoint_mse": 0.40552489161491395,
+    "epoch": 132,
+    "loss": 1.6881918430328369,
+    "lr": 0.00042381726342951984,
+    "velocity_mse": 1.6881918430328369
+  },
+  {
+    "endpoint_mse": 0.5523762106895447,
+    "epoch": 133,
+    "loss": 1.7729099988937378,
+    "lr": 0.0004222444666355916,
+    "velocity_mse": 1.7729099988937378
+  },
+  {
+    "endpoint_mse": 0.8596394956111908,
+    "epoch": 134,
+    "loss": 1.7118234157562255,
+    "lr": 0.0004206585908355934,
+    "velocity_mse": 1.7118234157562255
+  },
+  {
+    "endpoint_mse": 0.44616774320602415,
+    "epoch": 135,
+    "loss": 1.6490198850631714,
+    "lr": 0.0004190597568001073,
+    "velocity_mse": 1.6490198850631714
+  },
+  {
+    "endpoint_mse": 0.40541417300701144,
+    "epoch": 136,
+    "loss": 1.6967655420303345,
+    "lr": 0.00041744808628653516,
+    "velocity_mse": 1.6967655420303345
+  },
+  {
+    "endpoint_mse": 0.6982681214809418,
+    "epoch": 137,
+    "loss": 1.7338397264480592,
+    "lr": 0.00041582370202982653,
+    "velocity_mse": 1.7338397264480592
+  },
+  {
+    "endpoint_mse": 0.5303769111633301,
+    "epoch": 138,
+    "loss": 1.745632243156433,
+    "lr": 0.0004141867277331316,
+    "velocity_mse": 1.745632243156433
+  },
+  {
+    "endpoint_mse": 0.6551095008850097,
+    "epoch": 139,
+    "loss": 1.7026804208755493,
+    "lr": 0.00041253728805838084,
+    "velocity_mse": 1.7026804208755493
+  },
+  {
+    "endpoint_mse": 0.5529723167419434,
+    "epoch": 140,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.9884968179697,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.868262165421694,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 30.50177975327136,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 31.595448535216043,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 31.09802108430452,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.95617736049729,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 31.54018501559512,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 31.044121639463206,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 31.585339140185305,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 31.128633562621317,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 31.560017702885514,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.76367632684545,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 31.064317444296606,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.52843723502646,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.67719263682664,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.937249044995994,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.72455581886414,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 31.288137626242953,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 31.181848922664784,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 31.371052276127763,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.879143449469858,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 31.17923443970564,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.924037220717405,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 31.529043738754456,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.6713860034942627,
+    "lr": 0.0004108755086167916,
+    "velocity_mse": 1.6713860034942627
+  },
+  {
+    "endpoint_mse": 0.5519954323768616,
+    "epoch": 141,
+    "loss": 1.6183456897735595,
+    "lr": 0.0004092015159593021,
+    "velocity_mse": 1.6183456897735595
+  },
+  {
+    "endpoint_mse": 0.4967231750488281,
+    "epoch": 142,
+    "loss": 1.5764528036117553,
+    "lr": 0.00040751543756693446,
+    "velocity_mse": 1.5764528036117553
+  },
+  {
+    "endpoint_mse": 0.5859202861785888,
+    "epoch": 143,
+    "loss": 1.588058090209961,
+    "lr": 0.00040581740184108606,
+    "velocity_mse": 1.588058090209961
+  },
+  {
+    "endpoint_mse": 0.4242528796195984,
+    "epoch": 144,
+    "loss": 1.5501631021499633,
+    "lr": 0.00040410753809375175,
+    "velocity_mse": 1.5501631021499633
+  },
+  {
+    "endpoint_mse": 0.3735684335231781,
+    "epoch": 145,
+    "loss": 1.6293248414993287,
+    "lr": 0.0004023859765376758,
+    "velocity_mse": 1.6293248414993287
+  },
+  {
+    "endpoint_mse": 0.5876792550086976,
+    "epoch": 146,
+    "loss": 1.6437938690185547,
+    "lr": 0.0004006528482764361,
+    "velocity_mse": 1.6437938690185547
+  },
+  {
+    "endpoint_mse": 0.5307481706142425,
+    "epoch": 147,
+    "loss": 1.6195908308029174,
+    "lr": 0.0003989082852944596,
+    "velocity_mse": 1.6195908308029174
+  },
+  {
+    "endpoint_mse": 0.332006124407053,
+    "epoch": 148,
+    "loss": 1.5424595832824708,
+    "lr": 0.00039715242044697206,
+    "velocity_mse": 1.5424595832824708
+  },
+  {
+    "endpoint_mse": 0.8216960430145264,
+    "epoch": 149,
+    "loss": 1.5663063287734986,
+    "lr": 0.00039538538744987947,
+    "velocity_mse": 1.5663063287734986
+  },
+  {
+    "endpoint_mse": 0.5689820617437362,
+    "epoch": 150,
+    "loss": 1.629803442955017,
+    "lr": 0.00039360732086958603,
+    "velocity_mse": 1.629803442955017
+  },
+  {
+    "endpoint_mse": 0.4476697266101837,
+    "epoch": 151,
+    "loss": 1.684330201148987,
+    "lr": 0.0003918183561127458,
+    "velocity_mse": 1.684330201148987
+  },
+  {
+    "endpoint_mse": 0.540113776922226,
+    "epoch": 152,
+    "loss": 1.5086170434951782,
+    "lr": 0.0003900186294159514,
+    "velocity_mse": 1.5086170434951782
+  },
+  {
+    "endpoint_mse": 0.5407697141170502,
+    "epoch": 153,
+    "loss": 1.6452993631362915,
+    "lr": 0.00038820827783535853,
+    "velocity_mse": 1.6452993631362915
+  },
+  {
+    "endpoint_mse": 0.623225212097168,
+    "epoch": 154,
+    "loss": 1.5184252977371215,
+    "lr": 0.00038638743923624923,
+    "velocity_mse": 1.5184252977371215
+  },
+  {
+    "endpoint_mse": 0.4534321933984756,
+    "epoch": 155,
+    "loss": 1.6018830776214599,
+    "lr": 0.0003845562522825326,
+    "velocity_mse": 1.6018830776214599
+  },
+  {
+    "endpoint_mse": 0.48172985911369326,
+    "epoch": 156,
+    "loss": 1.7297930479049684,
+    "lr": 0.00038271485642618467,
+    "velocity_mse": 1.7297930479049684
+  },
+  {
+    "endpoint_mse": 0.5520640134811401,
+    "epoch": 157,
+    "loss": 1.70344021320343,
+    "lr": 0.00038086339189662925,
+    "velocity_mse": 1.70344021320343
+  },
+  {
+    "endpoint_mse": 0.550764513015747,
+    "epoch": 158,
+    "loss": 1.6107236862182617,
+    "lr": 0.00037900199969005856,
+    "velocity_mse": 1.6107236862182617
+  },
+  {
+    "endpoint_mse": 0.33919007927179334,
+    "epoch": 159,
+    "loss": 1.616746735572815,
+    "lr": 0.00037713082155869574,
+    "velocity_mse": 1.616746735572815
+  },
+  {
+    "endpoint_mse": 0.5516086757183075,
+    "epoch": 160,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 31.02718485668555,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 31.196334496013392,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 31.307295197887335,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 30.577924876155926,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.570716852978947,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.75923608617954,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.547435214247827,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.691677099166128,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.579200191579975,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 30.976169346377745,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 31.343628822990027,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 29.82138239227656,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 29.633937950084686,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.692792048273905,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.407682241370484,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.801649885731447,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.635656018951973,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.747363293413983,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.632202672474584,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.40373779387291,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.006545729266847,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.789029826522327,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.129602380565757,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 31.244691213253255,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.5456097364425658,
+    "lr": 0.00037525000000000004,
+    "velocity_mse": 1.5456097364425658
+  },
+  {
+    "endpoint_mse": 0.48832117915153506,
+    "epoch": 161,
+    "loss": 1.595710039138794,
+    "lr": 0.00037335967824581506,
+    "velocity_mse": 1.595710039138794
+  },
+  {
+    "endpoint_mse": 0.32217646241188047,
+    "epoch": 162,
+    "loss": 1.6039415359497071,
+    "lr": 0.0003714600002514612,
+    "velocity_mse": 1.6039415359497071
+  },
+  {
+    "endpoint_mse": 0.593679028749466,
+    "epoch": 163,
+    "loss": 1.6260442018508912,
+    "lr": 0.00036955111068477236,
+    "velocity_mse": 1.6260442018508912
+  },
+  {
+    "endpoint_mse": 0.5641055524349212,
+    "epoch": 164,
+    "loss": 1.588176417350769,
+    "lr": 0.00036763315491507976,
+    "velocity_mse": 1.588176417350769
+  },
+  {
+    "endpoint_mse": 0.4670924961566925,
+    "epoch": 165,
+    "loss": 1.6050411701202392,
+    "lr": 0.000365706279002141,
+    "velocity_mse": 1.6050411701202392
+  },
+  {
+    "endpoint_mse": 0.4885800004005432,
+    "epoch": 166,
+    "loss": 1.6617359161376952,
+    "lr": 0.00036377062968501693,
+    "velocity_mse": 1.6617359161376952
+  },
+  {
+    "endpoint_mse": 0.4067550599575043,
+    "epoch": 167,
+    "loss": 1.5937682867050171,
+    "lr": 0.00036182635437089736,
+    "velocity_mse": 1.5937682867050171
+  },
+  {
+    "endpoint_mse": 0.5387735247612,
+    "epoch": 168,
+    "loss": 1.5616919994354248,
+    "lr": 0.0003598736011238748,
+    "velocity_mse": 1.5616919994354248
+  },
+  {
+    "endpoint_mse": 0.3829954504966736,
+    "epoch": 169,
+    "loss": 1.4176158666610719,
+    "lr": 0.00035791251865366965,
+    "velocity_mse": 1.4176158666610719
+  },
+  {
+    "endpoint_mse": 0.36485251784324646,
+    "epoch": 170,
+    "loss": 1.749992036819458,
+    "lr": 0.00035594325630430455,
+    "velocity_mse": 1.749992036819458
+  },
+  {
+    "endpoint_mse": 0.524334442615509,
+    "epoch": 171,
+    "loss": 1.719573473930359,
+    "lr": 0.0003539659640427317,
+    "velocity_mse": 1.719573473930359
+  },
+  {
+    "endpoint_mse": 0.40921894907951356,
+    "epoch": 172,
+    "loss": 1.5600948572158813,
+    "lr": 0.0003519807924474122,
+    "velocity_mse": 1.5600948572158813
+  },
+  {
+    "endpoint_mse": 0.5576192319393158,
+    "epoch": 173,
+    "loss": 1.5779628515243531,
+    "lr": 0.00034998789269684896,
+    "velocity_mse": 1.5779628515243531
+  },
+  {
+    "endpoint_mse": 0.5978148460388184,
+    "epoch": 174,
+    "loss": 1.6867450952529908,
+    "lr": 0.0003479874165580739,
+    "velocity_mse": 1.6867450952529908
+  },
+  {
+    "endpoint_mse": 0.4416612207889557,
+    "epoch": 175,
+    "loss": 1.5673264026641847,
+    "lr": 0.00034597951637508993,
+    "velocity_mse": 1.5673264026641847
+  },
+  {
+    "endpoint_mse": 0.3928548499941826,
+    "epoch": 176,
+    "loss": 1.493053913116455,
+    "lr": 0.00034396434505727007,
+    "velocity_mse": 1.493053913116455
+  },
+  {
+    "endpoint_mse": 0.5059926301240921,
+    "epoch": 177,
+    "loss": 1.5288790941238404,
+    "lr": 0.0003419420560677122,
+    "velocity_mse": 1.5288790941238404
+  },
+  {
+    "endpoint_mse": 0.48450508117675783,
+    "epoch": 178,
+    "loss": 1.5326868295669556,
+    "lr": 0.0003399128034115524,
+    "velocity_mse": 1.5326868295669556
+  },
+  {
+    "endpoint_mse": 0.6581572771072388,
+    "epoch": 179,
+    "loss": 1.5833655834197997,
+    "lr": 0.00033787674162423715,
+    "velocity_mse": 1.5833655834197997
+  },
+  {
+    "endpoint_mse": 0.45020965933799745,
+    "epoch": 180,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 29.8693327173511,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 29.442221172840238,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 29.69941995778974,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 30.466357021423317,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.23689537852201,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 29.826449278112484,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.622554685499665,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 29.677390308741913,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.21075410739181,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 29.679232567147235,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 30.498848879981978,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.18503320141214,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.275121377158868,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 31.22827682284594,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 29.21331823275686,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.269251106302143,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 29.11444632433951,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.86942660124151,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.789926087976145,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 31.10010149839149,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 29.441827190014923,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 31.545076177260828,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.634528281747862,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 29.319449463594893,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.645299768447876,
+    "lr": 0.0003358340257597544,
+    "velocity_mse": 1.645299768447876
+  },
+  {
+    "endpoint_mse": 0.3647010885179043,
+    "epoch": 181,
+    "loss": 1.4871248006820679,
+    "lr": 0.00033378481137882584,
+    "velocity_mse": 1.4871248006820679
+  },
+  {
+    "endpoint_mse": 0.4570243936032057,
+    "epoch": 182,
+    "loss": 1.5775169610977173,
+    "lr": 0.0003317292545370606,
+    "velocity_mse": 1.5775169610977173
+  },
+  {
+    "endpoint_mse": 0.7012216448783875,
+    "epoch": 183,
+    "loss": 1.6802949905395508,
+    "lr": 0.0003296675117730705,
+    "velocity_mse": 1.6802949905395508
+  },
+  {
+    "endpoint_mse": 0.3616930365562439,
+    "epoch": 184,
+    "loss": 1.5207221508026123,
+    "lr": 0.0003275997400965494,
+    "velocity_mse": 1.5207221508026123
+  },
+  {
+    "endpoint_mse": 0.4075335443019867,
+    "epoch": 185,
+    "loss": 1.6912776470184325,
+    "lr": 0.00032552609697631616,
+    "velocity_mse": 1.6912776470184325
+  },
+  {
+    "endpoint_mse": 0.5056186258792877,
+    "epoch": 186,
+    "loss": 1.6042081117630005,
+    "lr": 0.00032344674032832286,
+    "velocity_mse": 1.6042081117630005
+  },
+  {
+    "endpoint_mse": 0.4182732716202736,
+    "epoch": 187,
+    "loss": 1.7273613452911376,
+    "lr": 0.00032136182850362875,
+    "velocity_mse": 1.7273613452911376
+  },
+  {
+    "endpoint_mse": 0.5834571540355682,
+    "epoch": 188,
+    "loss": 1.6725286483764648,
+    "lr": 0.00031927152027634136,
+    "velocity_mse": 1.6725286483764648
+  },
+  {
+    "endpoint_mse": 0.3363799065351486,
+    "epoch": 189,
+    "loss": 1.5474195718765258,
+    "lr": 0.0003171759748315251,
+    "velocity_mse": 1.5474195718765258
+  },
+  {
+    "endpoint_mse": 0.5394882529973983,
+    "epoch": 190,
+    "loss": 1.647054672241211,
+    "lr": 0.0003150753517530789,
+    "velocity_mse": 1.647054672241211
+  },
+  {
+    "endpoint_mse": 0.5255493521690369,
+    "epoch": 191,
+    "loss": 1.6872136354446412,
+    "lr": 0.00031296981101158316,
+    "velocity_mse": 1.6872136354446412
+  },
+  {
+    "endpoint_mse": 0.4372928261756897,
+    "epoch": 192,
+    "loss": 1.6219531774520874,
+    "lr": 0.00031085951295211706,
+    "velocity_mse": 1.6219531774520874
+  },
+  {
+    "endpoint_mse": 0.547466591000557,
+    "epoch": 193,
+    "loss": 1.557535219192505,
+    "lr": 0.00030874461828204845,
+    "velocity_mse": 1.557535219192505
+  },
+  {
+    "endpoint_mse": 0.3571736302226782,
+    "epoch": 194,
+    "loss": 1.6382214546203613,
+    "lr": 0.0003066252880587943,
+    "velocity_mse": 1.6382214546203613
+  },
+  {
+    "endpoint_mse": 0.6051131010055542,
+    "epoch": 195,
+    "loss": 1.6118680238723755,
+    "lr": 0.00030450168367755667,
+    "velocity_mse": 1.6118680238723755
+  },
+  {
+    "endpoint_mse": 0.3409517269581556,
+    "epoch": 196,
+    "loss": 1.5642181873321532,
+    "lr": 0.000302373966859031,
+    "velocity_mse": 1.5642181873321532
+  },
+  {
+    "endpoint_mse": 0.4300012648105621,
+    "epoch": 197,
+    "loss": 1.5811514854431152,
+    "lr": 0.00030024229963709074,
+    "velocity_mse": 1.5811514854431152
+  },
+  {
+    "endpoint_mse": 0.4657066404819489,
+    "epoch": 198,
+    "loss": 1.6488102436065675,
+    "lr": 0.000298106844346448,
+    "velocity_mse": 1.6488102436065675
+  },
+  {
+    "endpoint_mse": 0.4516731321811676,
+    "epoch": 199,
+    "loss": 1.6004991054534912,
+    "lr": 0.0002959677636102909,
+    "velocity_mse": 1.6004991054534912
+  },
+  {
+    "endpoint_mse": 0.4363367438316345,
+    "epoch": 200,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.285715149362687,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 31.413463530066434,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 29.704089050928065,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.73959286709356,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.28696429615362,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 29.450045122425294,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.66212441254272,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 29.98175033401891,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.296828019244412,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 29.361680732948187,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 29.817062648999098,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.837890317626517,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.72308259119299,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.66297451662109,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.99187169516434,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 29.938990809541416,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 31.18157538969699,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 29.910662724484652,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.489750348959607,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 29.864875329698886,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.03618766909419,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.140763112052,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 29.860386578225757,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 31.243819274381778,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.6244297742843627,
+    "lr": 0.0002938252203278992,
+    "velocity_mse": 1.6244297742843627
+  },
+  {
+    "endpoint_mse": 0.5879826307296753,
+    "epoch": 201,
+    "loss": 1.6215150117874146,
+    "lr": 0.00029167937766223914,
+    "velocity_mse": 1.6215150117874146
+  },
+  {
+    "endpoint_mse": 0.43533414602279663,
+    "epoch": 202,
+    "loss": 1.536410641670227,
+    "lr": 0.0002895303990275377,
+    "velocity_mse": 1.536410641670227
+  },
+  {
+    "endpoint_mse": 0.623105376958847,
+    "epoch": 203,
+    "loss": 1.5830742359161376,
+    "lr": 0.0002873784480768378,
+    "velocity_mse": 1.5830742359161376
+  },
+  {
+    "endpoint_mse": 0.3567091226577759,
+    "epoch": 204,
+    "loss": 1.5481906414031983,
+    "lr": 0.0002852236886895363,
+    "velocity_mse": 1.5481906414031983
+  },
+  {
+    "endpoint_mse": 0.45446659326553346,
+    "epoch": 205,
+    "loss": 1.5579530954360963,
+    "lr": 0.0002830662849589029,
+    "velocity_mse": 1.5579530954360963
+  },
+  {
+    "endpoint_mse": 0.37766008600592615,
+    "epoch": 206,
+    "loss": 1.5087449550628662,
+    "lr": 0.00028090640117958433,
+    "velocity_mse": 1.5087449550628662
+  },
+  {
+    "endpoint_mse": 0.5477733254432678,
+    "epoch": 207,
+    "loss": 1.5656028747558595,
+    "lr": 0.0002787442018350928,
+    "velocity_mse": 1.5656028747558595
+  },
+  {
+    "endpoint_mse": 0.5508329927921295,
+    "epoch": 208,
+    "loss": 1.5463701725006103,
+    "lr": 0.00027657985158527956,
+    "velocity_mse": 1.5463701725006103
+  },
+  {
+    "endpoint_mse": 0.5081845104694367,
+    "epoch": 209,
+    "loss": 1.520818829536438,
+    "lr": 0.00027441351525379595,
+    "velocity_mse": 1.520818829536438
+  },
+  {
+    "endpoint_mse": 0.4816693961620331,
+    "epoch": 210,
+    "loss": 1.538406538963318,
+    "lr": 0.00027224535781554077,
+    "velocity_mse": 1.538406538963318
+  },
+  {
+    "endpoint_mse": 0.5695068836212158,
+    "epoch": 211,
+    "loss": 1.5626014471054077,
+    "lr": 0.00027007554438409736,
+    "velocity_mse": 1.5626014471054077
+  },
+  {
+    "endpoint_mse": 0.5312065839767456,
+    "epoch": 212,
+    "loss": 1.6089568138122559,
+    "lr": 0.0002679042401991593,
+    "velocity_mse": 1.6089568138122559
+  },
+  {
+    "endpoint_mse": 0.5627703368663788,
+    "epoch": 213,
+    "loss": 1.6599976778030396,
+    "lr": 0.00026573161061394684,
+    "velocity_mse": 1.6599976778030396
+  },
+  {
+    "endpoint_mse": 0.4365016222000122,
+    "epoch": 214,
+    "loss": 1.545143461227417,
+    "lr": 0.00026355782108261454,
+    "velocity_mse": 1.545143461227417
+  },
+  {
+    "endpoint_mse": 0.420154470205307,
+    "epoch": 215,
+    "loss": 1.5211815595626832,
+    "lr": 0.00026138303714765145,
+    "velocity_mse": 1.5211815595626832
+  },
+  {
+    "endpoint_mse": 0.45292661190032957,
+    "epoch": 216,
+    "loss": 1.7131533861160277,
+    "lr": 0.000259207424427274,
+    "velocity_mse": 1.7131533861160277
+  },
+  {
+    "endpoint_mse": 0.531129801273346,
+    "epoch": 217,
+    "loss": 1.5085307598114013,
+    "lr": 0.00025703114860281437,
+    "velocity_mse": 1.5085307598114013
+  },
+  {
+    "endpoint_mse": 0.4537123441696167,
+    "epoch": 218,
+    "loss": 1.681429100036621,
+    "lr": 0.0002548543754061023,
+    "velocity_mse": 1.681429100036621
+  },
+  {
+    "endpoint_mse": 0.6127984821796417,
+    "epoch": 219,
+    "loss": 1.5123214721679688,
+    "lr": 0.0002526772706068443,
+    "velocity_mse": 1.5123214721679688
+  },
+  {
+    "endpoint_mse": 0.5167495548725128,
+    "epoch": 220,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.247922661644697,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 29.98756139645094,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 31.063586686443934,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.692619902039223,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.215014409458746,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.264157226226658,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.24834429249793,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 29.677317992402816,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 29.897093089691175,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 29.835869592648873,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 29.871694548552675,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 29.98961577155015,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 29.918807654670886,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.049980997249776,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 29.338313468404213,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.903242699420286,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 31.038171097683897,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.733167488896434,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 29.662030790819273,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.801391141341842,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 29.818616129699215,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.67084393052436,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.53733758199786,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.829278285437884,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.4801875829696656,
+    "lr": 0.0002505,
+    "velocity_mse": 1.4801875829696656
+  },
+  {
+    "endpoint_mse": 0.46450445652008054,
+    "epoch": 221,
+    "loss": 1.5914790630340576,
+    "lr": 0.0002483227293931558,
+    "velocity_mse": 1.5914790630340576
+  },
+  {
+    "endpoint_mse": 0.5645220220088959,
+    "epoch": 222,
+    "loss": 1.6206780433654786,
+    "lr": 0.0002461456245938978,
+    "velocity_mse": 1.6206780433654786
+  },
+  {
+    "endpoint_mse": 0.5578033804893494,
+    "epoch": 223,
+    "loss": 1.4300110578536986,
+    "lr": 0.00024396885139718567,
+    "velocity_mse": 1.4300110578536986
+  },
+  {
+    "endpoint_mse": 0.5359154790639877,
+    "epoch": 224,
+    "loss": 1.5359842300415039,
+    "lr": 0.00024179257557272601,
+    "velocity_mse": 1.5359842300415039
+  },
+  {
+    "endpoint_mse": 0.4516032814979553,
+    "epoch": 225,
+    "loss": 1.4410638093948365,
+    "lr": 0.0002396169628523487,
+    "velocity_mse": 1.4410638093948365
+  },
+  {
+    "endpoint_mse": 0.40193505585193634,
+    "epoch": 226,
+    "loss": 1.4554786443710328,
+    "lr": 0.00023744217891738555,
+    "velocity_mse": 1.4554786443710328
+  },
+  {
+    "endpoint_mse": 0.5928969502449035,
+    "epoch": 227,
+    "loss": 1.5559703826904296,
+    "lr": 0.00023526838938605322,
+    "velocity_mse": 1.5559703826904296
+  },
+  {
+    "endpoint_mse": 0.4085914552211761,
+    "epoch": 228,
+    "loss": 1.7038449764251709,
+    "lr": 0.00023309575980084074,
+    "velocity_mse": 1.7038449764251709
+  },
+  {
+    "endpoint_mse": 0.6446654856204986,
+    "epoch": 229,
+    "loss": 1.5172895669937134,
+    "lr": 0.0002309244556159027,
+    "velocity_mse": 1.5172895669937134
+  },
+  {
+    "endpoint_mse": 0.39223195761442187,
+    "epoch": 230,
+    "loss": 1.5576671600341796,
+    "lr": 0.00022875464218445927,
+    "velocity_mse": 1.5576671600341796
+  },
+  {
+    "endpoint_mse": 0.5735311597585678,
+    "epoch": 231,
+    "loss": 1.5126042366027832,
+    "lr": 0.00022658648474620412,
+    "velocity_mse": 1.5126042366027832
+  },
+  {
+    "endpoint_mse": 0.4092644214630127,
+    "epoch": 232,
+    "loss": 1.5004716634750366,
+    "lr": 0.0002244201484147205,
+    "velocity_mse": 1.5004716634750366
+  },
+  {
+    "endpoint_mse": 0.6439011454582214,
+    "epoch": 233,
+    "loss": 1.4545421361923219,
+    "lr": 0.00022225579816490727,
+    "velocity_mse": 1.4545421361923219
+  },
+  {
+    "endpoint_mse": 0.5829742133617402,
+    "epoch": 234,
+    "loss": 1.6659919261932372,
+    "lr": 0.00022009359882041573,
+    "velocity_mse": 1.6659919261932372
+  },
+  {
+    "endpoint_mse": 0.563705924153328,
+    "epoch": 235,
+    "loss": 1.4773418664932252,
+    "lr": 0.00021793371504109712,
+    "velocity_mse": 1.4773418664932252
+  },
+  {
+    "endpoint_mse": 0.6300749182701111,
+    "epoch": 236,
+    "loss": 1.5422980070114136,
+    "lr": 0.00021577631131046367,
+    "velocity_mse": 1.5422980070114136
+  },
+  {
+    "endpoint_mse": 0.47994205057621003,
+    "epoch": 237,
+    "loss": 1.6962186336517333,
+    "lr": 0.0002136215519231622,
+    "velocity_mse": 1.6962186336517333
+  },
+  {
+    "endpoint_mse": 0.4906867265701294,
+    "epoch": 238,
+    "loss": 1.5961622238159179,
+    "lr": 0.0002114696009724624,
+    "velocity_mse": 1.5961622238159179
+  },
+  {
+    "endpoint_mse": 0.4949102342128754,
+    "epoch": 239,
+    "loss": 1.445580816268921,
+    "lr": 0.00020932062233776098,
+    "velocity_mse": 1.445580816268921
+  },
+  {
+    "endpoint_mse": 0.44183778762817383,
+    "epoch": 240,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.05005116928888,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 29.87728830554755,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 30.539142199577384,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.73372300274171,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.147976874996953,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.468433781019634,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 29.840489805147815,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.324766870095978,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 31.5511836595129,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 30.11215221740018,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 29.441224768367107,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 29.872963723249587,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 29.813397347084898,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 29.560035816529687,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 29.785419224774753,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.844620220010835,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 29.568712999695084,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.57892680096955,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.55805695413012,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.494085699626336,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 29.37654576955483,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.3186217138736,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.80082372217232,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 29.501099531726783,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.3770539045333863,
+    "lr": 0.00020717477967210093,
+    "velocity_mse": 1.3770539045333863
+  },
+  {
+    "endpoint_mse": 0.7017526984214782,
+    "epoch": 241,
+    "loss": 1.5917088985443115,
+    "lr": 0.0002050322363897092,
+    "velocity_mse": 1.5917088985443115
+  },
+  {
+    "endpoint_mse": 0.7077907025814056,
+    "epoch": 242,
+    "loss": 1.6315438747406006,
+    "lr": 0.00020289315565355206,
+    "velocity_mse": 1.6315438747406006
+  },
+  {
+    "endpoint_mse": 0.4157383799552917,
+    "epoch": 243,
+    "loss": 1.5762544870376587,
+    "lr": 0.00020075770036290927,
+    "velocity_mse": 1.5762544870376587
+  },
+  {
+    "endpoint_mse": 0.4960794985294342,
+    "epoch": 244,
+    "loss": 1.6809895038604736,
+    "lr": 0.00019862603314096903,
+    "velocity_mse": 1.6809895038604736
+  },
+  {
+    "endpoint_mse": 0.5467918634414672,
+    "epoch": 245,
+    "loss": 1.463427758216858,
+    "lr": 0.00019649831632244334,
+    "velocity_mse": 1.463427758216858
+  },
+  {
+    "endpoint_mse": 0.437881575524807,
+    "epoch": 246,
+    "loss": 1.5111353158950807,
+    "lr": 0.00019437471194120565,
+    "velocity_mse": 1.5111353158950807
+  },
+  {
+    "endpoint_mse": 0.5678717136383057,
+    "epoch": 247,
+    "loss": 1.5531144380569457,
+    "lr": 0.0001922553817179516,
+    "velocity_mse": 1.5531144380569457
+  },
+  {
+    "endpoint_mse": 0.40532957911491396,
+    "epoch": 248,
+    "loss": 1.5453909397125245,
+    "lr": 0.00019014048704788292,
+    "velocity_mse": 1.5453909397125245
+  },
+  {
+    "endpoint_mse": 0.48851910829544065,
+    "epoch": 249,
+    "loss": 1.5781310319900512,
+    "lr": 0.00018803018898841688,
+    "velocity_mse": 1.5781310319900512
+  },
+  {
+    "endpoint_mse": 0.3207006961107254,
+    "epoch": 250,
+    "loss": 1.4971915483474731,
+    "lr": 0.00018592464824692109,
+    "velocity_mse": 1.4971915483474731
+  },
+  {
+    "endpoint_mse": 0.47124696969985963,
+    "epoch": 251,
+    "loss": 1.4842015504837036,
+    "lr": 0.00018382402516847496,
+    "velocity_mse": 1.4842015504837036
+  },
+  {
+    "endpoint_mse": 0.4607426643371582,
+    "epoch": 252,
+    "loss": 1.6231077671051026,
+    "lr": 0.00018172847972365873,
+    "velocity_mse": 1.6231077671051026
+  },
+  {
+    "endpoint_mse": 0.5818585485219956,
+    "epoch": 253,
+    "loss": 1.5360306262969972,
+    "lr": 0.00017963817149637136,
+    "velocity_mse": 1.5360306262969972
+  },
+  {
+    "endpoint_mse": 0.6530610263347626,
+    "epoch": 254,
+    "loss": 1.6201418161392211,
+    "lr": 0.00017755325967167717,
+    "velocity_mse": 1.6201418161392211
+  },
+  {
+    "endpoint_mse": 0.6775961756706238,
+    "epoch": 255,
+    "loss": 1.6472709894180297,
+    "lr": 0.00017547390302368384,
+    "velocity_mse": 1.6472709894180297
+  },
+  {
+    "endpoint_mse": 0.56886727809906,
+    "epoch": 256,
+    "loss": 1.5446962118148804,
+    "lr": 0.00017340025990345064,
+    "velocity_mse": 1.5446962118148804
+  },
+  {
+    "endpoint_mse": 0.266687273979187,
+    "epoch": 257,
+    "loss": 1.5921554088592529,
+    "lr": 0.00017133248822692948,
+    "velocity_mse": 1.5921554088592529
+  },
+  {
+    "endpoint_mse": 0.5644478023052215,
+    "epoch": 258,
+    "loss": 1.5705511331558228,
+    "lr": 0.0001692707454629394,
+    "velocity_mse": 1.5705511331558228
+  },
+  {
+    "endpoint_mse": 0.4425661534070969,
+    "epoch": 259,
+    "loss": 1.586868953704834,
+    "lr": 0.00016721518862117417,
+    "velocity_mse": 1.586868953704834
+  },
+  {
+    "endpoint_mse": 0.47332651615142823,
+    "epoch": 260,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 29.63226056715368,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.175044744485845,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 29.106647541730432,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.615089415244764,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.203254491165694,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 29.650569867070793,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.799455187343725,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 29.894101849156428,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 28.858720409760302,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 30.8178231556813,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 30.983588790925847,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 29.686150754376854,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.46418227688573,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.3284231915354,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.84323430534109,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.939413054999505,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.169245088464308,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 29.464411277934943,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 29.233707505393607,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.784338836229516,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.012950498605043,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.894754283067872,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.25181240973756,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 29.784952589638344,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.5990164518356322,
+    "lr": 0.00016516597424024566,
+    "velocity_mse": 1.5990164518356322
+  },
+  {
+    "endpoint_mse": 0.3728533715009689,
+    "epoch": 261,
+    "loss": 1.5786749362945556,
+    "lr": 0.0001631232583757629,
+    "velocity_mse": 1.5786749362945556
+  },
+  {
+    "endpoint_mse": 0.46241543292999265,
+    "epoch": 262,
+    "loss": 1.573055124282837,
+    "lr": 0.00016108719658844759,
+    "velocity_mse": 1.573055124282837
+  },
+  {
+    "endpoint_mse": 0.4573692366480827,
+    "epoch": 263,
+    "loss": 1.5793855905532836,
+    "lr": 0.00015905794393228785,
+    "velocity_mse": 1.5793855905532836
+  },
+  {
+    "endpoint_mse": 0.5486636519432068,
+    "epoch": 264,
+    "loss": 1.592812418937683,
+    "lr": 0.00015703565494273,
+    "velocity_mse": 1.592812418937683
+  },
+  {
+    "endpoint_mse": 0.49594421982765197,
+    "epoch": 265,
+    "loss": 1.585996675491333,
+    "lr": 0.0001550204836249101,
+    "velocity_mse": 1.585996675491333
+  },
+  {
+    "endpoint_mse": 0.5519586980342865,
+    "epoch": 266,
+    "loss": 1.5826488733291626,
+    "lr": 0.00015301258344192623,
+    "velocity_mse": 1.5826488733291626
+  },
+  {
+    "endpoint_mse": 0.4305474579334259,
+    "epoch": 267,
+    "loss": 1.5748643159866333,
+    "lr": 0.00015101210730315113,
+    "velocity_mse": 1.5748643159866333
+  },
+  {
+    "endpoint_mse": 0.5086082428693771,
+    "epoch": 268,
+    "loss": 1.533611822128296,
+    "lr": 0.00014901920755258782,
+    "velocity_mse": 1.533611822128296
+  },
+  {
+    "endpoint_mse": 0.48327946066856386,
+    "epoch": 269,
+    "loss": 1.5014147520065309,
+    "lr": 0.00014703403595726835,
+    "velocity_mse": 1.5014147520065309
+  },
+  {
+    "endpoint_mse": 0.3868074417114258,
+    "epoch": 270,
+    "loss": 1.609413456916809,
+    "lr": 0.00014505674369569554,
+    "velocity_mse": 1.609413456916809
+  },
+  {
+    "endpoint_mse": 0.4495923161506653,
+    "epoch": 271,
+    "loss": 1.4807543754577637,
+    "lr": 0.0001430874813463304,
+    "velocity_mse": 1.4807543754577637
+  },
+  {
+    "endpoint_mse": 0.3594783216714859,
+    "epoch": 272,
+    "loss": 1.5605615615844726,
+    "lr": 0.00014112639887612523,
+    "velocity_mse": 1.5605615615844726
+  },
+  {
+    "endpoint_mse": 0.4546861797571182,
+    "epoch": 273,
+    "loss": 1.687588667869568,
+    "lr": 0.0001391736456291027,
+    "velocity_mse": 1.687588667869568
+  },
+  {
+    "endpoint_mse": 0.5002923607826233,
+    "epoch": 274,
+    "loss": 1.5211125373840333,
+    "lr": 0.00013722937031498307,
+    "velocity_mse": 1.5211125373840333
+  },
+  {
+    "endpoint_mse": 0.44807430505752566,
+    "epoch": 275,
+    "loss": 1.6930224657058717,
+    "lr": 0.00013529372099785908,
+    "velocity_mse": 1.6930224657058717
+  },
+  {
+    "endpoint_mse": 0.483683317899704,
+    "epoch": 276,
+    "loss": 1.627330470085144,
+    "lr": 0.0001333668450849202,
+    "velocity_mse": 1.627330470085144
+  },
+  {
+    "endpoint_mse": 0.3380702093243599,
+    "epoch": 277,
+    "loss": 1.489208173751831,
+    "lr": 0.00013144888931522768,
+    "velocity_mse": 1.489208173751831
+  },
+  {
+    "endpoint_mse": 0.5767794072628021,
+    "epoch": 278,
+    "loss": 1.5214107275009154,
+    "lr": 0.0001295399997485389,
+    "velocity_mse": 1.5214107275009154
+  },
+  {
+    "endpoint_mse": 0.47159683629870414,
+    "epoch": 279,
+    "loss": 1.6095653295516967,
+    "lr": 0.00012764032175418497,
+    "velocity_mse": 1.6095653295516967
+  },
+  {
+    "endpoint_mse": 0.5728383928537368,
+    "epoch": 280,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 31.23700705710263,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.642100079348072,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 31.216000337646364,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 31.852920754313455,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.374181523882456,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 29.872745508672246,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.642370493239895,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.603881242049866,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.899712199893095,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 29.66699334583684,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 30.87040586664361,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.05728309678708,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 29.663462293005054,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.853247800851193,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 28.990191844374742,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.38882059273753,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 31.63110112525489,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.113809980334402,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.806277122043454,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.736383059414457,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 29.520485818841298,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.91988061480756,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.195035009472416,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.67736193950701,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.6503505945205688,
+    "lr": 0.00012575000000000005,
+    "velocity_mse": 1.6503505945205688
+  },
+  {
+    "endpoint_mse": 0.4331494956277311,
+    "epoch": 281,
+    "loss": 1.4619377851486206,
+    "lr": 0.00012386917844130438,
+    "velocity_mse": 1.4619377851486206
+  },
+  {
+    "endpoint_mse": 0.456170517206192,
+    "epoch": 282,
+    "loss": 1.4986406326293946,
+    "lr": 0.00012199800030994145,
+    "velocity_mse": 1.4986406326293946
+  },
+  {
+    "endpoint_mse": 0.5542558014392853,
+    "epoch": 283,
+    "loss": 1.568545937538147,
+    "lr": 0.00012013660810337076,
+    "velocity_mse": 1.568545937538147
+  },
+  {
+    "endpoint_mse": 0.38646732568740844,
+    "epoch": 284,
+    "loss": 1.598994255065918,
+    "lr": 0.0001182851435738154,
+    "velocity_mse": 1.598994255065918
+  },
+  {
+    "endpoint_mse": 0.5278504759073257,
+    "epoch": 285,
+    "loss": 1.4598037242889403,
+    "lr": 0.00011644374771746751,
+    "velocity_mse": 1.4598037242889403
+  },
+  {
+    "endpoint_mse": 0.35925031900405885,
+    "epoch": 286,
+    "loss": 1.541238021850586,
+    "lr": 0.00011461256076375082,
+    "velocity_mse": 1.541238021850586
+  },
+  {
+    "endpoint_mse": 0.44006639122962954,
+    "epoch": 287,
+    "loss": 1.5739105701446534,
+    "lr": 0.00011279172216464148,
+    "velocity_mse": 1.5739105701446534
+  },
+  {
+    "endpoint_mse": 0.5020702421665192,
+    "epoch": 288,
+    "loss": 1.6047023296356202,
+    "lr": 0.00011098137058404869,
+    "velocity_mse": 1.6047023296356202
+  },
+  {
+    "endpoint_mse": 0.4477727234363556,
+    "epoch": 289,
+    "loss": 1.635546898841858,
+    "lr": 0.00010918164388725426,
+    "velocity_mse": 1.635546898841858
+  },
+  {
+    "endpoint_mse": 0.5380187511444092,
+    "epoch": 290,
+    "loss": 1.681633996963501,
+    "lr": 0.00010739267913041398,
+    "velocity_mse": 1.681633996963501
+  },
+  {
+    "endpoint_mse": 0.4937294811010361,
+    "epoch": 291,
+    "loss": 1.5112732887268066,
+    "lr": 0.00010561461255012053,
+    "velocity_mse": 1.5112732887268066
+  },
+  {
+    "endpoint_mse": 0.4726942002773285,
+    "epoch": 292,
+    "loss": 1.491819190979004,
+    "lr": 0.00010384757955302797,
+    "velocity_mse": 1.491819190979004
+  },
+  {
+    "endpoint_mse": 0.40419968366622927,
+    "epoch": 293,
+    "loss": 1.5574320554733276,
+    "lr": 0.00010209171470554038,
+    "velocity_mse": 1.5574320554733276
+  },
+  {
+    "endpoint_mse": 0.4530148983001709,
+    "epoch": 294,
+    "loss": 1.5714689254760743,
+    "lr": 0.000100347151723564,
+    "velocity_mse": 1.5714689254760743
+  },
+  {
+    "endpoint_mse": 0.5083367049694061,
+    "epoch": 295,
+    "loss": 1.5171708106994628,
+    "lr": 9.86140234623242e-05,
+    "velocity_mse": 1.5171708106994628
+  },
+  {
+    "endpoint_mse": 0.49705301523208617,
+    "epoch": 296,
+    "loss": 1.5665091037750245,
+    "lr": 9.689246190624826e-05,
+    "velocity_mse": 1.5665091037750245
+  },
+  {
+    "endpoint_mse": 0.47656750679016113,
+    "epoch": 297,
+    "loss": 1.5639874696731568,
+    "lr": 9.518259815891395e-05,
+    "velocity_mse": 1.5639874696731568
+  },
+  {
+    "endpoint_mse": 0.48993802070617676,
+    "epoch": 298,
+    "loss": 1.5885254383087157,
+    "lr": 9.348456243306559e-05,
+    "velocity_mse": 1.5885254383087157
+  },
+  {
+    "endpoint_mse": 0.6976543188095092,
+    "epoch": 299,
+    "loss": 1.5791829824447632,
+    "lr": 9.179848404069795e-05,
+    "velocity_mse": 1.5791829824447632
+  },
+  {
+    "endpoint_mse": 0.5631909519433975,
+    "epoch": 300,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.221027380076418,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 31.117930519579026,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 29.918165966265956,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.626985654384264,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.39850274320811,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 29.3713499610462,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 29.416197581171147,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.914381325533643,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.031454629400642,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 31.07224101813165,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 29.851344987801056,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 31.28749314394151,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 29.988401209777315,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.2483900095312,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 29.55310445458658,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 31.03074334544892,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 31.30321758677059,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 31.01985848902279,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.663863655759055,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.202618237700584,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.0390158350065,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 28.396855443738737,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 32.1695231269598,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 31.011498079626136,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.5756171464920044,
+    "lr": 9.012449138320842e-05,
+    "velocity_mse": 1.5756171464920044
+  },
+  {
+    "endpoint_mse": 0.5948870122432709,
+    "epoch": 301,
+    "loss": 1.5214771032333374,
+    "lr": 8.84627119416192e-05,
+    "velocity_mse": 1.5214771032333374
+  },
+  {
+    "endpoint_mse": 0.6353746056556702,
+    "epoch": 302,
+    "loss": 1.5393208503723144,
+    "lr": 8.681327226686846e-05,
+    "velocity_mse": 1.5393208503723144
+  },
+  {
+    "endpoint_mse": 0.39199124574661254,
+    "epoch": 303,
+    "loss": 1.5945389032363892,
+    "lr": 8.517629797017354e-05,
+    "velocity_mse": 1.5945389032363892
+  },
+  {
+    "endpoint_mse": 0.3693753622472286,
+    "epoch": 304,
+    "loss": 1.6144795656204223,
+    "lr": 8.355191371346494e-05,
+    "velocity_mse": 1.6144795656204223
+  },
+  {
+    "endpoint_mse": 0.5594022154808045,
+    "epoch": 305,
+    "loss": 1.4820622205734253,
+    "lr": 8.194024319989277e-05,
+    "velocity_mse": 1.4820622205734253
+  },
+  {
+    "endpoint_mse": 0.3901472553610802,
+    "epoch": 306,
+    "loss": 1.5433267831802369,
+    "lr": 8.034140916440666e-05,
+    "velocity_mse": 1.5433267831802369
+  },
+  {
+    "endpoint_mse": 0.6386726498603821,
+    "epoch": 307,
+    "loss": 1.439980721473694,
+    "lr": 7.875553336440843e-05,
+    "velocity_mse": 1.439980721473694
+  },
+  {
+    "endpoint_mse": 0.4859755992889404,
+    "epoch": 308,
+    "loss": 1.605142855644226,
+    "lr": 7.718273657048023e-05,
+    "velocity_mse": 1.605142855644226
+  },
+  {
+    "endpoint_mse": 0.510671979188919,
+    "epoch": 309,
+    "loss": 1.5357275247573852,
+    "lr": 7.562313855718728e-05,
+    "velocity_mse": 1.5357275247573852
+  },
+  {
+    "endpoint_mse": 0.5045851111412049,
+    "epoch": 310,
+    "loss": 1.6327805280685426,
+    "lr": 7.40768580939564e-05,
+    "velocity_mse": 1.6327805280685426
+  },
+  {
+    "endpoint_mse": 0.4050367407500744,
+    "epoch": 311,
+    "loss": 1.5620830297470092,
+    "lr": 7.254401293603164e-05,
+    "velocity_mse": 1.5620830297470092
+  },
+  {
+    "endpoint_mse": 0.5270427405834198,
+    "epoch": 312,
+    "loss": 1.5332460880279541,
+    "lr": 7.102471981550652e-05,
+    "velocity_mse": 1.5332460880279541
+  },
+  {
+    "endpoint_mse": 0.655392974615097,
+    "epoch": 313,
+    "loss": 1.4500250816345215,
+    "lr": 6.951909443243423e-05,
+    "velocity_mse": 1.4500250816345215
+  },
+  {
+    "endpoint_mse": 0.661949074268341,
+    "epoch": 314,
+    "loss": 1.625828242301941,
+    "lr": 6.802725144601697e-05,
+    "velocity_mse": 1.625828242301941
+  },
+  {
+    "endpoint_mse": 0.5269136607646943,
+    "epoch": 315,
+    "loss": 1.608529758453369,
+    "lr": 6.654930446587406e-05,
+    "velocity_mse": 1.608529758453369
+  },
+  {
+    "endpoint_mse": 0.5729762256145478,
+    "epoch": 316,
+    "loss": 1.5754461765289307,
+    "lr": 6.50853660433901e-05,
+    "velocity_mse": 1.5754461765289307
+  },
+  {
+    "endpoint_mse": 0.33160274028778075,
+    "epoch": 317,
+    "loss": 1.4759751081466674,
+    "lr": 6.363554766314394e-05,
+    "velocity_mse": 1.4759751081466674
+  },
+  {
+    "endpoint_mse": 0.4237697795033455,
+    "epoch": 318,
+    "loss": 1.513276219367981,
+    "lr": 6.219995973441838e-05,
+    "velocity_mse": 1.513276219367981
+  },
+  {
+    "endpoint_mse": 0.4711028575897217,
+    "epoch": 319,
+    "loss": 1.4814817667007447,
+    "lr": 6.0778711582792276e-05,
+    "velocity_mse": 1.4814817667007447
+  },
+  {
+    "endpoint_mse": 0.4987026810646057,
+    "epoch": 320,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 31.065738387373642,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 32.003176720279136,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 30.08127934374592,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 31.11275909809588,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.63611305201161,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.61491319286035,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.159248113485283,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.351912061781846,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 31.331918303921434,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 29.31680348587871,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 30.22953095000386,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 29.58443255388388,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 31.75557413928118,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 32.86203243722541,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.460720716448787,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 31.85622085999828,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 29.979708655932413,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 31.524343769208166,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 29.502380503148274,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 31.055766800438963,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.206945594584216,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.167654091289226,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.60016220512217,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.52587955372806,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.4394875526428224,
+    "lr": 5.937191144181501e-05,
+    "velocity_mse": 1.4394875526428224
+  },
+  {
+    "endpoint_mse": 0.5616976201534272,
+    "epoch": 321,
+    "loss": 1.6282427310943604,
+    "lr": 5.797966644476383e-05,
+    "velocity_mse": 1.6282427310943604
+  },
+  {
+    "endpoint_mse": 0.5492970108985901,
+    "epoch": 322,
+    "loss": 1.658336877822876,
+    "lr": 5.660208261648575e-05,
+    "velocity_mse": 1.658336877822876
+  },
+  {
+    "endpoint_mse": 0.4359859645366669,
+    "epoch": 323,
+    "loss": 1.5694020748138429,
+    "lr": 5.5239264865322726e-05,
+    "velocity_mse": 1.5694020748138429
+  },
+  {
+    "endpoint_mse": 0.5888500690460206,
+    "epoch": 324,
+    "loss": 1.585787057876587,
+    "lr": 5.389131697512288e-05,
+    "velocity_mse": 1.585787057876587
+  },
+  {
+    "endpoint_mse": 0.5573213815689086,
+    "epoch": 325,
+    "loss": 1.5386286973953247,
+    "lr": 5.255834159733685e-05,
+    "velocity_mse": 1.5386286973953247
+  },
+  {
+    "endpoint_mse": 0.6264549136161804,
+    "epoch": 326,
+    "loss": 1.6583738327026367,
+    "lr": 5.1240440243200406e-05,
+    "velocity_mse": 1.6583738327026367
+  },
+  {
+    "endpoint_mse": 0.5223242610692977,
+    "epoch": 327,
+    "loss": 1.5193826675415039,
+    "lr": 4.993771327600429e-05,
+    "velocity_mse": 1.5193826675415039
+  },
+  {
+    "endpoint_mse": 0.4473157174885273,
+    "epoch": 328,
+    "loss": 1.5449285507202148,
+    "lr": 4.865025990345063e-05,
+    "velocity_mse": 1.5449285507202148
+  },
+  {
+    "endpoint_mse": 0.5857950508594513,
+    "epoch": 329,
+    "loss": 1.543556809425354,
+    "lr": 4.737817817009838e-05,
+    "velocity_mse": 1.543556809425354
+  },
+  {
+    "endpoint_mse": 0.5118193328380585,
+    "epoch": 330,
+    "loss": 1.5459479808807373,
+    "lr": 4.61215649498966e-05,
+    "velocity_mse": 1.5459479808807373
+  },
+  {
+    "endpoint_mse": 0.6198493182659149,
+    "epoch": 331,
+    "loss": 1.619714117050171,
+    "lr": 4.488051593880714e-05,
+    "velocity_mse": 1.619714117050171
+  },
+  {
+    "endpoint_mse": 0.6571738660335541,
+    "epoch": 332,
+    "loss": 1.3537771224975585,
+    "lr": 4.365512564751711e-05,
+    "velocity_mse": 1.3537771224975585
+  },
+  {
+    "endpoint_mse": 0.40596334636211395,
+    "epoch": 333,
+    "loss": 1.5167158603668214,
+    "lr": 4.2445487394241555e-05,
+    "velocity_mse": 1.5167158603668214
+  },
+  {
+    "endpoint_mse": 0.5670556604862214,
+    "epoch": 334,
+    "loss": 1.4772588968276978,
+    "lr": 4.1251693297616726e-05,
+    "velocity_mse": 1.4772588968276978
+  },
+  {
+    "endpoint_mse": 0.3261191800236702,
+    "epoch": 335,
+    "loss": 1.455402398109436,
+    "lr": 4.007383426968507e-05,
+    "velocity_mse": 1.455402398109436
+  },
+  {
+    "endpoint_mse": 0.4232264280319214,
+    "epoch": 336,
+    "loss": 1.6179270982742309,
+    "lr": 3.8912000008971776e-05,
+    "velocity_mse": 1.6179270982742309
+  },
+  {
+    "endpoint_mse": 0.5102197885513305,
+    "epoch": 337,
+    "loss": 1.4735304355621337,
+    "lr": 3.776627899365394e-05,
+    "velocity_mse": 1.4735304355621337
+  },
+  {
+    "endpoint_mse": 0.2848536461591721,
+    "epoch": 338,
+    "loss": 1.5566081762313844,
+    "lr": 3.663675847482294e-05,
+    "velocity_mse": 1.5566081762313844
+  },
+  {
+    "endpoint_mse": 0.4906129688024521,
+    "epoch": 339,
+    "loss": 1.614701223373413,
+    "lr": 3.55235244698393e-05,
+    "velocity_mse": 1.614701223373413
+  },
+  {
+    "endpoint_mse": 0.4186909258365631,
+    "epoch": 340,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 29.71457871769523,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 29.576631044253435,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 29.810648711375173,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.756456397457065,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.38893888634584,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.693924121897393,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.400845926247037,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.343627716646306,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.975923841090506,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 30.19926972146409,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 30.605980729423994,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.6798126389388,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.044329311551813,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.08530389396764,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.4656311377183,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 31.001909686927867,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 31.01497161031991,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.43742391756038,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.322058454684168,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.14447530024048,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.411041966572988,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 28.911914335185884,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.715574375631405,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 29.935820154502103,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.522573208808899,
+    "lr": 3.442666175578254e-05,
+    "velocity_mse": 1.522573208808899
+  },
+  {
+    "endpoint_mse": 0.45567149519920347,
+    "epoch": 341,
+    "loss": 1.5784888744354248,
+    "lr": 3.334625386299502e-05,
+    "velocity_mse": 1.5784888744354248
+  },
+  {
+    "endpoint_mse": 0.4519539326429367,
+    "epoch": 342,
+    "loss": 1.5022237300872803,
+    "lr": 3.228238306872076e-05,
+    "velocity_mse": 1.5022237300872803
+  },
+  {
+    "endpoint_mse": 0.5056614995002746,
+    "epoch": 343,
+    "loss": 1.557232880592346,
+    "lr": 3.123513039083961e-05,
+    "velocity_mse": 1.557232880592346
+  },
+  {
+    "endpoint_mse": 0.5220014363527298,
+    "epoch": 344,
+    "loss": 1.6104753732681274,
+    "lr": 3.0204575581697715e-05,
+    "velocity_mse": 1.6104753732681274
+  },
+  {
+    "endpoint_mse": 0.4463177561759949,
+    "epoch": 345,
+    "loss": 1.5041177988052368,
+    "lr": 2.9190797122033684e-05,
+    "velocity_mse": 1.5041177988052368
+  },
+  {
+    "endpoint_mse": 0.5801772117614746,
+    "epoch": 346,
+    "loss": 1.5965105533599853,
+    "lr": 2.8193872215002235e-05,
+    "velocity_mse": 1.5965105533599853
+  },
+  {
+    "endpoint_mse": 0.44807611405849457,
+    "epoch": 347,
+    "loss": 1.5399168014526368,
+    "lr": 2.7213876780294762e-05,
+    "velocity_mse": 1.5399168014526368
+  },
+  {
+    "endpoint_mse": 0.45071364045143125,
+    "epoch": 348,
+    "loss": 1.4563207149505615,
+    "lr": 2.6250885448357824e-05,
+    "velocity_mse": 1.4563207149505615
+  },
+  {
+    "endpoint_mse": 0.5487504839897156,
+    "epoch": 349,
+    "loss": 1.5731379985809326,
+    "lr": 2.5304971554709775e-05,
+    "velocity_mse": 1.5731379985809326
+  },
+  {
+    "endpoint_mse": 0.5413606584072113,
+    "epoch": 350,
+    "loss": 1.7038349390029908,
+    "lr": 2.4376207134355842e-05,
+    "velocity_mse": 1.7038349390029908
+  },
+  {
+    "endpoint_mse": 0.5215394735336304,
+    "epoch": 351,
+    "loss": 1.5716896295547484,
+    "lr": 2.3464662916302494e-05,
+    "velocity_mse": 1.5716896295547484
+  },
+  {
+    "endpoint_mse": 0.48722426891326903,
+    "epoch": 352,
+    "loss": 1.5972190380096436,
+    "lr": 2.257040831817111e-05,
+    "velocity_mse": 1.5972190380096436
+  },
+  {
+    "endpoint_mse": 0.6401913285255432,
+    "epoch": 353,
+    "loss": 1.6175058603286743,
+    "lr": 2.1693511440911578e-05,
+    "velocity_mse": 1.6175058603286743
+  },
+  {
+    "endpoint_mse": 0.5512702345848084,
+    "epoch": 354,
+    "loss": 1.6051520586013794,
+    "lr": 2.0834039063616126e-05,
+    "velocity_mse": 1.6051520586013794
+  },
+  {
+    "endpoint_mse": 0.5141702592372894,
+    "epoch": 355,
+    "loss": 1.5285217761993408,
+    "lr": 1.9992056638433958e-05,
+    "velocity_mse": 1.5285217761993408
+  },
+  {
+    "endpoint_mse": 0.48323923647403716,
+    "epoch": 356,
+    "loss": 1.4144774198532104,
+    "lr": 1.9167628285586566e-05,
+    "velocity_mse": 1.4144774198532104
+  },
+  {
+    "endpoint_mse": 0.563598120212555,
+    "epoch": 357,
+    "loss": 1.6290259599685668,
+    "lr": 1.8360816788484898e-05,
+    "velocity_mse": 1.6290259599685668
+  },
+  {
+    "endpoint_mse": 0.5148863583803177,
+    "epoch": 358,
+    "loss": 1.44720618724823,
+    "lr": 1.757168358894819e-05,
+    "velocity_mse": 1.44720618724823
+  },
+  {
+    "endpoint_mse": 0.556718897819519,
+    "epoch": 359,
+    "loss": 1.5799588918685914,
+    "lr": 1.6800288782524808e-05,
+    "velocity_mse": 1.5799588918685914
+  },
+  {
+    "endpoint_mse": 0.5346631884574891,
+    "epoch": 360,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.063404044910637,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.567170644004594,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 29.72081096678962,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.90223052393769,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.554998173327782,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 31.9542167268912,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.377549816596186,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.729007988532572,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 30.06155855796355,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 29.878052956515624,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 31.038793149432557,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.995727680457534,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 29.551994709788204,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.255920046055024,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.667615826686983,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 30.04053913442217,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.73978539634805,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.806000179049413,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.079192571285365,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 32.19723672140212,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 29.805167720722793,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.754625620914688,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.097253387664196,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.514727102499563,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.574924373626709,
+    "lr": 1.6046691113915874e-05,
+    "velocity_mse": 1.574924373626709
+  },
+  {
+    "endpoint_mse": 0.4886507213115692,
+    "epoch": 361,
+    "loss": 1.5804237842559814,
+    "lr": 1.531094797250151e-05,
+    "velocity_mse": 1.5804237842559814
+  },
+  {
+    "endpoint_mse": 0.4033489882946014,
+    "epoch": 362,
+    "loss": 1.606296181678772,
+    "lr": 1.4593115387970475e-05,
+    "velocity_mse": 1.606296181678772
+  },
+  {
+    "endpoint_mse": 0.630840727686882,
+    "epoch": 363,
+    "loss": 1.3822401762008667,
+    "lr": 1.3893248026053298e-05,
+    "velocity_mse": 1.3822401762008667
+  },
+  {
+    "endpoint_mse": 0.523242711275816,
+    "epoch": 364,
+    "loss": 1.5547795057296754,
+    "lr": 1.3211399184359222e-05,
+    "velocity_mse": 1.5547795057296754
+  },
+  {
+    "endpoint_mse": 0.439956521987915,
+    "epoch": 365,
+    "loss": 1.6171821355819702,
+    "lr": 1.2547620788317353e-05,
+    "velocity_mse": 1.6171821355819702
+  },
+  {
+    "endpoint_mse": 0.5280553519725799,
+    "epoch": 366,
+    "loss": 1.6559174537658692,
+    "lr": 1.190196338722263e-05,
+    "velocity_mse": 1.6559174537658692
+  },
+  {
+    "endpoint_mse": 0.5720410585403443,
+    "epoch": 367,
+    "loss": 1.5088665723800658,
+    "lr": 1.1274476150385834e-05,
+    "velocity_mse": 1.5088665723800658
+  },
+  {
+    "endpoint_mse": 0.6685429811477661,
+    "epoch": 368,
+    "loss": 1.5512712717056274,
+    "lr": 1.0665206863389437e-05,
+    "velocity_mse": 1.5512712717056274
+  },
+  {
+    "endpoint_mse": 0.47616729736328123,
+    "epoch": 369,
+    "loss": 1.6378042936325072,
+    "lr": 1.0074201924448574e-05,
+    "velocity_mse": 1.6378042936325072
+  },
+  {
+    "endpoint_mse": 0.4755005478858948,
+    "epoch": 370,
+    "loss": 1.4890585660934448,
+    "lr": 9.501506340877456e-06,
+    "velocity_mse": 1.4890585660934448
+  },
+  {
+    "endpoint_mse": 0.5496894001960755,
+    "epoch": 371,
+    "loss": 1.5848458528518676,
+    "lr": 8.947163725662118e-06,
+    "velocity_mse": 1.5848458528518676
+  },
+  {
+    "endpoint_mse": 0.34933894127607346,
+    "epoch": 372,
+    "loss": 1.5806246519088745,
+    "lr": 8.41121629413888e-06,
+    "velocity_mse": 1.5806246519088745
+  },
+  {
+    "endpoint_mse": 0.5248073160648346,
+    "epoch": 373,
+    "loss": 1.5646014213562012,
+    "lr": 7.893704860779699e-06,
+    "velocity_mse": 1.5646014213562012
+  },
+  {
+    "endpoint_mse": 0.5743861794471741,
+    "epoch": 374,
+    "loss": 1.5853036880493163,
+    "lr": 7.394668836083833e-06,
+    "velocity_mse": 1.5853036880493163
+  },
+  {
+    "endpoint_mse": 0.5187458515167236,
+    "epoch": 375,
+    "loss": 1.6400654315948486,
+    "lr": 6.914146223576625e-06,
+    "velocity_mse": 1.6400654315948486
+  },
+  {
+    "endpoint_mse": 0.4606876611709595,
+    "epoch": 376,
+    "loss": 1.5839875221252442,
+    "lr": 6.45217361691548e-06,
+    "velocity_mse": 1.5839875221252442
+  },
+  {
+    "endpoint_mse": 0.4321605294942856,
+    "epoch": 377,
+    "loss": 1.613010835647583,
+    "lr": 6.008786197103017e-06,
+    "velocity_mse": 1.613010835647583
+  },
+  {
+    "endpoint_mse": 0.49216337203979493,
+    "epoch": 378,
+    "loss": 1.5227702856063843,
+    "lr": 5.584017729807838e-06,
+    "velocity_mse": 1.5227702856063843
+  },
+  {
+    "endpoint_mse": 0.5140254259109497,
+    "epoch": 379,
+    "loss": 1.6426144123077393,
+    "lr": 5.177900562793351e-06,
+    "velocity_mse": 1.6426144123077393
+  },
+  {
+    "endpoint_mse": 0.47669792771339414,
+    "epoch": 380,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.045535187237387,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.819009107053006,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 30.317447397627507,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 29.000149057031646,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.744184934771123,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 30.70899804426602,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.745854840930818,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 30.685867257723338,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 31.349461330944504,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 32.31212547775024,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 30.457155623218178,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.254456641824422,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.24275594828291,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 30.531823664750803,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 29.30642855906237,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 31.22450197320678,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.442521654835637,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.414211280386066,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 31.37310413522583,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.69861369009725,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 30.483185658972943,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.316584392162245,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 31.710798283938413,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.881065303072532,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.5891760349273683,
+    "lr": 4.790465623454099e-06,
+    "velocity_mse": 1.5891760349273683
+  },
+  {
+    "endpoint_mse": 0.3103800445795059,
+    "epoch": 381,
+    "loss": 1.617898416519165,
+    "lr": 4.421742416460756e-06,
+    "velocity_mse": 1.617898416519165
+  },
+  {
+    "endpoint_mse": 0.5635515689849854,
+    "epoch": 382,
+    "loss": 1.486543869972229,
+    "lr": 4.071759021513154e-06,
+    "velocity_mse": 1.486543869972229
+  },
+  {
+    "endpoint_mse": 0.4336137592792511,
+    "epoch": 383,
+    "loss": 1.3733969926834106,
+    "lr": 3.7405420912017517e-06,
+    "velocity_mse": 1.3733969926834106
+  },
+  {
+    "endpoint_mse": 0.500242480635643,
+    "epoch": 384,
+    "loss": 1.4590465307235718,
+    "lr": 3.4281168489782227e-06,
+    "velocity_mse": 1.4590465307235718
+  },
+  {
+    "endpoint_mse": 0.47072775959968566,
+    "epoch": 385,
+    "loss": 1.4710447311401367,
+    "lr": 3.13450708723431e-06,
+    "velocity_mse": 1.4710447311401367
+  },
+  {
+    "endpoint_mse": 0.47847203016281126,
+    "epoch": 386,
+    "loss": 1.4852043390274048,
+    "lr": 2.859735165490165e-06,
+    "velocity_mse": 1.4852043390274048
+  },
+  {
+    "endpoint_mse": 0.670498502254486,
+    "epoch": 387,
+    "loss": 1.6847408056259154,
+    "lr": 2.6038220086914294e-06,
+    "velocity_mse": 1.6847408056259154
+  },
+  {
+    "endpoint_mse": 0.5620554566383362,
+    "epoch": 388,
+    "loss": 1.6418158292770386,
+    "lr": 2.366787105615814e-06,
+    "velocity_mse": 1.6418158292770386
+  },
+  {
+    "endpoint_mse": 0.5494878053665161,
+    "epoch": 389,
+    "loss": 1.6218645572662354,
+    "lr": 2.148648507388904e-06,
+    "velocity_mse": 1.6218645572662354
+  },
+  {
+    "endpoint_mse": 0.29359117448329924,
+    "epoch": 390,
+    "loss": 1.51293785572052,
+    "lr": 1.9494228261094866e-06,
+    "velocity_mse": 1.51293785572052
+  },
+  {
+    "endpoint_mse": 0.43902350068092344,
+    "epoch": 391,
+    "loss": 1.595569944381714,
+    "lr": 1.769125233584573e-06,
+    "velocity_mse": 1.595569944381714
+  },
+  {
+    "endpoint_mse": 0.5558006882667541,
+    "epoch": 392,
+    "loss": 1.607711672782898,
+    "lr": 1.607769460173835e-06,
+    "velocity_mse": 1.607711672782898
+  },
+  {
+    "endpoint_mse": 0.36045691296458243,
+    "epoch": 393,
+    "loss": 1.490694522857666,
+    "lr": 1.4653677937441758e-06,
+    "velocity_mse": 1.490694522857666
+  },
+  {
+    "endpoint_mse": 0.34097476303577423,
+    "epoch": 394,
+    "loss": 1.6268736362457275,
+    "lr": 1.3419310787338286e-06,
+    "velocity_mse": 1.6268736362457275
+  },
+  {
+    "endpoint_mse": 0.514697265625,
+    "epoch": 395,
+    "loss": 1.6396426677703857,
+    "lr": 1.2374687153264792e-06,
+    "velocity_mse": 1.6396426677703857
+  },
+  {
+    "endpoint_mse": 0.3765345811843872,
+    "epoch": 396,
+    "loss": 1.5673632144927978,
+    "lr": 1.1519886587356073e-06,
+    "velocity_mse": 1.5673632144927978
+  },
+  {
+    "endpoint_mse": 0.4343303918838501,
+    "epoch": 397,
+    "loss": 1.5756392002105712,
+    "lr": 1.0854974185984637e-06,
+    "velocity_mse": 1.5756392002105712
+  },
+  {
+    "endpoint_mse": 0.5837191641330719,
+    "epoch": 398,
+    "loss": 1.5030923366546631,
+    "lr": 1.0380000584803783e-06,
+    "velocity_mse": 1.5030923366546631
+  },
+  {
+    "endpoint_mse": 0.5991631746292114,
+    "epoch": 399,
+    "loss": 1.622319221496582,
+    "lr": 1.009500195489258e-06,
+    "velocity_mse": 1.622319221496582
+  },
+  {
+    "endpoint_mse": 0.4009742081165314,
+    "epoch": 400,
+    "eval": {
+      "test": {
+        "mean_nmse_db": 30.88942288633932,
+        "n": 3,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed2026/transnet_transnet",
+            "nmse_db": 30.273693147923638,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed3407/clnet_transnet",
+            "nmse_db": 30.978179650752647,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed42/csinet_transnet",
+            "nmse_db": 31.416395860341673,
+            "seed": 42
+          }
+        ]
+      },
+      "train": {
+        "mean_nmse_db": 30.524096793350157,
+        "n": 19,
+        "rows": [
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed42/transnet_transnet",
+            "nmse_db": 29.81032054423947,
+            "seed": 42
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed42/crnet_transnet",
+            "nmse_db": 30.208534439860657,
+            "seed": 42
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed42/clnet_transnet",
+            "nmse_db": 31.31796472326777,
+            "seed": 42
+          },
+          {
+            "encoder": "cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cnn_transnet",
+            "nmse_db": 29.800529239270954,
+            "seed": 42
+          },
+          {
+            "encoder": "resnet",
+            "exp_dir": "exps/COST2100/in/seed42/resnet_transnet",
+            "nmse_db": 30.12293814353402,
+            "seed": 42
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed2026/csinet_transnet",
+            "nmse_db": 30.476227863248802,
+            "seed": 2026
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed2026/crnet_transnet",
+            "nmse_db": 30.385126320665385,
+            "seed": 2026
+          },
+          {
+            "encoder": "clnet",
+            "exp_dir": "exps/COST2100/in/seed2026/clnet_transnet",
+            "nmse_db": 30.73129747856061,
+            "seed": 2026
+          },
+          {
+            "encoder": "transnet",
+            "exp_dir": "exps/COST2100/in/seed3407/transnet_transnet",
+            "nmse_db": 31.113125819485244,
+            "seed": 3407
+          },
+          {
+            "encoder": "csinet",
+            "exp_dir": "exps/COST2100/in/seed3407/csinet_transnet",
+            "nmse_db": 30.596983288762654,
+            "seed": 3407
+          },
+          {
+            "encoder": "crnet",
+            "exp_dir": "exps/COST2100/in/seed3407/crnet_transnet",
+            "nmse_db": 31.118344694877887,
+            "seed": 3407
+          },
+          {
+            "encoder": "cbam_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/cbam_cnn_transnet",
+            "nmse_db": 30.058337982755404,
+            "seed": 42
+          },
+          {
+            "encoder": "dscnn",
+            "exp_dir": "exps/COST2100/in/seed42/dscnn_transnet",
+            "nmse_db": 30.126351302167222,
+            "seed": 42
+          },
+          {
+            "encoder": "convnext",
+            "exp_dir": "exps/COST2100/in/seed42/convnext_transnet",
+            "nmse_db": 30.508825673413632,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_mixer",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_mixer_transnet",
+            "nmse_db": 30.59502435146024,
+            "seed": 42
+          },
+          {
+            "encoder": "attention_cnn",
+            "exp_dir": "exps/COST2100/in/seed42/attention_cnn_transnet",
+            "nmse_db": 31.418637931113302,
+            "seed": 42
+          },
+          {
+            "encoder": "swin",
+            "exp_dir": "exps/COST2100/in/seed42/swin_transnet",
+            "nmse_db": 30.29518208091268,
+            "seed": 42
+          },
+          {
+            "encoder": "mlp_ae",
+            "exp_dir": "exps/COST2100/in/seed42/mlp_ae_transnet",
+            "nmse_db": 30.437936997085394,
+            "seed": 42
+          },
+          {
+            "encoder": "sparse_resnet",
+            "exp_dir": "exps/COST2100/in/seed42/sparse_resnet_transnet",
+            "nmse_db": 30.836150198971637,
+            "seed": 42
+          }
+        ]
+      }
+    },
+    "loss": 1.6115787029266357,
+    "lr": 1e-06,
+    "velocity_mse": 1.6115787029266357
+  }
+]

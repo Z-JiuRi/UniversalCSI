@@ -1,0 +1,9 @@
+{
+  "code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "csi_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "decoder_state": "decoder_param_fm/exps/random_film_zscore_tok512_h2048_lr2e-4_ep400_seed42/generated/generated_decoder.pth",
+  "mse_sum_per_sample": 6.693784123565811,
+  "nmse_db": 8.597591102848341,
+  "num_samples": 100000
+}

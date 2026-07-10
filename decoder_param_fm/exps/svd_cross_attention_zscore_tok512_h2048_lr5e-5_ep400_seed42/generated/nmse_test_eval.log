@@ -1,0 +1,10 @@
+{
+  "code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/test_code.pt",
+  "csi_path": "/storage/hujiacong/zxd/datasets/cost2100/in_test.pt",
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "decoder_state": "decoder_param_fm/exps/svd_cross_attention_zscore_tok512_h2048_lr5e-5_ep400_seed42/generated/generated_decoder.pth",
+  "mse_sum_per_sample": 0.5333193533522838,
+  "nmse_db": -2.3942337903803255,
+  "num_samples": 20000
+}
+

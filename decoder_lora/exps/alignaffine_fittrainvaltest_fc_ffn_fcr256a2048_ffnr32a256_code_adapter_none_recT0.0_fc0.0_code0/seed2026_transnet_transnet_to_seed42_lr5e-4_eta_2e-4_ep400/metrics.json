@@ -1,0 +1,45 @@
+{
+  "best_loss": {
+    "metric": 1.4087101958769683e-06,
+    "loss": 1.4087101958769683e-06,
+    "rec": 1.4087101958769683e-06,
+    "epoch": 128,
+    "selection": "val_external_loss",
+    "train_all": {
+      "decoder_mse": 9.341417237010319e-07,
+      "decoder_nmse": -26.841699600219727,
+      "n": 100000
+    },
+    "val_external": {
+      "decoder_mse": 1.4087101958769683e-06,
+      "decoder_nmse": -25.061960220336914,
+      "n": 30000
+    },
+    "test_external": {
+      "decoder_mse": 1.4390927122803988e-06,
+      "decoder_nmse": -24.969921112060547,
+      "n": 20000
+    }
+  },
+  "best_nmse": {
+    "metric": -24.995956420898438,
+    "decoder_mse": 1.4302826930967664e-06,
+    "epoch": 120,
+    "selection": "val_external_decoder_nmse",
+    "train_all": {
+      "decoder_mse": 9.570120269563632e-07,
+      "decoder_nmse": -26.736656188964844,
+      "n": 100000
+    },
+    "val_external": {
+      "decoder_mse": 1.4302826930967664e-06,
+      "decoder_nmse": -24.995956420898438,
+      "n": 30000
+    },
+    "test_external": {
+      "decoder_mse": 1.4606396023737034e-06,
+      "decoder_nmse": -24.905376434326172,
+      "n": 20000
+    }
+  }
+}

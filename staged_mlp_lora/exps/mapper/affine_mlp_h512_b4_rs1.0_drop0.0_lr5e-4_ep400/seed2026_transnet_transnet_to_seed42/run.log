@@ -1,0 +1,502 @@
+I 07.04/01:19:58 logger.py:152 ] => Experiment directory: staged_mlp_lora/exps/mapper/affine_mlp_h512_b4_rs1.0_drop0.0_lr5e-4_ep400/seed2026_transnet_transnet_to_seed42
+I 07.04/01:19:58 logger.py:71  ] => Runtime Context:
+I 07.04/01:19:58 logger.py:72  ]    cwd: /storage/hujiacong/zxd/Huawei/UniversalCSI
+I 07.04/01:19:58 logger.py:73  ]    pid: 767027
+I 07.04/01:19:58 logger.py:74  ]    command: staged_mlp_lora/train_affine_mlp_mapper.py --source_code exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt --target_code exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt --exp_dir staged_mlp_lora/exps/mapper/affine_mlp_h512_b4_rs1.0_drop0.0_lr5e-4_ep400/seed2026_transnet_transnet_to_seed42 --source_name seed2026_transnet_transnet --hidden_dim 512 --num_blocks 4 --dropout 0.0 --residual_scale 1.0 --align_ridge 1e-4 --epochs 400 --batch_size 1024 --workers 0 --lr 5e-4 --weight_decay 1e-4 --scheduler cosine --eta_min 5e-5 --val_ratio 0 --max_samples 0 --eval_decoder_every 20 --eval_decoder_max_samples 0 --decoder_checkpoint exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth --decoder_args_json exps/COST2100/in/seed42/transnet_transnet/args.json --csi_path /storage/hujiacong/zxd/datasets/cost2100/in_train.pt --gpu 0 --seed 2026
+I 07.04/01:19:58 logger.py:75  ]    python: 3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]
+I 07.04/01:19:58 logger.py:76  ]    pytorch: 2.5.1
+I 07.04/01:19:58 logger.py:77  ]    cuda_available: True
+I 07.04/01:19:58 logger.py:79  ]    cuda_version: 12.1
+I 07.04/01:19:58 logger.py:81  ]    CUDA_VISIBLE_DEVICES: 0
+I 07.04/01:19:58 logger.py:91  ]    current_device: not initialized yet
+I 07.04/01:19:58 logger.py:63  ] => Arguments:
+{
+  "align_ridge": 0.0001,
+  "batch_size": 1024,
+  "cpu": false,
+  "csi_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "decoder_checkpoint": "exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth",
+  "dropout": 0.0,
+  "epochs": 400,
+  "eta_min": 5e-05,
+  "eval_decoder_every": 20,
+  "eval_decoder_max_samples": 0,
+  "exp_dir": "staged_mlp_lora/exps/mapper/affine_mlp_h512_b4_rs1.0_drop0.0_lr5e-4_ep400/seed2026_transnet_transnet_to_seed42",
+  "gpu": 0,
+  "hidden_dim": 512,
+  "lr": 0.0005,
+  "max_samples": 0,
+  "num_blocks": 4,
+  "residual_scale": 1.0,
+  "scheduler": "cosine",
+  "seed": 2026,
+  "source_code": "exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt",
+  "source_name": "seed2026_transnet_transnet",
+  "target_code": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "val_ratio": 0.0,
+  "weight_decay": 0.0001,
+  "workers": 0
+}
+I 07.04/01:20:06 logger.py:146 ] 
+name                                                              grad          shape   numel
+----                                                              ----          -----   -----
+blocks.0.norm.weight                                              True         (512,)     512
+blocks.0.norm.bias                                                True         (512,)     512
+blocks.0.net.0.weight                                             True     (512, 512) 262,144
+blocks.0.net.0.bias                                               True         (512,)     512
+blocks.0.net.3.weight                                             True     (512, 512) 262,144
+blocks.0.net.3.bias                                               True         (512,)     512
+blocks.1.norm.weight                                              True         (512,)     512
+blocks.1.norm.bias                                                True         (512,)     512
+blocks.1.net.0.weight                                             True     (512, 512) 262,144
+blocks.1.net.0.bias                                               True         (512,)     512
+blocks.1.net.3.weight                                             True     (512, 512) 262,144
+blocks.1.net.3.bias                                               True         (512,)     512
+blocks.2.norm.weight                                              True         (512,)     512
+blocks.2.norm.bias                                                True         (512,)     512
+blocks.2.net.0.weight                                             True     (512, 512) 262,144
+blocks.2.net.0.bias                                               True         (512,)     512
+blocks.2.net.3.weight                                             True     (512, 512) 262,144
+blocks.2.net.3.bias                                               True         (512,)     512
+blocks.3.norm.weight                                              True         (512,)     512
+blocks.3.norm.bias                                                True         (512,)     512
+blocks.3.net.0.weight                                             True     (512, 512) 262,144
+blocks.3.net.0.bias                                               True         (512,)     512
+blocks.3.net.3.weight                                             True     (512, 512) 262,144
+blocks.3.net.3.bias                                               True         (512,)     512
+final_norm.weight                                                 True         (512,)     512
+final_norm.bias                                                   True         (512,)     512
+**********
+total=2,106,368, trainable=2,106,368, frozen=0
+I 07.04/01:20:07 train_affine_mlp_mapper.py:480 ] => Periodic true NMSE eval: every=20 max_samples=full
+I 07.04/01:20:08 train_affine_mlp_mapper.py:493 ] => Device: cuda
+I 07.04/01:20:08 train_affine_mlp_mapper.py:494 ] => Source: exps/COST2100/in/seed2026/transnet_transnet/codewords/train_code.pt
+I 07.04/01:20:08 train_affine_mlp_mapper.py:495 ] => Target: exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt
+I 07.04/01:20:08 train_affine_mlp_mapper.py:496 ] => Dataset: train=100000 val=0 all=100000 code_dim=512
+I 07.04/01:20:08 train_affine_mlp_mapper.py:502 ] => Affine buffers: weight=(512, 512) bias=(512,) numel=262656
+I 07.04/01:20:08 train_affine_mlp_mapper.py:507 ] => Mapper: hidden_dim=512 num_blocks=4 residual_scale=1.0 trainable_params=2,106,368
+I 07.04/01:20:08 train_affine_mlp_mapper.py:514 ] => Optimizer: AdamW lr=0.0005 weight_decay=0.0001 scheduler=cosine eta_min=5e-05
+I 07.04/01:20:21 train_affine_mlp_mapper.py:597 ] Epoch [1/400] lr=1.250000e-05 train_loss=9.316587e-02 train_mse=9.316587e-02 train_cos=0.980103 train_nmse=-8.381dB
+I 07.04/01:20:34 train_affine_mlp_mapper.py:597 ] Epoch [2/400] lr=2.500000e-05 train_loss=9.117658e-02 train_mse=9.117658e-02 train_cos=0.980908 train_nmse=-8.475dB
+I 07.04/01:20:45 train_affine_mlp_mapper.py:597 ] Epoch [3/400] lr=3.750000e-05 train_loss=8.775609e-02 train_mse=8.775609e-02 train_cos=0.982128 train_nmse=-8.641dB
+I 07.04/01:20:53 train_affine_mlp_mapper.py:597 ] Epoch [4/400] lr=5.000000e-05 train_loss=8.451636e-02 train_mse=8.451636e-02 train_cos=0.982851 train_nmse=-8.805dB
+I 07.04/01:21:04 train_affine_mlp_mapper.py:597 ] Epoch [5/400] lr=6.250000e-05 train_loss=8.114782e-02 train_mse=8.114782e-02 train_cos=0.983320 train_nmse=-8.981dB
+I 07.04/01:21:12 train_affine_mlp_mapper.py:597 ] Epoch [6/400] lr=7.500000e-05 train_loss=7.742498e-02 train_mse=7.742498e-02 train_cos=0.983699 train_nmse=-9.186dB
+I 07.04/01:21:20 train_affine_mlp_mapper.py:597 ] Epoch [7/400] lr=8.750000e-05 train_loss=7.336272e-02 train_mse=7.336272e-02 train_cos=0.984026 train_nmse=-9.420dB
+I 07.04/01:21:28 train_affine_mlp_mapper.py:597 ] Epoch [8/400] lr=1.000000e-04 train_loss=6.905823e-02 train_mse=6.905823e-02 train_cos=0.984302 train_nmse=-9.682dB
+I 07.04/01:21:36 train_affine_mlp_mapper.py:597 ] Epoch [9/400] lr=1.125000e-04 train_loss=6.459050e-02 train_mse=6.459050e-02 train_cos=0.984546 train_nmse=-9.973dB
+I 07.04/01:21:44 train_affine_mlp_mapper.py:597 ] Epoch [10/400] lr=1.250000e-04 train_loss=6.007213e-02 train_mse=6.007213e-02 train_cos=0.984761 train_nmse=-10.288dB
+I 07.04/01:21:52 train_affine_mlp_mapper.py:597 ] Epoch [11/400] lr=1.375000e-04 train_loss=5.560850e-02 train_mse=5.560850e-02 train_cos=0.984954 train_nmse=-10.623dB
+I 07.04/01:22:00 train_affine_mlp_mapper.py:597 ] Epoch [12/400] lr=1.500000e-04 train_loss=5.130865e-02 train_mse=5.130865e-02 train_cos=0.985135 train_nmse=-10.973dB
+I 07.04/01:22:10 train_affine_mlp_mapper.py:597 ] Epoch [13/400] lr=1.625000e-04 train_loss=4.728296e-02 train_mse=4.728296e-02 train_cos=0.985304 train_nmse=-11.328dB
+I 07.04/01:22:18 train_affine_mlp_mapper.py:597 ] Epoch [14/400] lr=1.750000e-04 train_loss=4.362627e-02 train_mse=4.362627e-02 train_cos=0.985463 train_nmse=-11.677dB
+I 07.04/01:22:26 train_affine_mlp_mapper.py:597 ] Epoch [15/400] lr=1.875000e-04 train_loss=4.038828e-02 train_mse=4.038828e-02 train_cos=0.985631 train_nmse=-12.012dB
+I 07.04/01:22:33 train_affine_mlp_mapper.py:597 ] Epoch [16/400] lr=2.000000e-04 train_loss=3.764369e-02 train_mse=3.764369e-02 train_cos=0.985787 train_nmse=-12.318dB
+I 07.04/01:22:41 train_affine_mlp_mapper.py:597 ] Epoch [17/400] lr=2.125000e-04 train_loss=3.540345e-02 train_mse=3.540345e-02 train_cos=0.985928 train_nmse=-12.584dB
+I 07.04/01:22:49 train_affine_mlp_mapper.py:597 ] Epoch [18/400] lr=2.250000e-04 train_loss=3.361385e-02 train_mse=3.361385e-02 train_cos=0.986077 train_nmse=-12.809dB
+I 07.04/01:22:57 train_affine_mlp_mapper.py:597 ] Epoch [19/400] lr=2.375000e-04 train_loss=3.224168e-02 train_mse=3.224168e-02 train_cos=0.986221 train_nmse=-12.990dB
+I 07.04/01:23:18 train_affine_mlp_mapper.py:558 ] Epoch [20/400] true_decoder_eval n=100000 decoder_mse=2.798972e-05 decoder_nmse=-12.076dB
+I 07.04/01:23:18 train_affine_mlp_mapper.py:597 ] Epoch [20/400] lr=2.500000e-04 train_loss=3.119885e-02 train_mse=3.119885e-02 train_cos=0.986364 train_nmse=-13.133dB
+I 07.04/01:23:25 train_affine_mlp_mapper.py:597 ] Epoch [21/400] lr=2.625000e-04 train_loss=3.042468e-02 train_mse=3.042468e-02 train_cos=0.986496 train_nmse=-13.243dB
+I 07.04/01:23:32 train_affine_mlp_mapper.py:597 ] Epoch [22/400] lr=2.750000e-04 train_loss=2.981300e-02 train_mse=2.981300e-02 train_cos=0.986631 train_nmse=-13.330dB
+I 07.04/01:23:38 train_affine_mlp_mapper.py:597 ] Epoch [23/400] lr=2.875000e-04 train_loss=2.932107e-02 train_mse=2.932107e-02 train_cos=0.986753 train_nmse=-13.403dB
+I 07.04/01:23:45 train_affine_mlp_mapper.py:597 ] Epoch [24/400] lr=3.000000e-04 train_loss=2.889194e-02 train_mse=2.889194e-02 train_cos=0.986869 train_nmse=-13.467dB
+I 07.04/01:23:52 train_affine_mlp_mapper.py:597 ] Epoch [25/400] lr=3.125000e-04 train_loss=2.847753e-02 train_mse=2.847753e-02 train_cos=0.986989 train_nmse=-13.530dB
+I 07.04/01:23:58 train_affine_mlp_mapper.py:597 ] Epoch [26/400] lr=3.250000e-04 train_loss=2.808083e-02 train_mse=2.808083e-02 train_cos=0.987096 train_nmse=-13.591dB
+I 07.04/01:24:07 train_affine_mlp_mapper.py:597 ] Epoch [27/400] lr=3.375000e-04 train_loss=2.768783e-02 train_mse=2.768783e-02 train_cos=0.987193 train_nmse=-13.652dB
+I 07.04/01:24:14 train_affine_mlp_mapper.py:597 ] Epoch [28/400] lr=3.500000e-04 train_loss=2.726100e-02 train_mse=2.726100e-02 train_cos=0.987307 train_nmse=-13.720dB
+I 07.04/01:24:20 train_affine_mlp_mapper.py:597 ] Epoch [29/400] lr=3.625000e-04 train_loss=2.683215e-02 train_mse=2.683215e-02 train_cos=0.987403 train_nmse=-13.789dB
+I 07.04/01:24:27 train_affine_mlp_mapper.py:597 ] Epoch [30/400] lr=3.750000e-04 train_loss=2.640099e-02 train_mse=2.640099e-02 train_cos=0.987488 train_nmse=-13.859dB
+I 07.04/01:24:33 train_affine_mlp_mapper.py:597 ] Epoch [31/400] lr=3.875000e-04 train_loss=2.595149e-02 train_mse=2.595149e-02 train_cos=0.987567 train_nmse=-13.933dB
+I 07.04/01:24:40 train_affine_mlp_mapper.py:597 ] Epoch [32/400] lr=4.000000e-04 train_loss=2.547925e-02 train_mse=2.547925e-02 train_cos=0.987643 train_nmse=-14.013dB
+I 07.04/01:24:47 train_affine_mlp_mapper.py:597 ] Epoch [33/400] lr=4.125000e-04 train_loss=2.497538e-02 train_mse=2.497538e-02 train_cos=0.987724 train_nmse=-14.099dB
+I 07.04/01:24:53 train_affine_mlp_mapper.py:597 ] Epoch [34/400] lr=4.250000e-04 train_loss=2.447007e-02 train_mse=2.447007e-02 train_cos=0.987775 train_nmse=-14.189dB
+I 07.04/01:24:59 train_affine_mlp_mapper.py:597 ] Epoch [35/400] lr=4.375000e-04 train_loss=2.391830e-02 train_mse=2.391830e-02 train_cos=0.987829 train_nmse=-14.287dB
+I 07.04/01:25:08 train_affine_mlp_mapper.py:597 ] Epoch [36/400] lr=4.500000e-04 train_loss=2.331381e-02 train_mse=2.331381e-02 train_cos=0.987876 train_nmse=-14.399dB
+I 07.04/01:25:15 train_affine_mlp_mapper.py:597 ] Epoch [37/400] lr=4.625000e-04 train_loss=2.263533e-02 train_mse=2.263533e-02 train_cos=0.987907 train_nmse=-14.527dB
+I 07.04/01:25:22 train_affine_mlp_mapper.py:597 ] Epoch [38/400] lr=4.750000e-04 train_loss=2.185356e-02 train_mse=2.185356e-02 train_cos=0.987900 train_nmse=-14.680dB
+I 07.04/01:25:28 train_affine_mlp_mapper.py:597 ] Epoch [39/400] lr=4.875000e-04 train_loss=2.078422e-02 train_mse=2.078422e-02 train_cos=0.987870 train_nmse=-14.898dB
+I 07.04/01:25:43 train_affine_mlp_mapper.py:558 ] Epoch [40/400] true_decoder_eval n=100000 decoder_mse=6.258196e-06 decoder_nmse=-18.581dB
+I 07.04/01:25:44 train_affine_mlp_mapper.py:597 ] Epoch [40/400] lr=5.000000e-04 train_loss=1.919850e-02 train_mse=1.919850e-02 train_cos=0.987995 train_nmse=-15.243dB
+I 07.04/01:25:50 train_affine_mlp_mapper.py:597 ] Epoch [41/400] lr=4.999914e-04 train_loss=1.771389e-02 train_mse=1.771389e-02 train_cos=0.988305 train_nmse=-15.591dB
+I 07.04/01:25:56 train_affine_mlp_mapper.py:597 ] Epoch [42/400] lr=4.999657e-04 train_loss=1.678461e-02 train_mse=1.678461e-02 train_cos=0.988537 train_nmse=-15.826dB
+I 07.04/01:26:06 train_affine_mlp_mapper.py:597 ] Epoch [43/400] lr=4.999229e-04 train_loss=1.618982e-02 train_mse=1.618982e-02 train_cos=0.988703 train_nmse=-15.982dB
+I 07.04/01:26:12 train_affine_mlp_mapper.py:597 ] Epoch [44/400] lr=4.998629e-04 train_loss=1.576573e-02 train_mse=1.576573e-02 train_cos=0.988836 train_nmse=-16.098dB
+I 07.04/01:26:18 train_affine_mlp_mapper.py:597 ] Epoch [45/400] lr=4.997858e-04 train_loss=1.541457e-02 train_mse=1.541457e-02 train_cos=0.988968 train_nmse=-16.196dB
+I 07.04/01:26:25 train_affine_mlp_mapper.py:597 ] Epoch [46/400] lr=4.996916e-04 train_loss=1.513724e-02 train_mse=1.513724e-02 train_cos=0.989075 train_nmse=-16.274dB
+I 07.04/01:26:32 train_affine_mlp_mapper.py:597 ] Epoch [47/400] lr=4.995803e-04 train_loss=1.491234e-02 train_mse=1.491234e-02 train_cos=0.989166 train_nmse=-16.339dB
+I 07.04/01:26:38 train_affine_mlp_mapper.py:597 ] Epoch [48/400] lr=4.994519e-04 train_loss=1.470265e-02 train_mse=1.470265e-02 train_cos=0.989259 train_nmse=-16.401dB
+I 07.04/01:26:45 train_affine_mlp_mapper.py:597 ] Epoch [49/400] lr=4.993064e-04 train_loss=1.451866e-02 train_mse=1.451866e-02 train_cos=0.989346 train_nmse=-16.456dB
+I 07.04/01:26:51 train_affine_mlp_mapper.py:597 ] Epoch [50/400] lr=4.991438e-04 train_loss=1.433905e-02 train_mse=1.433905e-02 train_cos=0.989440 train_nmse=-16.509dB
+I 07.04/01:26:57 train_affine_mlp_mapper.py:597 ] Epoch [51/400] lr=4.989641e-04 train_loss=1.419290e-02 train_mse=1.419290e-02 train_cos=0.989513 train_nmse=-16.554dB
+I 07.04/01:27:05 train_affine_mlp_mapper.py:597 ] Epoch [52/400] lr=4.987674e-04 train_loss=1.404815e-02 train_mse=1.404815e-02 train_cos=0.989594 train_nmse=-16.599dB
+I 07.04/01:27:11 train_affine_mlp_mapper.py:597 ] Epoch [53/400] lr=4.985537e-04 train_loss=1.391695e-02 train_mse=1.391695e-02 train_cos=0.989665 train_nmse=-16.639dB
+I 07.04/01:27:17 train_affine_mlp_mapper.py:597 ] Epoch [54/400] lr=4.983229e-04 train_loss=1.379520e-02 train_mse=1.379520e-02 train_cos=0.989736 train_nmse=-16.677dB
+I 07.04/01:27:24 train_affine_mlp_mapper.py:597 ] Epoch [55/400] lr=4.980751e-04 train_loss=1.367311e-02 train_mse=1.367311e-02 train_cos=0.989808 train_nmse=-16.716dB
+I 07.04/01:27:30 train_affine_mlp_mapper.py:597 ] Epoch [56/400] lr=4.978103e-04 train_loss=1.357164e-02 train_mse=1.357164e-02 train_cos=0.989867 train_nmse=-16.748dB
+I 07.04/01:27:37 train_affine_mlp_mapper.py:597 ] Epoch [57/400] lr=4.975286e-04 train_loss=1.346466e-02 train_mse=1.346466e-02 train_cos=0.989932 train_nmse=-16.783dB
+I 07.04/01:27:43 train_affine_mlp_mapper.py:597 ] Epoch [58/400] lr=4.972299e-04 train_loss=1.337470e-02 train_mse=1.337470e-02 train_cos=0.989987 train_nmse=-16.812dB
+I 07.04/01:27:49 train_affine_mlp_mapper.py:597 ] Epoch [59/400] lr=4.969143e-04 train_loss=1.327576e-02 train_mse=1.327576e-02 train_cos=0.990050 train_nmse=-16.844dB
+I 07.04/01:28:06 train_affine_mlp_mapper.py:558 ] Epoch [60/400] true_decoder_eval n=100000 decoder_mse=3.827076e-06 decoder_nmse=-20.717dB
+I 07.04/01:28:06 train_affine_mlp_mapper.py:597 ] Epoch [60/400] lr=4.965817e-04 train_loss=1.317348e-02 train_mse=1.317348e-02 train_cos=0.990116 train_nmse=-16.878dB
+I 07.04/01:28:12 train_affine_mlp_mapper.py:597 ] Epoch [61/400] lr=4.962324e-04 train_loss=1.310167e-02 train_mse=1.310167e-02 train_cos=0.990161 train_nmse=-16.901dB
+I 07.04/01:28:18 train_affine_mlp_mapper.py:597 ] Epoch [62/400] lr=4.958661e-04 train_loss=1.300865e-02 train_mse=1.300865e-02 train_cos=0.990223 train_nmse=-16.932dB
+I 07.04/01:28:25 train_affine_mlp_mapper.py:597 ] Epoch [63/400] lr=4.954831e-04 train_loss=1.292851e-02 train_mse=1.292851e-02 train_cos=0.990275 train_nmse=-16.960dB
+I 07.04/01:28:31 train_affine_mlp_mapper.py:597 ] Epoch [64/400] lr=4.950832e-04 train_loss=1.284859e-02 train_mse=1.284859e-02 train_cos=0.990328 train_nmse=-16.986dB
+I 07.04/01:28:38 train_affine_mlp_mapper.py:597 ] Epoch [65/400] lr=4.946666e-04 train_loss=1.277738e-02 train_mse=1.277738e-02 train_cos=0.990373 train_nmse=-17.010dB
+I 07.04/01:28:44 train_affine_mlp_mapper.py:597 ] Epoch [66/400] lr=4.942333e-04 train_loss=1.271035e-02 train_mse=1.271035e-02 train_cos=0.990420 train_nmse=-17.033dB
+I 07.04/01:28:51 train_affine_mlp_mapper.py:597 ] Epoch [67/400] lr=4.937832e-04 train_loss=1.262920e-02 train_mse=1.262920e-02 train_cos=0.990475 train_nmse=-17.061dB
+I 07.04/01:28:57 train_affine_mlp_mapper.py:597 ] Epoch [68/400] lr=4.933165e-04 train_loss=1.256329e-02 train_mse=1.256329e-02 train_cos=0.990520 train_nmse=-17.084dB
+I 07.04/01:29:06 train_affine_mlp_mapper.py:597 ] Epoch [69/400] lr=4.928332e-04 train_loss=1.249807e-02 train_mse=1.249807e-02 train_cos=0.990563 train_nmse=-17.106dB
+I 07.04/01:29:12 train_affine_mlp_mapper.py:597 ] Epoch [70/400] lr=4.923333e-04 train_loss=1.243542e-02 train_mse=1.243542e-02 train_cos=0.990606 train_nmse=-17.128dB
+I 07.04/01:29:18 train_affine_mlp_mapper.py:597 ] Epoch [71/400] lr=4.918169e-04 train_loss=1.235726e-02 train_mse=1.235726e-02 train_cos=0.990664 train_nmse=-17.156dB
+I 07.04/01:29:25 train_affine_mlp_mapper.py:597 ] Epoch [72/400] lr=4.912839e-04 train_loss=1.230107e-02 train_mse=1.230107e-02 train_cos=0.990701 train_nmse=-17.176dB
+I 07.04/01:29:32 train_affine_mlp_mapper.py:597 ] Epoch [73/400] lr=4.907344e-04 train_loss=1.223608e-02 train_mse=1.223608e-02 train_cos=0.990746 train_nmse=-17.198dB
+I 07.04/01:29:38 train_affine_mlp_mapper.py:597 ] Epoch [74/400] lr=4.901686e-04 train_loss=1.216360e-02 train_mse=1.216360e-02 train_cos=0.990799 train_nmse=-17.225dB
+I 07.04/01:29:44 train_affine_mlp_mapper.py:597 ] Epoch [75/400] lr=4.895863e-04 train_loss=1.211873e-02 train_mse=1.211873e-02 train_cos=0.990830 train_nmse=-17.240dB
+I 07.04/01:29:51 train_affine_mlp_mapper.py:597 ] Epoch [76/400] lr=4.889877e-04 train_loss=1.205115e-02 train_mse=1.205115e-02 train_cos=0.990877 train_nmse=-17.264dB
+I 07.04/01:29:57 train_affine_mlp_mapper.py:597 ] Epoch [77/400] lr=4.883728e-04 train_loss=1.199908e-02 train_mse=1.199908e-02 train_cos=0.990914 train_nmse=-17.283dB
+I 07.04/01:30:07 train_affine_mlp_mapper.py:597 ] Epoch [78/400] lr=4.877417e-04 train_loss=1.194212e-02 train_mse=1.194212e-02 train_cos=0.990955 train_nmse=-17.304dB
+I 07.04/01:30:13 train_affine_mlp_mapper.py:597 ] Epoch [79/400] lr=4.870943e-04 train_loss=1.188875e-02 train_mse=1.188875e-02 train_cos=0.990994 train_nmse=-17.323dB
+I 07.04/01:30:29 train_affine_mlp_mapper.py:558 ] Epoch [80/400] true_decoder_eval n=100000 decoder_mse=3.433346e-06 decoder_nmse=-21.189dB
+I 07.04/01:30:29 train_affine_mlp_mapper.py:597 ] Epoch [80/400] lr=4.864308e-04 train_loss=1.184043e-02 train_mse=1.184043e-02 train_cos=0.991029 train_nmse=-17.341dB
+I 07.04/01:30:34 train_affine_mlp_mapper.py:597 ] Epoch [81/400] lr=4.857512e-04 train_loss=1.177306e-02 train_mse=1.177306e-02 train_cos=0.991079 train_nmse=-17.366dB
+I 07.04/01:30:41 train_affine_mlp_mapper.py:597 ] Epoch [82/400] lr=4.850556e-04 train_loss=1.171547e-02 train_mse=1.171547e-02 train_cos=0.991120 train_nmse=-17.387dB
+I 07.04/01:30:48 train_affine_mlp_mapper.py:597 ] Epoch [83/400] lr=4.843440e-04 train_loss=1.167552e-02 train_mse=1.167552e-02 train_cos=0.991149 train_nmse=-17.402dB
+I 07.04/01:30:55 train_affine_mlp_mapper.py:597 ] Epoch [84/400] lr=4.836164e-04 train_loss=1.162254e-02 train_mse=1.162254e-02 train_cos=0.991188 train_nmse=-17.421dB
+I 07.04/01:31:02 train_affine_mlp_mapper.py:597 ] Epoch [85/400] lr=4.828729e-04 train_loss=1.157653e-02 train_mse=1.157653e-02 train_cos=0.991221 train_nmse=-17.439dB
+I 07.04/01:31:10 train_affine_mlp_mapper.py:597 ] Epoch [86/400] lr=4.821136e-04 train_loss=1.152591e-02 train_mse=1.152591e-02 train_cos=0.991259 train_nmse=-17.458dB
+I 07.04/01:31:16 train_affine_mlp_mapper.py:597 ] Epoch [87/400] lr=4.813385e-04 train_loss=1.146352e-02 train_mse=1.146352e-02 train_cos=0.991306 train_nmse=-17.481dB
+I 07.04/01:31:24 train_affine_mlp_mapper.py:597 ] Epoch [88/400] lr=4.805477e-04 train_loss=1.142279e-02 train_mse=1.142279e-02 train_cos=0.991334 train_nmse=-17.497dB
+I 07.04/01:31:31 train_affine_mlp_mapper.py:597 ] Epoch [89/400] lr=4.797413e-04 train_loss=1.136186e-02 train_mse=1.136186e-02 train_cos=0.991381 train_nmse=-17.520dB
+I 07.04/01:31:36 train_affine_mlp_mapper.py:597 ] Epoch [90/400] lr=4.789193e-04 train_loss=1.132885e-02 train_mse=1.132885e-02 train_cos=0.991405 train_nmse=-17.533dB
+I 07.04/01:31:42 train_affine_mlp_mapper.py:597 ] Epoch [91/400] lr=4.780817e-04 train_loss=1.128923e-02 train_mse=1.128923e-02 train_cos=0.991433 train_nmse=-17.548dB
+I 07.04/01:31:49 train_affine_mlp_mapper.py:597 ] Epoch [92/400] lr=4.772287e-04 train_loss=1.124041e-02 train_mse=1.124041e-02 train_cos=0.991469 train_nmse=-17.567dB
+I 07.04/01:31:55 train_affine_mlp_mapper.py:597 ] Epoch [93/400] lr=4.763602e-04 train_loss=1.120390e-02 train_mse=1.120390e-02 train_cos=0.991495 train_nmse=-17.581dB
+I 07.04/01:32:04 train_affine_mlp_mapper.py:597 ] Epoch [94/400] lr=4.754765e-04 train_loss=1.115305e-02 train_mse=1.115305e-02 train_cos=0.991533 train_nmse=-17.601dB
+I 07.04/01:32:11 train_affine_mlp_mapper.py:597 ] Epoch [95/400] lr=4.745774e-04 train_loss=1.110983e-02 train_mse=1.110983e-02 train_cos=0.991566 train_nmse=-17.618dB
+I 07.04/01:32:18 train_affine_mlp_mapper.py:597 ] Epoch [96/400] lr=4.736632e-04 train_loss=1.106494e-02 train_mse=1.106494e-02 train_cos=0.991598 train_nmse=-17.635dB
+I 07.04/01:32:25 train_affine_mlp_mapper.py:597 ] Epoch [97/400] lr=4.727339e-04 train_loss=1.102136e-02 train_mse=1.102136e-02 train_cos=0.991632 train_nmse=-17.652dB
+I 07.04/01:32:32 train_affine_mlp_mapper.py:597 ] Epoch [98/400] lr=4.717894e-04 train_loss=1.099178e-02 train_mse=1.099178e-02 train_cos=0.991653 train_nmse=-17.664dB
+I 07.04/01:32:38 train_affine_mlp_mapper.py:597 ] Epoch [99/400] lr=4.708300e-04 train_loss=1.094899e-02 train_mse=1.094899e-02 train_cos=0.991684 train_nmse=-17.681dB
+I 07.04/01:32:54 train_affine_mlp_mapper.py:558 ] Epoch [100/400] true_decoder_eval n=100000 decoder_mse=3.190003e-06 decoder_nmse=-21.508dB
+I 07.04/01:32:54 train_affine_mlp_mapper.py:597 ] Epoch [100/400] lr=4.698557e-04 train_loss=1.090992e-02 train_mse=1.090992e-02 train_cos=0.991713 train_nmse=-17.697dB
+I 07.04/01:33:01 train_affine_mlp_mapper.py:597 ] Epoch [101/400] lr=4.688666e-04 train_loss=1.086964e-02 train_mse=1.086964e-02 train_cos=0.991744 train_nmse=-17.712dB
+I 07.04/01:33:10 train_affine_mlp_mapper.py:597 ] Epoch [102/400] lr=4.678626e-04 train_loss=1.083677e-02 train_mse=1.083677e-02 train_cos=0.991767 train_nmse=-17.725dB
+I 07.04/01:33:17 train_affine_mlp_mapper.py:597 ] Epoch [103/400] lr=4.668440e-04 train_loss=1.081207e-02 train_mse=1.081207e-02 train_cos=0.991787 train_nmse=-17.736dB
+I 07.04/01:33:23 train_affine_mlp_mapper.py:597 ] Epoch [104/400] lr=4.658108e-04 train_loss=1.076010e-02 train_mse=1.076010e-02 train_cos=0.991826 train_nmse=-17.756dB
+I 07.04/01:33:29 train_affine_mlp_mapper.py:597 ] Epoch [105/400] lr=4.647631e-04 train_loss=1.073466e-02 train_mse=1.073466e-02 train_cos=0.991844 train_nmse=-17.767dB
+I 07.04/01:33:36 train_affine_mlp_mapper.py:597 ] Epoch [106/400] lr=4.637009e-04 train_loss=1.069556e-02 train_mse=1.069556e-02 train_cos=0.991874 train_nmse=-17.783dB
+I 07.04/01:33:42 train_affine_mlp_mapper.py:597 ] Epoch [107/400] lr=4.626243e-04 train_loss=1.066472e-02 train_mse=1.066472e-02 train_cos=0.991895 train_nmse=-17.795dB
+I 07.04/01:33:49 train_affine_mlp_mapper.py:597 ] Epoch [108/400] lr=4.615335e-04 train_loss=1.061784e-02 train_mse=1.061784e-02 train_cos=0.991931 train_nmse=-17.814dB
+I 07.04/01:33:56 train_affine_mlp_mapper.py:597 ] Epoch [109/400] lr=4.604284e-04 train_loss=1.058344e-02 train_mse=1.058344e-02 train_cos=0.991957 train_nmse=-17.828dB
+I 07.04/01:34:04 train_affine_mlp_mapper.py:597 ] Epoch [110/400] lr=4.593092e-04 train_loss=1.055901e-02 train_mse=1.055901e-02 train_cos=0.991975 train_nmse=-17.838dB
+I 07.04/01:34:11 train_affine_mlp_mapper.py:597 ] Epoch [111/400] lr=4.581760e-04 train_loss=1.052300e-02 train_mse=1.052300e-02 train_cos=0.992003 train_nmse=-17.853dB
+I 07.04/01:34:17 train_affine_mlp_mapper.py:597 ] Epoch [112/400] lr=4.570288e-04 train_loss=1.049190e-02 train_mse=1.049190e-02 train_cos=0.992027 train_nmse=-17.866dB
+I 07.04/01:34:24 train_affine_mlp_mapper.py:597 ] Epoch [113/400] lr=4.558678e-04 train_loss=1.046366e-02 train_mse=1.046366e-02 train_cos=0.992047 train_nmse=-17.878dB
+I 07.04/01:34:31 train_affine_mlp_mapper.py:597 ] Epoch [114/400] lr=4.546930e-04 train_loss=1.043367e-02 train_mse=1.043367e-02 train_cos=0.992069 train_nmse=-17.890dB
+I 07.04/01:34:38 train_affine_mlp_mapper.py:597 ] Epoch [115/400] lr=4.535045e-04 train_loss=1.040527e-02 train_mse=1.040527e-02 train_cos=0.992091 train_nmse=-17.902dB
+I 07.04/01:34:44 train_affine_mlp_mapper.py:597 ] Epoch [116/400] lr=4.523024e-04 train_loss=1.037419e-02 train_mse=1.037419e-02 train_cos=0.992115 train_nmse=-17.915dB
+I 07.04/01:34:51 train_affine_mlp_mapper.py:597 ] Epoch [117/400] lr=4.510868e-04 train_loss=1.034567e-02 train_mse=1.034567e-02 train_cos=0.992136 train_nmse=-17.927dB
+I 07.04/01:34:58 train_affine_mlp_mapper.py:597 ] Epoch [118/400] lr=4.498578e-04 train_loss=1.031275e-02 train_mse=1.031275e-02 train_cos=0.992159 train_nmse=-17.941dB
+I 07.04/01:35:08 train_affine_mlp_mapper.py:597 ] Epoch [119/400] lr=4.486155e-04 train_loss=1.028695e-02 train_mse=1.028695e-02 train_cos=0.992181 train_nmse=-17.952dB
+I 07.04/01:35:24 train_affine_mlp_mapper.py:558 ] Epoch [120/400] true_decoder_eval n=100000 decoder_mse=3.035686e-06 decoder_nmse=-21.723dB
+I 07.04/01:35:24 train_affine_mlp_mapper.py:597 ] Epoch [120/400] lr=4.473600e-04 train_loss=1.026133e-02 train_mse=1.026133e-02 train_cos=0.992199 train_nmse=-17.962dB
+I 07.04/01:35:31 train_affine_mlp_mapper.py:597 ] Epoch [121/400] lr=4.460913e-04 train_loss=1.023739e-02 train_mse=1.023739e-02 train_cos=0.992217 train_nmse=-17.972dB
+I 07.04/01:35:38 train_affine_mlp_mapper.py:597 ] Epoch [122/400] lr=4.448097e-04 train_loss=1.019503e-02 train_mse=1.019503e-02 train_cos=0.992250 train_nmse=-17.991dB
+I 07.04/01:35:45 train_affine_mlp_mapper.py:597 ] Epoch [123/400] lr=4.435150e-04 train_loss=1.016799e-02 train_mse=1.016799e-02 train_cos=0.992269 train_nmse=-18.002dB
+I 07.04/01:35:52 train_affine_mlp_mapper.py:597 ] Epoch [124/400] lr=4.422076e-04 train_loss=1.014117e-02 train_mse=1.014117e-02 train_cos=0.992290 train_nmse=-18.014dB
+I 07.04/01:35:58 train_affine_mlp_mapper.py:597 ] Epoch [125/400] lr=4.408874e-04 train_loss=1.011440e-02 train_mse=1.011440e-02 train_cos=0.992310 train_nmse=-18.025dB
+I 07.04/01:36:08 train_affine_mlp_mapper.py:597 ] Epoch [126/400] lr=4.395546e-04 train_loss=1.009405e-02 train_mse=1.009405e-02 train_cos=0.992325 train_nmse=-18.034dB
+I 07.04/01:36:15 train_affine_mlp_mapper.py:597 ] Epoch [127/400] lr=4.382092e-04 train_loss=1.006584e-02 train_mse=1.006584e-02 train_cos=0.992346 train_nmse=-18.046dB
+I 07.04/01:36:21 train_affine_mlp_mapper.py:597 ] Epoch [128/400] lr=4.368515e-04 train_loss=1.004817e-02 train_mse=1.004817e-02 train_cos=0.992359 train_nmse=-18.054dB
+I 07.04/01:36:28 train_affine_mlp_mapper.py:597 ] Epoch [129/400] lr=4.354814e-04 train_loss=1.001595e-02 train_mse=1.001595e-02 train_cos=0.992385 train_nmse=-18.068dB
+I 07.04/01:36:35 train_affine_mlp_mapper.py:597 ] Epoch [130/400] lr=4.340990e-04 train_loss=9.987870e-03 train_mse=9.987870e-03 train_cos=0.992406 train_nmse=-18.080dB
+I 07.04/01:36:42 train_affine_mlp_mapper.py:597 ] Epoch [131/400] lr=4.327046e-04 train_loss=9.960398e-03 train_mse=9.960398e-03 train_cos=0.992426 train_nmse=-18.092dB
+I 07.04/01:36:48 train_affine_mlp_mapper.py:597 ] Epoch [132/400] lr=4.312981e-04 train_loss=9.936256e-03 train_mse=9.936256e-03 train_cos=0.992444 train_nmse=-18.102dB
+I 07.04/01:36:56 train_affine_mlp_mapper.py:597 ] Epoch [133/400] lr=4.298798e-04 train_loss=9.910591e-03 train_mse=9.910591e-03 train_cos=0.992465 train_nmse=-18.113dB
+I 07.04/01:37:05 train_affine_mlp_mapper.py:597 ] Epoch [134/400] lr=4.284496e-04 train_loss=9.896996e-03 train_mse=9.896996e-03 train_cos=0.992475 train_nmse=-18.119dB
+I 07.04/01:37:11 train_affine_mlp_mapper.py:597 ] Epoch [135/400] lr=4.270078e-04 train_loss=9.865345e-03 train_mse=9.865345e-03 train_cos=0.992500 train_nmse=-18.133dB
+I 07.04/01:37:18 train_affine_mlp_mapper.py:597 ] Epoch [136/400] lr=4.255544e-04 train_loss=9.843813e-03 train_mse=9.843813e-03 train_cos=0.992518 train_nmse=-18.143dB
+I 07.04/01:37:25 train_affine_mlp_mapper.py:597 ] Epoch [137/400] lr=4.240895e-04 train_loss=9.823109e-03 train_mse=9.823109e-03 train_cos=0.992532 train_nmse=-18.152dB
+I 07.04/01:37:32 train_affine_mlp_mapper.py:597 ] Epoch [138/400] lr=4.226133e-04 train_loss=9.794284e-03 train_mse=9.794284e-03 train_cos=0.992552 train_nmse=-18.165dB
+I 07.04/01:37:39 train_affine_mlp_mapper.py:597 ] Epoch [139/400] lr=4.211258e-04 train_loss=9.778190e-03 train_mse=9.778190e-03 train_cos=0.992567 train_nmse=-18.172dB
+I 07.04/01:37:55 train_affine_mlp_mapper.py:558 ] Epoch [140/400] true_decoder_eval n=100000 decoder_mse=2.933085e-06 decoder_nmse=-21.873dB
+I 07.04/01:37:55 train_affine_mlp_mapper.py:597 ] Epoch [140/400] lr=4.196272e-04 train_loss=9.750857e-03 train_mse=9.750857e-03 train_cos=0.992588 train_nmse=-18.184dB
+I 07.04/01:38:06 train_affine_mlp_mapper.py:597 ] Epoch [141/400] lr=4.181176e-04 train_loss=9.729568e-03 train_mse=9.729568e-03 train_cos=0.992604 train_nmse=-18.193dB
+I 07.04/01:38:12 train_affine_mlp_mapper.py:597 ] Epoch [142/400] lr=4.165971e-04 train_loss=9.701975e-03 train_mse=9.701975e-03 train_cos=0.992626 train_nmse=-18.206dB
+I 07.04/01:38:19 train_affine_mlp_mapper.py:597 ] Epoch [143/400] lr=4.150658e-04 train_loss=9.678446e-03 train_mse=9.678446e-03 train_cos=0.992644 train_nmse=-18.216dB
+I 07.04/01:38:26 train_affine_mlp_mapper.py:597 ] Epoch [144/400] lr=4.135238e-04 train_loss=9.661998e-03 train_mse=9.661998e-03 train_cos=0.992656 train_nmse=-18.224dB
+I 07.04/01:38:33 train_affine_mlp_mapper.py:597 ] Epoch [145/400] lr=4.119713e-04 train_loss=9.632087e-03 train_mse=9.632087e-03 train_cos=0.992680 train_nmse=-18.237dB
+I 07.04/01:38:39 train_affine_mlp_mapper.py:597 ] Epoch [146/400] lr=4.104084e-04 train_loss=9.619776e-03 train_mse=9.619776e-03 train_cos=0.992688 train_nmse=-18.243dB
+I 07.04/01:38:46 train_affine_mlp_mapper.py:597 ] Epoch [147/400] lr=4.088351e-04 train_loss=9.585141e-03 train_mse=9.585141e-03 train_cos=0.992717 train_nmse=-18.258dB
+I 07.04/01:38:53 train_affine_mlp_mapper.py:597 ] Epoch [148/400] lr=4.072517e-04 train_loss=9.572578e-03 train_mse=9.572578e-03 train_cos=0.992727 train_nmse=-18.264dB
+I 07.04/01:38:59 train_affine_mlp_mapper.py:597 ] Epoch [149/400] lr=4.056582e-04 train_loss=9.550759e-03 train_mse=9.550759e-03 train_cos=0.992745 train_nmse=-18.274dB
+I 07.04/01:39:08 train_affine_mlp_mapper.py:597 ] Epoch [150/400] lr=4.040547e-04 train_loss=9.530906e-03 train_mse=9.530906e-03 train_cos=0.992761 train_nmse=-18.283dB
+I 07.04/01:39:15 train_affine_mlp_mapper.py:597 ] Epoch [151/400] lr=4.024414e-04 train_loss=9.499706e-03 train_mse=9.499706e-03 train_cos=0.992785 train_nmse=-18.297dB
+I 07.04/01:39:22 train_affine_mlp_mapper.py:597 ] Epoch [152/400] lr=4.008184e-04 train_loss=9.481149e-03 train_mse=9.481149e-03 train_cos=0.992800 train_nmse=-18.306dB
+I 07.04/01:39:28 train_affine_mlp_mapper.py:597 ] Epoch [153/400] lr=3.991858e-04 train_loss=9.466521e-03 train_mse=9.466521e-03 train_cos=0.992812 train_nmse=-18.313dB
+I 07.04/01:39:35 train_affine_mlp_mapper.py:597 ] Epoch [154/400] lr=3.975438e-04 train_loss=9.443738e-03 train_mse=9.443738e-03 train_cos=0.992831 train_nmse=-18.323dB
+I 07.04/01:39:42 train_affine_mlp_mapper.py:597 ] Epoch [155/400] lr=3.958924e-04 train_loss=9.418494e-03 train_mse=9.418494e-03 train_cos=0.992851 train_nmse=-18.335dB
+I 07.04/01:39:49 train_affine_mlp_mapper.py:597 ] Epoch [156/400] lr=3.942318e-04 train_loss=9.396832e-03 train_mse=9.396832e-03 train_cos=0.992868 train_nmse=-18.344dB
+I 07.04/01:39:56 train_affine_mlp_mapper.py:597 ] Epoch [157/400] lr=3.925622e-04 train_loss=9.376321e-03 train_mse=9.376321e-03 train_cos=0.992885 train_nmse=-18.354dB
+I 07.04/01:40:05 train_affine_mlp_mapper.py:597 ] Epoch [158/400] lr=3.908836e-04 train_loss=9.349392e-03 train_mse=9.349392e-03 train_cos=0.992906 train_nmse=-18.367dB
+I 07.04/01:40:13 train_affine_mlp_mapper.py:597 ] Epoch [159/400] lr=3.891961e-04 train_loss=9.327593e-03 train_mse=9.327593e-03 train_cos=0.992924 train_nmse=-18.377dB
+I 07.04/01:40:29 train_affine_mlp_mapper.py:558 ] Epoch [160/400] true_decoder_eval n=100000 decoder_mse=2.852499e-06 decoder_nmse=-21.994dB
+I 07.04/01:40:29 train_affine_mlp_mapper.py:597 ] Epoch [160/400] lr=3.875000e-04 train_loss=9.309613e-03 train_mse=9.309613e-03 train_cos=0.992940 train_nmse=-18.385dB
+I 07.04/01:40:36 train_affine_mlp_mapper.py:597 ] Epoch [161/400] lr=3.857953e-04 train_loss=9.284386e-03 train_mse=9.284386e-03 train_cos=0.992958 train_nmse=-18.397dB
+I 07.04/01:40:42 train_affine_mlp_mapper.py:597 ] Epoch [162/400] lr=3.840822e-04 train_loss=9.263141e-03 train_mse=9.263141e-03 train_cos=0.992976 train_nmse=-18.407dB
+I 07.04/01:40:49 train_affine_mlp_mapper.py:597 ] Epoch [163/400] lr=3.823607e-04 train_loss=9.247313e-03 train_mse=9.247313e-03 train_cos=0.992989 train_nmse=-18.415dB
+I 07.04/01:40:56 train_affine_mlp_mapper.py:597 ] Epoch [164/400] lr=3.806311e-04 train_loss=9.229880e-03 train_mse=9.229880e-03 train_cos=0.993002 train_nmse=-18.423dB
+I 07.04/01:41:05 train_affine_mlp_mapper.py:597 ] Epoch [165/400] lr=3.788934e-04 train_loss=9.212171e-03 train_mse=9.212171e-03 train_cos=0.993016 train_nmse=-18.431dB
+I 07.04/01:41:11 train_affine_mlp_mapper.py:597 ] Epoch [166/400] lr=3.771479e-04 train_loss=9.189791e-03 train_mse=9.189791e-03 train_cos=0.993033 train_nmse=-18.442dB
+I 07.04/01:41:18 train_affine_mlp_mapper.py:597 ] Epoch [167/400] lr=3.753945e-04 train_loss=9.168390e-03 train_mse=9.168390e-03 train_cos=0.993049 train_nmse=-18.451dB
+I 07.04/01:41:25 train_affine_mlp_mapper.py:597 ] Epoch [168/400] lr=3.736335e-04 train_loss=9.155246e-03 train_mse=9.155246e-03 train_cos=0.993061 train_nmse=-18.458dB
+I 07.04/01:41:32 train_affine_mlp_mapper.py:597 ] Epoch [169/400] lr=3.718650e-04 train_loss=9.133544e-03 train_mse=9.133544e-03 train_cos=0.993078 train_nmse=-18.468dB
+I 07.04/01:41:39 train_affine_mlp_mapper.py:597 ] Epoch [170/400] lr=3.700891e-04 train_loss=9.115014e-03 train_mse=9.115014e-03 train_cos=0.993092 train_nmse=-18.477dB
+I 07.04/01:41:46 train_affine_mlp_mapper.py:597 ] Epoch [171/400] lr=3.683060e-04 train_loss=9.097101e-03 train_mse=9.097101e-03 train_cos=0.993104 train_nmse=-18.485dB
+I 07.04/01:41:53 train_affine_mlp_mapper.py:597 ] Epoch [172/400] lr=3.665157e-04 train_loss=9.075442e-03 train_mse=9.075442e-03 train_cos=0.993122 train_nmse=-18.495dB
+I 07.04/01:42:03 train_affine_mlp_mapper.py:597 ] Epoch [173/400] lr=3.647185e-04 train_loss=9.057868e-03 train_mse=9.057868e-03 train_cos=0.993135 train_nmse=-18.504dB
+I 07.04/01:42:10 train_affine_mlp_mapper.py:597 ] Epoch [174/400] lr=3.629145e-04 train_loss=9.037096e-03 train_mse=9.037096e-03 train_cos=0.993150 train_nmse=-18.514dB
+I 07.04/01:42:17 train_affine_mlp_mapper.py:597 ] Epoch [175/400] lr=3.611038e-04 train_loss=9.021530e-03 train_mse=9.021530e-03 train_cos=0.993162 train_nmse=-18.522dB
+I 07.04/01:42:25 train_affine_mlp_mapper.py:597 ] Epoch [176/400] lr=3.592865e-04 train_loss=9.008639e-03 train_mse=9.008639e-03 train_cos=0.993173 train_nmse=-18.528dB
+I 07.04/01:42:32 train_affine_mlp_mapper.py:597 ] Epoch [177/400] lr=3.574628e-04 train_loss=8.988741e-03 train_mse=8.988741e-03 train_cos=0.993187 train_nmse=-18.537dB
+I 07.04/01:42:39 train_affine_mlp_mapper.py:597 ] Epoch [178/400] lr=3.556328e-04 train_loss=8.967277e-03 train_mse=8.967277e-03 train_cos=0.993204 train_nmse=-18.548dB
+I 07.04/01:42:46 train_affine_mlp_mapper.py:597 ] Epoch [179/400] lr=3.537967e-04 train_loss=8.955623e-03 train_mse=8.955623e-03 train_cos=0.993212 train_nmse=-18.554dB
+I 07.04/01:43:08 train_affine_mlp_mapper.py:558 ] Epoch [180/400] true_decoder_eval n=100000 decoder_mse=2.781443e-06 decoder_nmse=-22.103dB
+I 07.04/01:43:08 train_affine_mlp_mapper.py:597 ] Epoch [180/400] lr=3.519545e-04 train_loss=8.937301e-03 train_mse=8.937301e-03 train_cos=0.993227 train_nmse=-18.562dB
+I 07.04/01:43:17 train_affine_mlp_mapper.py:597 ] Epoch [181/400] lr=3.501065e-04 train_loss=8.915995e-03 train_mse=8.915995e-03 train_cos=0.993243 train_nmse=-18.573dB
+I 07.04/01:43:26 train_affine_mlp_mapper.py:597 ] Epoch [182/400] lr=3.482528e-04 train_loss=8.906869e-03 train_mse=8.906869e-03 train_cos=0.993250 train_nmse=-18.577dB
+I 07.04/01:43:34 train_affine_mlp_mapper.py:597 ] Epoch [183/400] lr=3.463935e-04 train_loss=8.887543e-03 train_mse=8.887543e-03 train_cos=0.993265 train_nmse=-18.587dB
+I 07.04/01:43:42 train_affine_mlp_mapper.py:597 ] Epoch [184/400] lr=3.445288e-04 train_loss=8.876839e-03 train_mse=8.876839e-03 train_cos=0.993274 train_nmse=-18.592dB
+I 07.04/01:43:51 train_affine_mlp_mapper.py:597 ] Epoch [185/400] lr=3.426588e-04 train_loss=8.861084e-03 train_mse=8.861084e-03 train_cos=0.993285 train_nmse=-18.599dB
+I 07.04/01:43:59 train_affine_mlp_mapper.py:597 ] Epoch [186/400] lr=3.407836e-04 train_loss=8.846245e-03 train_mse=8.846245e-03 train_cos=0.993296 train_nmse=-18.607dB
+I 07.04/01:44:09 train_affine_mlp_mapper.py:597 ] Epoch [187/400] lr=3.389035e-04 train_loss=8.821668e-03 train_mse=8.821668e-03 train_cos=0.993315 train_nmse=-18.619dB
+I 07.04/01:44:16 train_affine_mlp_mapper.py:597 ] Epoch [188/400] lr=3.370184e-04 train_loss=8.812475e-03 train_mse=8.812475e-03 train_cos=0.993321 train_nmse=-18.623dB
+I 07.04/01:44:22 train_affine_mlp_mapper.py:597 ] Epoch [189/400] lr=3.351286e-04 train_loss=8.792443e-03 train_mse=8.792443e-03 train_cos=0.993337 train_nmse=-18.633dB
+I 07.04/01:44:29 train_affine_mlp_mapper.py:597 ] Epoch [190/400] lr=3.332343e-04 train_loss=8.784333e-03 train_mse=8.784333e-03 train_cos=0.993343 train_nmse=-18.637dB
+I 07.04/01:44:36 train_affine_mlp_mapper.py:597 ] Epoch [191/400] lr=3.313355e-04 train_loss=8.767246e-03 train_mse=8.767246e-03 train_cos=0.993355 train_nmse=-18.646dB
+I 07.04/01:44:42 train_affine_mlp_mapper.py:597 ] Epoch [192/400] lr=3.294324e-04 train_loss=8.753132e-03 train_mse=8.753132e-03 train_cos=0.993366 train_nmse=-18.653dB
+I 07.04/01:44:49 train_affine_mlp_mapper.py:597 ] Epoch [193/400] lr=3.275252e-04 train_loss=8.737803e-03 train_mse=8.737803e-03 train_cos=0.993378 train_nmse=-18.660dB
+I 07.04/01:44:56 train_affine_mlp_mapper.py:597 ] Epoch [194/400] lr=3.256140e-04 train_loss=8.724571e-03 train_mse=8.724571e-03 train_cos=0.993388 train_nmse=-18.667dB
+I 07.04/01:45:06 train_affine_mlp_mapper.py:597 ] Epoch [195/400] lr=3.236989e-04 train_loss=8.704927e-03 train_mse=8.704927e-03 train_cos=0.993403 train_nmse=-18.677dB
+I 07.04/01:45:12 train_affine_mlp_mapper.py:597 ] Epoch [196/400] lr=3.217801e-04 train_loss=8.688769e-03 train_mse=8.688769e-03 train_cos=0.993416 train_nmse=-18.685dB
+I 07.04/01:45:19 train_affine_mlp_mapper.py:597 ] Epoch [197/400] lr=3.198578e-04 train_loss=8.676298e-03 train_mse=8.676298e-03 train_cos=0.993424 train_nmse=-18.691dB
+I 07.04/01:45:26 train_affine_mlp_mapper.py:597 ] Epoch [198/400] lr=3.179320e-04 train_loss=8.670844e-03 train_mse=8.670844e-03 train_cos=0.993428 train_nmse=-18.694dB
+I 07.04/01:45:32 train_affine_mlp_mapper.py:597 ] Epoch [199/400] lr=3.160030e-04 train_loss=8.649565e-03 train_mse=8.649565e-03 train_cos=0.993446 train_nmse=-18.705dB
+I 07.04/01:45:50 train_affine_mlp_mapper.py:558 ] Epoch [200/400] true_decoder_eval n=100000 decoder_mse=2.704365e-06 decoder_nmse=-22.225dB
+I 07.04/01:45:50 train_affine_mlp_mapper.py:597 ] Epoch [200/400] lr=3.140708e-04 train_loss=8.637515e-03 train_mse=8.637515e-03 train_cos=0.993453 train_nmse=-18.710dB
+I 07.04/01:45:59 train_affine_mlp_mapper.py:597 ] Epoch [201/400] lr=3.121357e-04 train_loss=8.625595e-03 train_mse=8.625595e-03 train_cos=0.993463 train_nmse=-18.717dB
+I 07.04/01:46:09 train_affine_mlp_mapper.py:597 ] Epoch [202/400] lr=3.101978e-04 train_loss=8.609560e-03 train_mse=8.609560e-03 train_cos=0.993475 train_nmse=-18.725dB
+I 07.04/01:46:16 train_affine_mlp_mapper.py:597 ] Epoch [203/400] lr=3.082571e-04 train_loss=8.598807e-03 train_mse=8.598807e-03 train_cos=0.993483 train_nmse=-18.730dB
+I 07.04/01:46:23 train_affine_mlp_mapper.py:597 ] Epoch [204/400] lr=3.063139e-04 train_loss=8.583076e-03 train_mse=8.583076e-03 train_cos=0.993494 train_nmse=-18.738dB
+I 07.04/01:46:31 train_affine_mlp_mapper.py:597 ] Epoch [205/400] lr=3.043684e-04 train_loss=8.567458e-03 train_mse=8.567458e-03 train_cos=0.993507 train_nmse=-18.746dB
+I 07.04/01:46:39 train_affine_mlp_mapper.py:597 ] Epoch [206/400] lr=3.024206e-04 train_loss=8.554597e-03 train_mse=8.554597e-03 train_cos=0.993517 train_nmse=-18.752dB
+I 07.04/01:46:47 train_affine_mlp_mapper.py:597 ] Epoch [207/400] lr=3.004707e-04 train_loss=8.542081e-03 train_mse=8.542081e-03 train_cos=0.993526 train_nmse=-18.758dB
+I 07.04/01:46:54 train_affine_mlp_mapper.py:597 ] Epoch [208/400] lr=2.985189e-04 train_loss=8.528480e-03 train_mse=8.528480e-03 train_cos=0.993536 train_nmse=-18.766dB
+I 07.04/01:47:01 train_affine_mlp_mapper.py:597 ] Epoch [209/400] lr=2.965653e-04 train_loss=8.516954e-03 train_mse=8.516954e-03 train_cos=0.993545 train_nmse=-18.772dB
+I 07.04/01:47:09 train_affine_mlp_mapper.py:597 ] Epoch [210/400] lr=2.946100e-04 train_loss=8.503594e-03 train_mse=8.503594e-03 train_cos=0.993554 train_nmse=-18.779dB
+I 07.04/01:47:16 train_affine_mlp_mapper.py:597 ] Epoch [211/400] lr=2.926533e-04 train_loss=8.493497e-03 train_mse=8.493497e-03 train_cos=0.993563 train_nmse=-18.783dB
+I 07.04/01:47:23 train_affine_mlp_mapper.py:597 ] Epoch [212/400] lr=2.906952e-04 train_loss=8.477748e-03 train_mse=8.477748e-03 train_cos=0.993575 train_nmse=-18.792dB
+I 07.04/01:47:30 train_affine_mlp_mapper.py:597 ] Epoch [213/400] lr=2.887359e-04 train_loss=8.466267e-03 train_mse=8.466267e-03 train_cos=0.993583 train_nmse=-18.797dB
+I 07.04/01:47:37 train_affine_mlp_mapper.py:597 ] Epoch [214/400] lr=2.867756e-04 train_loss=8.455845e-03 train_mse=8.455845e-03 train_cos=0.993590 train_nmse=-18.803dB
+I 07.04/01:47:44 train_affine_mlp_mapper.py:597 ] Epoch [215/400] lr=2.848144e-04 train_loss=8.438793e-03 train_mse=8.438793e-03 train_cos=0.993605 train_nmse=-18.812dB
+I 07.04/01:47:50 train_affine_mlp_mapper.py:597 ] Epoch [216/400] lr=2.828524e-04 train_loss=8.425789e-03 train_mse=8.425789e-03 train_cos=0.993613 train_nmse=-18.818dB
+I 07.04/01:47:57 train_affine_mlp_mapper.py:597 ] Epoch [217/400] lr=2.808898e-04 train_loss=8.419535e-03 train_mse=8.419535e-03 train_cos=0.993618 train_nmse=-18.821dB
+I 07.04/01:48:07 train_affine_mlp_mapper.py:597 ] Epoch [218/400] lr=2.789268e-04 train_loss=8.413784e-03 train_mse=8.413784e-03 train_cos=0.993625 train_nmse=-18.825dB
+I 07.04/01:48:15 train_affine_mlp_mapper.py:597 ] Epoch [219/400] lr=2.769635e-04 train_loss=8.397403e-03 train_mse=8.397403e-03 train_cos=0.993635 train_nmse=-18.833dB
+I 07.04/01:48:31 train_affine_mlp_mapper.py:558 ] Epoch [220/400] true_decoder_eval n=100000 decoder_mse=2.650472e-06 decoder_nmse=-22.313dB
+I 07.04/01:48:31 train_affine_mlp_mapper.py:597 ] Epoch [220/400] lr=2.750000e-04 train_loss=8.381288e-03 train_mse=8.381288e-03 train_cos=0.993647 train_nmse=-18.841dB
+I 07.04/01:48:38 train_affine_mlp_mapper.py:597 ] Epoch [221/400] lr=2.730365e-04 train_loss=8.368754e-03 train_mse=8.368754e-03 train_cos=0.993658 train_nmse=-18.848dB
+I 07.04/01:48:46 train_affine_mlp_mapper.py:597 ] Epoch [222/400] lr=2.710732e-04 train_loss=8.355290e-03 train_mse=8.355290e-03 train_cos=0.993667 train_nmse=-18.855dB
+I 07.04/01:48:53 train_affine_mlp_mapper.py:597 ] Epoch [223/400] lr=2.691102e-04 train_loss=8.345017e-03 train_mse=8.345017e-03 train_cos=0.993675 train_nmse=-18.860dB
+I 07.04/01:49:00 train_affine_mlp_mapper.py:597 ] Epoch [224/400] lr=2.671476e-04 train_loss=8.337546e-03 train_mse=8.337546e-03 train_cos=0.993681 train_nmse=-18.864dB
+I 07.04/01:49:08 train_affine_mlp_mapper.py:597 ] Epoch [225/400] lr=2.651856e-04 train_loss=8.327954e-03 train_mse=8.327954e-03 train_cos=0.993687 train_nmse=-18.869dB
+I 07.04/01:49:15 train_affine_mlp_mapper.py:597 ] Epoch [226/400] lr=2.632244e-04 train_loss=8.309300e-03 train_mse=8.309300e-03 train_cos=0.993701 train_nmse=-18.879dB
+I 07.04/01:49:22 train_affine_mlp_mapper.py:597 ] Epoch [227/400] lr=2.612641e-04 train_loss=8.297810e-03 train_mse=8.297810e-03 train_cos=0.993711 train_nmse=-18.885dB
+I 07.04/01:49:29 train_affine_mlp_mapper.py:597 ] Epoch [228/400] lr=2.593048e-04 train_loss=8.283201e-03 train_mse=8.283201e-03 train_cos=0.993721 train_nmse=-18.893dB
+I 07.04/01:49:35 train_affine_mlp_mapper.py:597 ] Epoch [229/400] lr=2.573467e-04 train_loss=8.275715e-03 train_mse=8.275715e-03 train_cos=0.993727 train_nmse=-18.896dB
+I 07.04/01:49:42 train_affine_mlp_mapper.py:597 ] Epoch [230/400] lr=2.553900e-04 train_loss=8.264163e-03 train_mse=8.264163e-03 train_cos=0.993736 train_nmse=-18.902dB
+I 07.04/01:49:49 train_affine_mlp_mapper.py:597 ] Epoch [231/400] lr=2.534347e-04 train_loss=8.255966e-03 train_mse=8.255966e-03 train_cos=0.993742 train_nmse=-18.907dB
+I 07.04/01:49:56 train_affine_mlp_mapper.py:597 ] Epoch [232/400] lr=2.514811e-04 train_loss=8.245683e-03 train_mse=8.245683e-03 train_cos=0.993749 train_nmse=-18.912dB
+I 07.04/01:50:06 train_affine_mlp_mapper.py:597 ] Epoch [233/400] lr=2.495293e-04 train_loss=8.233837e-03 train_mse=8.233837e-03 train_cos=0.993759 train_nmse=-18.918dB
+I 07.04/01:50:14 train_affine_mlp_mapper.py:597 ] Epoch [234/400] lr=2.475794e-04 train_loss=8.221176e-03 train_mse=8.221176e-03 train_cos=0.993769 train_nmse=-18.925dB
+I 07.04/01:50:20 train_affine_mlp_mapper.py:597 ] Epoch [235/400] lr=2.456316e-04 train_loss=8.213469e-03 train_mse=8.213469e-03 train_cos=0.993775 train_nmse=-18.929dB
+I 07.04/01:50:28 train_affine_mlp_mapper.py:597 ] Epoch [236/400] lr=2.436861e-04 train_loss=8.196340e-03 train_mse=8.196340e-03 train_cos=0.993786 train_nmse=-18.938dB
+I 07.04/01:50:35 train_affine_mlp_mapper.py:597 ] Epoch [237/400] lr=2.417429e-04 train_loss=8.189824e-03 train_mse=8.189824e-03 train_cos=0.993793 train_nmse=-18.942dB
+I 07.04/01:50:42 train_affine_mlp_mapper.py:597 ] Epoch [238/400] lr=2.398022e-04 train_loss=8.182840e-03 train_mse=8.182840e-03 train_cos=0.993797 train_nmse=-18.945dB
+I 07.04/01:50:49 train_affine_mlp_mapper.py:597 ] Epoch [239/400] lr=2.378643e-04 train_loss=8.167868e-03 train_mse=8.167868e-03 train_cos=0.993809 train_nmse=-18.953dB
+I 07.04/01:51:07 train_affine_mlp_mapper.py:558 ] Epoch [240/400] true_decoder_eval n=100000 decoder_mse=2.613884e-06 decoder_nmse=-22.373dB
+I 07.04/01:51:08 train_affine_mlp_mapper.py:597 ] Epoch [240/400] lr=2.359292e-04 train_loss=8.160824e-03 train_mse=8.160824e-03 train_cos=0.993814 train_nmse=-18.957dB
+I 07.04/01:51:14 train_affine_mlp_mapper.py:597 ] Epoch [241/400] lr=2.339970e-04 train_loss=8.149260e-03 train_mse=8.149260e-03 train_cos=0.993823 train_nmse=-18.963dB
+I 07.04/01:51:22 train_affine_mlp_mapper.py:597 ] Epoch [242/400] lr=2.320680e-04 train_loss=8.139858e-03 train_mse=8.139858e-03 train_cos=0.993830 train_nmse=-18.968dB
+I 07.04/01:51:29 train_affine_mlp_mapper.py:597 ] Epoch [243/400] lr=2.301422e-04 train_loss=8.130546e-03 train_mse=8.130546e-03 train_cos=0.993838 train_nmse=-18.973dB
+I 07.04/01:51:37 train_affine_mlp_mapper.py:597 ] Epoch [244/400] lr=2.282199e-04 train_loss=8.118839e-03 train_mse=8.118839e-03 train_cos=0.993846 train_nmse=-18.979dB
+I 07.04/01:51:43 train_affine_mlp_mapper.py:597 ] Epoch [245/400] lr=2.263011e-04 train_loss=8.111633e-03 train_mse=8.111633e-03 train_cos=0.993850 train_nmse=-18.983dB
+I 07.04/01:51:50 train_affine_mlp_mapper.py:597 ] Epoch [246/400] lr=2.243860e-04 train_loss=8.100779e-03 train_mse=8.100779e-03 train_cos=0.993860 train_nmse=-18.989dB
+I 07.04/01:51:57 train_affine_mlp_mapper.py:597 ] Epoch [247/400] lr=2.224748e-04 train_loss=8.090764e-03 train_mse=8.090764e-03 train_cos=0.993867 train_nmse=-18.994dB
+I 07.04/01:52:08 train_affine_mlp_mapper.py:597 ] Epoch [248/400] lr=2.205676e-04 train_loss=8.078437e-03 train_mse=8.078437e-03 train_cos=0.993877 train_nmse=-19.001dB
+I 07.04/01:52:16 train_affine_mlp_mapper.py:597 ] Epoch [249/400] lr=2.186645e-04 train_loss=8.070461e-03 train_mse=8.070461e-03 train_cos=0.993883 train_nmse=-19.005dB
+I 07.04/01:52:24 train_affine_mlp_mapper.py:597 ] Epoch [250/400] lr=2.167657e-04 train_loss=8.062759e-03 train_mse=8.062759e-03 train_cos=0.993888 train_nmse=-19.009dB
+I 07.04/01:52:31 train_affine_mlp_mapper.py:597 ] Epoch [251/400] lr=2.148714e-04 train_loss=8.049619e-03 train_mse=8.049619e-03 train_cos=0.993898 train_nmse=-19.017dB
+I 07.04/01:52:37 train_affine_mlp_mapper.py:597 ] Epoch [252/400] lr=2.129816e-04 train_loss=8.041133e-03 train_mse=8.041133e-03 train_cos=0.993904 train_nmse=-19.021dB
+I 07.04/01:52:43 train_affine_mlp_mapper.py:597 ] Epoch [253/400] lr=2.110965e-04 train_loss=8.029520e-03 train_mse=8.029520e-03 train_cos=0.993914 train_nmse=-19.028dB
+I 07.04/01:52:50 train_affine_mlp_mapper.py:597 ] Epoch [254/400] lr=2.092164e-04 train_loss=8.019997e-03 train_mse=8.019997e-03 train_cos=0.993921 train_nmse=-19.033dB
+I 07.04/01:52:57 train_affine_mlp_mapper.py:597 ] Epoch [255/400] lr=2.073412e-04 train_loss=8.012719e-03 train_mse=8.012719e-03 train_cos=0.993927 train_nmse=-19.037dB
+I 07.04/01:53:06 train_affine_mlp_mapper.py:597 ] Epoch [256/400] lr=2.054712e-04 train_loss=8.002236e-03 train_mse=8.002236e-03 train_cos=0.993934 train_nmse=-19.042dB
+I 07.04/01:53:13 train_affine_mlp_mapper.py:597 ] Epoch [257/400] lr=2.036065e-04 train_loss=7.994976e-03 train_mse=7.994976e-03 train_cos=0.993940 train_nmse=-19.046dB
+I 07.04/01:53:20 train_affine_mlp_mapper.py:597 ] Epoch [258/400] lr=2.017472e-04 train_loss=7.985503e-03 train_mse=7.985503e-03 train_cos=0.993946 train_nmse=-19.051dB
+I 07.04/01:53:26 train_affine_mlp_mapper.py:597 ] Epoch [259/400] lr=1.998935e-04 train_loss=7.979044e-03 train_mse=7.979044e-03 train_cos=0.993952 train_nmse=-19.054dB
+I 07.04/01:53:42 train_affine_mlp_mapper.py:558 ] Epoch [260/400] true_decoder_eval n=100000 decoder_mse=2.570733e-06 decoder_nmse=-22.445dB
+I 07.04/01:53:42 train_affine_mlp_mapper.py:597 ] Epoch [260/400] lr=1.980455e-04 train_loss=7.964782e-03 train_mse=7.964782e-03 train_cos=0.993962 train_nmse=-19.063dB
+I 07.04/01:53:49 train_affine_mlp_mapper.py:597 ] Epoch [261/400] lr=1.962033e-04 train_loss=7.956852e-03 train_mse=7.956852e-03 train_cos=0.993969 train_nmse=-19.067dB
+I 07.04/01:53:55 train_affine_mlp_mapper.py:597 ] Epoch [262/400] lr=1.943672e-04 train_loss=7.946556e-03 train_mse=7.946556e-03 train_cos=0.993976 train_nmse=-19.072dB
+I 07.04/01:54:06 train_affine_mlp_mapper.py:597 ] Epoch [263/400] lr=1.925372e-04 train_loss=7.938672e-03 train_mse=7.938672e-03 train_cos=0.993982 train_nmse=-19.077dB
+I 07.04/01:54:12 train_affine_mlp_mapper.py:597 ] Epoch [264/400] lr=1.907135e-04 train_loss=7.931777e-03 train_mse=7.931777e-03 train_cos=0.993987 train_nmse=-19.081dB
+I 07.04/01:54:19 train_affine_mlp_mapper.py:597 ] Epoch [265/400] lr=1.888962e-04 train_loss=7.925611e-03 train_mse=7.925611e-03 train_cos=0.993992 train_nmse=-19.084dB
+I 07.04/01:54:25 train_affine_mlp_mapper.py:597 ] Epoch [266/400] lr=1.870855e-04 train_loss=7.913301e-03 train_mse=7.913301e-03 train_cos=0.994002 train_nmse=-19.091dB
+I 07.04/01:54:31 train_affine_mlp_mapper.py:597 ] Epoch [267/400] lr=1.852815e-04 train_loss=7.901566e-03 train_mse=7.901566e-03 train_cos=0.994010 train_nmse=-19.097dB
+I 07.04/01:54:37 train_affine_mlp_mapper.py:597 ] Epoch [268/400] lr=1.834843e-04 train_loss=7.896897e-03 train_mse=7.896897e-03 train_cos=0.994014 train_nmse=-19.100dB
+I 07.04/01:54:44 train_affine_mlp_mapper.py:597 ] Epoch [269/400] lr=1.816940e-04 train_loss=7.887873e-03 train_mse=7.887873e-03 train_cos=0.994021 train_nmse=-19.105dB
+I 07.04/01:54:51 train_affine_mlp_mapper.py:597 ] Epoch [270/400] lr=1.799109e-04 train_loss=7.880978e-03 train_mse=7.880978e-03 train_cos=0.994026 train_nmse=-19.109dB
+I 07.04/01:54:57 train_affine_mlp_mapper.py:597 ] Epoch [271/400] lr=1.781350e-04 train_loss=7.870659e-03 train_mse=7.870659e-03 train_cos=0.994034 train_nmse=-19.114dB
+I 07.04/01:55:06 train_affine_mlp_mapper.py:597 ] Epoch [272/400] lr=1.763665e-04 train_loss=7.862333e-03 train_mse=7.862333e-03 train_cos=0.994040 train_nmse=-19.119dB
+I 07.04/01:55:13 train_affine_mlp_mapper.py:597 ] Epoch [273/400] lr=1.746055e-04 train_loss=7.853833e-03 train_mse=7.853833e-03 train_cos=0.994047 train_nmse=-19.124dB
+I 07.04/01:55:19 train_affine_mlp_mapper.py:597 ] Epoch [274/400] lr=1.728521e-04 train_loss=7.845799e-03 train_mse=7.845799e-03 train_cos=0.994053 train_nmse=-19.128dB
+I 07.04/01:55:25 train_affine_mlp_mapper.py:597 ] Epoch [275/400] lr=1.711066e-04 train_loss=7.838457e-03 train_mse=7.838457e-03 train_cos=0.994058 train_nmse=-19.132dB
+I 07.04/01:55:32 train_affine_mlp_mapper.py:597 ] Epoch [276/400] lr=1.693689e-04 train_loss=7.832548e-03 train_mse=7.832548e-03 train_cos=0.994063 train_nmse=-19.135dB
+I 07.04/01:55:39 train_affine_mlp_mapper.py:597 ] Epoch [277/400] lr=1.676393e-04 train_loss=7.824503e-03 train_mse=7.824503e-03 train_cos=0.994069 train_nmse=-19.140dB
+I 07.04/01:55:45 train_affine_mlp_mapper.py:597 ] Epoch [278/400] lr=1.659178e-04 train_loss=7.817200e-03 train_mse=7.817200e-03 train_cos=0.994075 train_nmse=-19.144dB
+I 07.04/01:55:52 train_affine_mlp_mapper.py:597 ] Epoch [279/400] lr=1.642047e-04 train_loss=7.805025e-03 train_mse=7.805025e-03 train_cos=0.994084 train_nmse=-19.151dB
+I 07.04/01:56:11 train_affine_mlp_mapper.py:558 ] Epoch [280/400] true_decoder_eval n=100000 decoder_mse=2.534972e-06 decoder_nmse=-22.506dB
+I 07.04/01:56:11 train_affine_mlp_mapper.py:597 ] Epoch [280/400] lr=1.625000e-04 train_loss=7.800441e-03 train_mse=7.800441e-03 train_cos=0.994087 train_nmse=-19.153dB
+I 07.04/01:56:17 train_affine_mlp_mapper.py:597 ] Epoch [281/400] lr=1.608039e-04 train_loss=7.794717e-03 train_mse=7.794717e-03 train_cos=0.994091 train_nmse=-19.156dB
+I 07.04/01:56:24 train_affine_mlp_mapper.py:597 ] Epoch [282/400] lr=1.591164e-04 train_loss=7.783970e-03 train_mse=7.783970e-03 train_cos=0.994099 train_nmse=-19.162dB
+I 07.04/01:56:30 train_affine_mlp_mapper.py:597 ] Epoch [283/400] lr=1.574378e-04 train_loss=7.775766e-03 train_mse=7.775766e-03 train_cos=0.994106 train_nmse=-19.167dB
+I 07.04/01:56:37 train_affine_mlp_mapper.py:597 ] Epoch [284/400] lr=1.557682e-04 train_loss=7.767415e-03 train_mse=7.767415e-03 train_cos=0.994112 train_nmse=-19.171dB
+I 07.04/01:56:43 train_affine_mlp_mapper.py:597 ] Epoch [285/400] lr=1.541076e-04 train_loss=7.760521e-03 train_mse=7.760521e-03 train_cos=0.994117 train_nmse=-19.176dB
+I 07.04/01:56:50 train_affine_mlp_mapper.py:597 ] Epoch [286/400] lr=1.524562e-04 train_loss=7.756416e-03 train_mse=7.756416e-03 train_cos=0.994120 train_nmse=-19.178dB
+I 07.04/01:56:56 train_affine_mlp_mapper.py:597 ] Epoch [287/400] lr=1.508142e-04 train_loss=7.752390e-03 train_mse=7.752390e-03 train_cos=0.994123 train_nmse=-19.180dB
+I 07.04/01:57:06 train_affine_mlp_mapper.py:597 ] Epoch [288/400] lr=1.491816e-04 train_loss=7.738581e-03 train_mse=7.738581e-03 train_cos=0.994134 train_nmse=-19.188dB
+I 07.04/01:57:12 train_affine_mlp_mapper.py:597 ] Epoch [289/400] lr=1.475586e-04 train_loss=7.732496e-03 train_mse=7.732496e-03 train_cos=0.994139 train_nmse=-19.191dB
+I 07.04/01:57:19 train_affine_mlp_mapper.py:597 ] Epoch [290/400] lr=1.459453e-04 train_loss=7.725605e-03 train_mse=7.725605e-03 train_cos=0.994144 train_nmse=-19.195dB
+I 07.04/01:57:25 train_affine_mlp_mapper.py:597 ] Epoch [291/400] lr=1.443418e-04 train_loss=7.718622e-03 train_mse=7.718622e-03 train_cos=0.994149 train_nmse=-19.199dB
+I 07.04/01:57:32 train_affine_mlp_mapper.py:597 ] Epoch [292/400] lr=1.427483e-04 train_loss=7.710543e-03 train_mse=7.710543e-03 train_cos=0.994155 train_nmse=-19.203dB
+I 07.04/01:57:39 train_affine_mlp_mapper.py:597 ] Epoch [293/400] lr=1.411649e-04 train_loss=7.703096e-03 train_mse=7.703096e-03 train_cos=0.994161 train_nmse=-19.207dB
+I 07.04/01:57:45 train_affine_mlp_mapper.py:597 ] Epoch [294/400] lr=1.395916e-04 train_loss=7.695265e-03 train_mse=7.695265e-03 train_cos=0.994167 train_nmse=-19.212dB
+I 07.04/01:57:53 train_affine_mlp_mapper.py:597 ] Epoch [295/400] lr=1.380287e-04 train_loss=7.686784e-03 train_mse=7.686784e-03 train_cos=0.994173 train_nmse=-19.217dB
+I 07.04/01:58:00 train_affine_mlp_mapper.py:597 ] Epoch [296/400] lr=1.364762e-04 train_loss=7.682038e-03 train_mse=7.682038e-03 train_cos=0.994177 train_nmse=-19.220dB
+I 07.04/01:58:10 train_affine_mlp_mapper.py:597 ] Epoch [297/400] lr=1.349342e-04 train_loss=7.675579e-03 train_mse=7.675579e-03 train_cos=0.994182 train_nmse=-19.223dB
+I 07.04/01:58:17 train_affine_mlp_mapper.py:597 ] Epoch [298/400] lr=1.334029e-04 train_loss=7.670584e-03 train_mse=7.670584e-03 train_cos=0.994185 train_nmse=-19.226dB
+I 07.04/01:58:23 train_affine_mlp_mapper.py:597 ] Epoch [299/400] lr=1.318824e-04 train_loss=7.662965e-03 train_mse=7.662965e-03 train_cos=0.994191 train_nmse=-19.230dB
+I 07.04/01:58:39 train_affine_mlp_mapper.py:558 ] Epoch [300/400] true_decoder_eval n=100000 decoder_mse=2.516536e-06 decoder_nmse=-22.538dB
+I 07.04/01:58:39 train_affine_mlp_mapper.py:597 ] Epoch [300/400] lr=1.303728e-04 train_loss=7.657253e-03 train_mse=7.657253e-03 train_cos=0.994195 train_nmse=-19.233dB
+I 07.04/01:58:45 train_affine_mlp_mapper.py:597 ] Epoch [301/400] lr=1.288742e-04 train_loss=7.651925e-03 train_mse=7.651925e-03 train_cos=0.994200 train_nmse=-19.236dB
+I 07.04/01:58:52 train_affine_mlp_mapper.py:597 ] Epoch [302/400] lr=1.273867e-04 train_loss=7.643047e-03 train_mse=7.643047e-03 train_cos=0.994206 train_nmse=-19.241dB
+I 07.04/01:58:59 train_affine_mlp_mapper.py:597 ] Epoch [303/400] lr=1.259105e-04 train_loss=7.637453e-03 train_mse=7.637453e-03 train_cos=0.994210 train_nmse=-19.245dB
+I 07.04/01:59:09 train_affine_mlp_mapper.py:597 ] Epoch [304/400] lr=1.244456e-04 train_loss=7.630138e-03 train_mse=7.630138e-03 train_cos=0.994216 train_nmse=-19.249dB
+I 07.04/01:59:16 train_affine_mlp_mapper.py:597 ] Epoch [305/400] lr=1.229922e-04 train_loss=7.624113e-03 train_mse=7.624113e-03 train_cos=0.994220 train_nmse=-19.252dB
+I 07.04/01:59:22 train_affine_mlp_mapper.py:597 ] Epoch [306/400] lr=1.215504e-04 train_loss=7.617383e-03 train_mse=7.617383e-03 train_cos=0.994225 train_nmse=-19.256dB
+I 07.04/01:59:29 train_affine_mlp_mapper.py:597 ] Epoch [307/400] lr=1.201202e-04 train_loss=7.609864e-03 train_mse=7.609864e-03 train_cos=0.994231 train_nmse=-19.260dB
+I 07.04/01:59:36 train_affine_mlp_mapper.py:597 ] Epoch [308/400] lr=1.187019e-04 train_loss=7.603949e-03 train_mse=7.603949e-03 train_cos=0.994236 train_nmse=-19.264dB
+I 07.04/01:59:43 train_affine_mlp_mapper.py:597 ] Epoch [309/400] lr=1.172954e-04 train_loss=7.599819e-03 train_mse=7.599819e-03 train_cos=0.994239 train_nmse=-19.266dB
+I 07.04/01:59:49 train_affine_mlp_mapper.py:597 ] Epoch [310/400] lr=1.159010e-04 train_loss=7.595115e-03 train_mse=7.595115e-03 train_cos=0.994242 train_nmse=-19.269dB
+I 07.04/01:59:55 train_affine_mlp_mapper.py:597 ] Epoch [311/400] lr=1.145186e-04 train_loss=7.589816e-03 train_mse=7.589816e-03 train_cos=0.994247 train_nmse=-19.272dB
+I 07.04/02:00:05 train_affine_mlp_mapper.py:597 ] Epoch [312/400] lr=1.131485e-04 train_loss=7.583224e-03 train_mse=7.583224e-03 train_cos=0.994251 train_nmse=-19.275dB
+I 07.04/02:00:12 train_affine_mlp_mapper.py:597 ] Epoch [313/400] lr=1.117908e-04 train_loss=7.577173e-03 train_mse=7.577173e-03 train_cos=0.994256 train_nmse=-19.279dB
+I 07.04/02:00:19 train_affine_mlp_mapper.py:597 ] Epoch [314/400] lr=1.104454e-04 train_loss=7.570408e-03 train_mse=7.570408e-03 train_cos=0.994261 train_nmse=-19.283dB
+I 07.04/02:00:26 train_affine_mlp_mapper.py:597 ] Epoch [315/400] lr=1.091126e-04 train_loss=7.565478e-03 train_mse=7.565478e-03 train_cos=0.994264 train_nmse=-19.286dB
+I 07.04/02:00:33 train_affine_mlp_mapper.py:597 ] Epoch [316/400] lr=1.077924e-04 train_loss=7.560541e-03 train_mse=7.560541e-03 train_cos=0.994268 train_nmse=-19.289dB
+I 07.04/02:00:41 train_affine_mlp_mapper.py:597 ] Epoch [317/400] lr=1.064850e-04 train_loss=7.553275e-03 train_mse=7.553275e-03 train_cos=0.994274 train_nmse=-19.293dB
+I 07.04/02:00:47 train_affine_mlp_mapper.py:597 ] Epoch [318/400] lr=1.051903e-04 train_loss=7.549157e-03 train_mse=7.549157e-03 train_cos=0.994277 train_nmse=-19.295dB
+I 07.04/02:00:54 train_affine_mlp_mapper.py:597 ] Epoch [319/400] lr=1.039087e-04 train_loss=7.542371e-03 train_mse=7.542371e-03 train_cos=0.994282 train_nmse=-19.299dB
+I 07.04/02:01:13 train_affine_mlp_mapper.py:558 ] Epoch [320/400] true_decoder_eval n=100000 decoder_mse=2.486854e-06 decoder_nmse=-22.589dB
+I 07.04/02:01:13 train_affine_mlp_mapper.py:597 ] Epoch [320/400] lr=1.026400e-04 train_loss=7.538384e-03 train_mse=7.538384e-03 train_cos=0.994285 train_nmse=-19.301dB
+I 07.04/02:01:20 train_affine_mlp_mapper.py:597 ] Epoch [321/400] lr=1.013845e-04 train_loss=7.532802e-03 train_mse=7.532802e-03 train_cos=0.994289 train_nmse=-19.305dB
+I 07.04/02:01:27 train_affine_mlp_mapper.py:597 ] Epoch [322/400] lr=1.001422e-04 train_loss=7.528172e-03 train_mse=7.528172e-03 train_cos=0.994293 train_nmse=-19.307dB
+I 07.04/02:01:33 train_affine_mlp_mapper.py:597 ] Epoch [323/400] lr=9.891316e-05 train_loss=7.522251e-03 train_mse=7.522251e-03 train_cos=0.994297 train_nmse=-19.311dB
+I 07.04/02:01:40 train_affine_mlp_mapper.py:597 ] Epoch [324/400] lr=9.769758e-05 train_loss=7.516943e-03 train_mse=7.516943e-03 train_cos=0.994302 train_nmse=-19.314dB
+I 07.04/02:01:47 train_affine_mlp_mapper.py:597 ] Epoch [325/400] lr=9.649550e-05 train_loss=7.513036e-03 train_mse=7.513036e-03 train_cos=0.994305 train_nmse=-19.316dB
+I 07.04/02:01:54 train_affine_mlp_mapper.py:597 ] Epoch [326/400] lr=9.530701e-05 train_loss=7.506679e-03 train_mse=7.506679e-03 train_cos=0.994310 train_nmse=-19.320dB
+I 07.04/02:02:01 train_affine_mlp_mapper.py:597 ] Epoch [327/400] lr=9.413221e-05 train_loss=7.500429e-03 train_mse=7.500429e-03 train_cos=0.994314 train_nmse=-19.323dB
+I 07.04/02:02:09 train_affine_mlp_mapper.py:597 ] Epoch [328/400] lr=9.297118e-05 train_loss=7.496364e-03 train_mse=7.496364e-03 train_cos=0.994317 train_nmse=-19.325dB
+I 07.04/02:02:16 train_affine_mlp_mapper.py:597 ] Epoch [329/400] lr=9.182401e-05 train_loss=7.491934e-03 train_mse=7.491934e-03 train_cos=0.994320 train_nmse=-19.328dB
+I 07.04/02:02:22 train_affine_mlp_mapper.py:597 ] Epoch [330/400] lr=9.069079e-05 train_loss=7.486424e-03 train_mse=7.486424e-03 train_cos=0.994324 train_nmse=-19.332dB
+I 07.04/02:02:29 train_affine_mlp_mapper.py:597 ] Epoch [331/400] lr=8.957161e-05 train_loss=7.483162e-03 train_mse=7.483162e-03 train_cos=0.994327 train_nmse=-19.333dB
+I 07.04/02:02:36 train_affine_mlp_mapper.py:597 ] Epoch [332/400] lr=8.846655e-05 train_loss=7.476460e-03 train_mse=7.476460e-03 train_cos=0.994332 train_nmse=-19.337dB
+I 07.04/02:02:43 train_affine_mlp_mapper.py:597 ] Epoch [333/400] lr=8.737569e-05 train_loss=7.473986e-03 train_mse=7.473986e-03 train_cos=0.994334 train_nmse=-19.339dB
+I 07.04/02:02:50 train_affine_mlp_mapper.py:597 ] Epoch [334/400] lr=8.629912e-05 train_loss=7.468863e-03 train_mse=7.468863e-03 train_cos=0.994338 train_nmse=-19.342dB
+I 07.04/02:02:57 train_affine_mlp_mapper.py:597 ] Epoch [335/400] lr=8.523692e-05 train_loss=7.464173e-03 train_mse=7.464173e-03 train_cos=0.994341 train_nmse=-19.344dB
+I 07.04/02:03:06 train_affine_mlp_mapper.py:597 ] Epoch [336/400] lr=8.418918e-05 train_loss=7.458982e-03 train_mse=7.458982e-03 train_cos=0.994345 train_nmse=-19.347dB
+I 07.04/02:03:12 train_affine_mlp_mapper.py:597 ] Epoch [337/400] lr=8.315596e-05 train_loss=7.455583e-03 train_mse=7.455583e-03 train_cos=0.994348 train_nmse=-19.349dB
+I 07.04/02:03:19 train_affine_mlp_mapper.py:597 ] Epoch [338/400] lr=8.213736e-05 train_loss=7.450178e-03 train_mse=7.450178e-03 train_cos=0.994352 train_nmse=-19.352dB
+I 07.04/02:03:26 train_affine_mlp_mapper.py:597 ] Epoch [339/400] lr=8.113344e-05 train_loss=7.447068e-03 train_mse=7.447068e-03 train_cos=0.994354 train_nmse=-19.354dB
+I 07.04/02:03:43 train_affine_mlp_mapper.py:558 ] Epoch [340/400] true_decoder_eval n=100000 decoder_mse=2.479651e-06 decoder_nmse=-22.602dB
+I 07.04/02:03:43 train_affine_mlp_mapper.py:597 ] Epoch [340/400] lr=8.014428e-05 train_loss=7.442231e-03 train_mse=7.442231e-03 train_cos=0.994358 train_nmse=-19.357dB
+I 07.04/02:03:50 train_affine_mlp_mapper.py:597 ] Epoch [341/400] lr=7.916997e-05 train_loss=7.437504e-03 train_mse=7.437504e-03 train_cos=0.994361 train_nmse=-19.360dB
+I 07.04/02:03:57 train_affine_mlp_mapper.py:597 ] Epoch [342/400] lr=7.821057e-05 train_loss=7.433417e-03 train_mse=7.433417e-03 train_cos=0.994365 train_nmse=-19.362dB
+I 07.04/02:04:07 train_affine_mlp_mapper.py:597 ] Epoch [343/400] lr=7.726615e-05 train_loss=7.431133e-03 train_mse=7.431133e-03 train_cos=0.994366 train_nmse=-19.363dB
+I 07.04/02:04:14 train_affine_mlp_mapper.py:597 ] Epoch [344/400] lr=7.633679e-05 train_loss=7.425374e-03 train_mse=7.425374e-03 train_cos=0.994371 train_nmse=-19.367dB
+I 07.04/02:04:21 train_affine_mlp_mapper.py:597 ] Epoch [345/400] lr=7.542256e-05 train_loss=7.421145e-03 train_mse=7.421145e-03 train_cos=0.994374 train_nmse=-19.369dB
+I 07.04/02:04:27 train_affine_mlp_mapper.py:597 ] Epoch [346/400] lr=7.452353e-05 train_loss=7.416773e-03 train_mse=7.416773e-03 train_cos=0.994377 train_nmse=-19.372dB
+I 07.04/02:04:34 train_affine_mlp_mapper.py:597 ] Epoch [347/400] lr=7.363977e-05 train_loss=7.412466e-03 train_mse=7.412466e-03 train_cos=0.994380 train_nmse=-19.375dB
+I 07.04/02:04:41 train_affine_mlp_mapper.py:597 ] Epoch [348/400] lr=7.277134e-05 train_loss=7.408692e-03 train_mse=7.408692e-03 train_cos=0.994383 train_nmse=-19.377dB
+I 07.04/02:04:48 train_affine_mlp_mapper.py:597 ] Epoch [349/400] lr=7.191831e-05 train_loss=7.406112e-03 train_mse=7.406112e-03 train_cos=0.994385 train_nmse=-19.379dB
+I 07.04/02:04:54 train_affine_mlp_mapper.py:597 ] Epoch [350/400] lr=7.108075e-05 train_loss=7.402222e-03 train_mse=7.402222e-03 train_cos=0.994388 train_nmse=-19.380dB
+I 07.04/02:05:02 train_affine_mlp_mapper.py:597 ] Epoch [351/400] lr=7.025871e-05 train_loss=7.398214e-03 train_mse=7.398214e-03 train_cos=0.994391 train_nmse=-19.383dB
+I 07.04/02:05:10 train_affine_mlp_mapper.py:597 ] Epoch [352/400] lr=6.945227e-05 train_loss=7.396133e-03 train_mse=7.396133e-03 train_cos=0.994393 train_nmse=-19.384dB
+I 07.04/02:05:17 train_affine_mlp_mapper.py:597 ] Epoch [353/400] lr=6.866148e-05 train_loss=7.391176e-03 train_mse=7.391176e-03 train_cos=0.994396 train_nmse=-19.387dB
+I 07.04/02:05:24 train_affine_mlp_mapper.py:597 ] Epoch [354/400] lr=6.788641e-05 train_loss=7.387695e-03 train_mse=7.387695e-03 train_cos=0.994399 train_nmse=-19.389dB
+I 07.04/02:05:31 train_affine_mlp_mapper.py:597 ] Epoch [355/400] lr=6.712711e-05 train_loss=7.384250e-03 train_mse=7.384250e-03 train_cos=0.994402 train_nmse=-19.391dB
+I 07.04/02:05:38 train_affine_mlp_mapper.py:597 ] Epoch [356/400] lr=6.638363e-05 train_loss=7.381536e-03 train_mse=7.381536e-03 train_cos=0.994404 train_nmse=-19.393dB
+I 07.04/02:05:45 train_affine_mlp_mapper.py:597 ] Epoch [357/400] lr=6.565605e-05 train_loss=7.376836e-03 train_mse=7.376836e-03 train_cos=0.994408 train_nmse=-19.395dB
+I 07.04/02:05:52 train_affine_mlp_mapper.py:597 ] Epoch [358/400] lr=6.494440e-05 train_loss=7.374949e-03 train_mse=7.374949e-03 train_cos=0.994408 train_nmse=-19.396dB
+I 07.04/02:05:58 train_affine_mlp_mapper.py:597 ] Epoch [359/400] lr=6.424876e-05 train_loss=7.371176e-03 train_mse=7.371176e-03 train_cos=0.994412 train_nmse=-19.399dB
+I 07.04/02:06:18 train_affine_mlp_mapper.py:558 ] Epoch [360/400] true_decoder_eval n=100000 decoder_mse=2.466663e-06 decoder_nmse=-22.625dB
+I 07.04/02:06:18 train_affine_mlp_mapper.py:597 ] Epoch [360/400] lr=6.356916e-05 train_loss=7.368416e-03 train_mse=7.368416e-03 train_cos=0.994414 train_nmse=-19.400dB
+I 07.04/02:06:25 train_affine_mlp_mapper.py:597 ] Epoch [361/400] lr=6.290566e-05 train_loss=7.365077e-03 train_mse=7.365077e-03 train_cos=0.994416 train_nmse=-19.402dB
+I 07.04/02:06:32 train_affine_mlp_mapper.py:597 ] Epoch [362/400] lr=6.225832e-05 train_loss=7.361419e-03 train_mse=7.361419e-03 train_cos=0.994419 train_nmse=-19.405dB
+I 07.04/02:06:38 train_affine_mlp_mapper.py:597 ] Epoch [363/400] lr=6.162718e-05 train_loss=7.358594e-03 train_mse=7.358594e-03 train_cos=0.994421 train_nmse=-19.406dB
+I 07.04/02:06:45 train_affine_mlp_mapper.py:597 ] Epoch [364/400] lr=6.101228e-05 train_loss=7.356370e-03 train_mse=7.356370e-03 train_cos=0.994423 train_nmse=-19.407dB
+I 07.04/02:06:51 train_affine_mlp_mapper.py:597 ] Epoch [365/400] lr=6.041369e-05 train_loss=7.352635e-03 train_mse=7.352635e-03 train_cos=0.994426 train_nmse=-19.410dB
+I 07.04/02:06:58 train_affine_mlp_mapper.py:597 ] Epoch [366/400] lr=5.983143e-05 train_loss=7.351114e-03 train_mse=7.351114e-03 train_cos=0.994427 train_nmse=-19.410dB
+I 07.04/02:07:08 train_affine_mlp_mapper.py:597 ] Epoch [367/400] lr=5.926556e-05 train_loss=7.347455e-03 train_mse=7.347455e-03 train_cos=0.994429 train_nmse=-19.413dB
+I 07.04/02:07:15 train_affine_mlp_mapper.py:597 ] Epoch [368/400] lr=5.871612e-05 train_loss=7.344825e-03 train_mse=7.344825e-03 train_cos=0.994432 train_nmse=-19.414dB
+I 07.04/02:07:21 train_affine_mlp_mapper.py:597 ] Epoch [369/400] lr=5.818315e-05 train_loss=7.341452e-03 train_mse=7.341452e-03 train_cos=0.994434 train_nmse=-19.416dB
+I 07.04/02:07:28 train_affine_mlp_mapper.py:597 ] Epoch [370/400] lr=5.766669e-05 train_loss=7.339074e-03 train_mse=7.339074e-03 train_cos=0.994436 train_nmse=-19.417dB
+I 07.04/02:07:34 train_affine_mlp_mapper.py:597 ] Epoch [371/400] lr=5.716678e-05 train_loss=7.336547e-03 train_mse=7.336547e-03 train_cos=0.994438 train_nmse=-19.419dB
+I 07.04/02:07:40 train_affine_mlp_mapper.py:597 ] Epoch [372/400] lr=5.668346e-05 train_loss=7.333871e-03 train_mse=7.333871e-03 train_cos=0.994440 train_nmse=-19.421dB
+I 07.04/02:07:47 train_affine_mlp_mapper.py:597 ] Epoch [373/400] lr=5.621677e-05 train_loss=7.330918e-03 train_mse=7.330918e-03 train_cos=0.994442 train_nmse=-19.422dB
+I 07.04/02:07:54 train_affine_mlp_mapper.py:597 ] Epoch [374/400] lr=5.576674e-05 train_loss=7.328103e-03 train_mse=7.328103e-03 train_cos=0.994445 train_nmse=-19.424dB
+I 07.04/02:08:02 train_affine_mlp_mapper.py:597 ] Epoch [375/400] lr=5.533340e-05 train_loss=7.327357e-03 train_mse=7.327357e-03 train_cos=0.994445 train_nmse=-19.425dB
+I 07.04/02:08:11 train_affine_mlp_mapper.py:597 ] Epoch [376/400] lr=5.491679e-05 train_loss=7.323798e-03 train_mse=7.323798e-03 train_cos=0.994448 train_nmse=-19.426dB
+I 07.04/02:08:18 train_affine_mlp_mapper.py:597 ] Epoch [377/400] lr=5.451694e-05 train_loss=7.321726e-03 train_mse=7.321726e-03 train_cos=0.994449 train_nmse=-19.428dB
+I 07.04/02:08:25 train_affine_mlp_mapper.py:597 ] Epoch [378/400] lr=5.413388e-05 train_loss=7.320100e-03 train_mse=7.320100e-03 train_cos=0.994450 train_nmse=-19.429dB
+I 07.04/02:08:32 train_affine_mlp_mapper.py:597 ] Epoch [379/400] lr=5.376765e-05 train_loss=7.317816e-03 train_mse=7.317816e-03 train_cos=0.994452 train_nmse=-19.430dB
+I 07.04/02:08:48 train_affine_mlp_mapper.py:558 ] Epoch [380/400] true_decoder_eval n=100000 decoder_mse=2.453827e-06 decoder_nmse=-22.647dB
+I 07.04/02:08:48 train_affine_mlp_mapper.py:597 ] Epoch [380/400] lr=5.341826e-05 train_loss=7.315292e-03 train_mse=7.315292e-03 train_cos=0.994454 train_nmse=-19.432dB
+I 07.04/02:08:55 train_affine_mlp_mapper.py:597 ] Epoch [381/400] lr=5.308574e-05 train_loss=7.313009e-03 train_mse=7.313009e-03 train_cos=0.994456 train_nmse=-19.433dB
+I 07.04/02:09:05 train_affine_mlp_mapper.py:597 ] Epoch [382/400] lr=5.277012e-05 train_loss=7.311121e-03 train_mse=7.311121e-03 train_cos=0.994458 train_nmse=-19.434dB
+I 07.04/02:09:11 train_affine_mlp_mapper.py:597 ] Epoch [383/400] lr=5.247143e-05 train_loss=7.308753e-03 train_mse=7.308753e-03 train_cos=0.994459 train_nmse=-19.436dB
+I 07.04/02:09:18 train_affine_mlp_mapper.py:597 ] Epoch [384/400] lr=5.218968e-05 train_loss=7.306826e-03 train_mse=7.306826e-03 train_cos=0.994461 train_nmse=-19.437dB
+I 07.04/02:09:24 train_affine_mlp_mapper.py:597 ] Epoch [385/400] lr=5.192491e-05 train_loss=7.304838e-03 train_mse=7.304838e-03 train_cos=0.994462 train_nmse=-19.438dB
+I 07.04/02:09:31 train_affine_mlp_mapper.py:597 ] Epoch [386/400] lr=5.167712e-05 train_loss=7.301844e-03 train_mse=7.301844e-03 train_cos=0.994465 train_nmse=-19.440dB
+I 07.04/02:09:37 train_affine_mlp_mapper.py:597 ] Epoch [387/400] lr=5.144633e-05 train_loss=7.300530e-03 train_mse=7.300530e-03 train_cos=0.994466 train_nmse=-19.440dB
+I 07.04/02:09:44 train_affine_mlp_mapper.py:597 ] Epoch [388/400] lr=5.123257e-05 train_loss=7.297427e-03 train_mse=7.297427e-03 train_cos=0.994468 train_nmse=-19.443dB
+I 07.04/02:09:51 train_affine_mlp_mapper.py:597 ] Epoch [389/400] lr=5.103586e-05 train_loss=7.296871e-03 train_mse=7.296871e-03 train_cos=0.994468 train_nmse=-19.443dB
+I 07.04/02:09:57 train_affine_mlp_mapper.py:597 ] Epoch [390/400] lr=5.085619e-05 train_loss=7.294501e-03 train_mse=7.294501e-03 train_cos=0.994470 train_nmse=-19.444dB
+I 07.04/02:10:07 train_affine_mlp_mapper.py:597 ] Epoch [391/400] lr=5.069360e-05 train_loss=7.294003e-03 train_mse=7.294003e-03 train_cos=0.994471 train_nmse=-19.444dB
+I 07.04/02:10:14 train_affine_mlp_mapper.py:597 ] Epoch [392/400] lr=5.054809e-05 train_loss=7.292118e-03 train_mse=7.292118e-03 train_cos=0.994472 train_nmse=-19.446dB
+I 07.04/02:10:21 train_affine_mlp_mapper.py:597 ] Epoch [393/400] lr=5.041967e-05 train_loss=7.290154e-03 train_mse=7.290154e-03 train_cos=0.994474 train_nmse=-19.447dB
+I 07.04/02:10:28 train_affine_mlp_mapper.py:597 ] Epoch [394/400] lr=5.030835e-05 train_loss=7.288921e-03 train_mse=7.288921e-03 train_cos=0.994474 train_nmse=-19.447dB
+I 07.04/02:10:35 train_affine_mlp_mapper.py:597 ] Epoch [395/400] lr=5.021415e-05 train_loss=7.287368e-03 train_mse=7.287368e-03 train_cos=0.994476 train_nmse=-19.448dB
+I 07.04/02:10:42 train_affine_mlp_mapper.py:597 ] Epoch [396/400] lr=5.013706e-05 train_loss=7.286765e-03 train_mse=7.286765e-03 train_cos=0.994476 train_nmse=-19.449dB
+I 07.04/02:10:49 train_affine_mlp_mapper.py:597 ] Epoch [397/400] lr=5.007710e-05 train_loss=7.284304e-03 train_mse=7.284304e-03 train_cos=0.994478 train_nmse=-19.450dB
+I 07.04/02:10:55 train_affine_mlp_mapper.py:597 ] Epoch [398/400] lr=5.003427e-05 train_loss=7.283159e-03 train_mse=7.283159e-03 train_cos=0.994479 train_nmse=-19.451dB
+I 07.04/02:11:05 train_affine_mlp_mapper.py:597 ] Epoch [399/400] lr=5.000857e-05 train_loss=7.281037e-03 train_mse=7.281037e-03 train_cos=0.994481 train_nmse=-19.452dB
+I 07.04/02:11:21 train_affine_mlp_mapper.py:558 ] Epoch [400/400] true_decoder_eval n=100000 decoder_mse=2.449612e-06 decoder_nmse=-22.655dB
+I 07.04/02:11:21 train_affine_mlp_mapper.py:597 ] Epoch [400/400] lr=5.000000e-05 train_loss=7.280094e-03 train_mse=7.280094e-03 train_cos=0.994481 train_nmse=-19.453dB
+I 07.04/02:11:56 train_affine_mlp_mapper.py:648 ] best_mse_epoch=400 best_mse=7.280094e-03
+I 07.04/02:11:56 train_affine_mlp_mapper.py:652 ] best_nmse_epoch=400 best_nmse=-22.655dB
+I 07.04/02:11:56 train_affine_mlp_mapper.py:656 ] all_best_mse_mse=7.207408e-03 all_best_mse_cos=0.994533 all_best_mse_nmse=-19.496dB

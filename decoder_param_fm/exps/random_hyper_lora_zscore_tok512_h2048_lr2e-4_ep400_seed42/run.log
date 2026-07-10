@@ -1,0 +1,283 @@
+I 07.05/03:31:03 logger.py:152 ] => Experiment directory: decoder_param_fm/exps/random_hyper_lora_zscore_tok512_h2048_lr2e-4_ep400_seed42
+I 07.05/03:31:03 logger.py:71  ] => Runtime Context:
+I 07.05/03:31:03 logger.py:72  ]    cwd: /storage/hujiacong/zxd/Huawei/UniversalCSI
+I 07.05/03:31:03 logger.py:73  ]    pid: 1557515
+I 07.05/03:31:03 logger.py:74  ]    command: decoder_param_fm/train_param_fm.py --exp_dir decoder_param_fm/exps/random_hyper_lora_zscore_tok512_h2048_lr2e-4_ep400_seed42 --decoder_args_json exps/COST2100/in/seed42/transnet_transnet/args.json --target_checkpoint exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth --guide_code_path exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt --condition_extract random --condition_inject hyper_lora --param_norm zscore --epochs 400 --steps_per_epoch 100 --lr 2e-4 --warmup_ratio 0.1 --token_size 512 --hidden_dim 2048 --num_blocks 4 --condition_tokens 512 --cond_dim 512 --num_heads 8 --set_layers 2 --lambda_endpoint 0.0 --base_seed 2026 --seed 42 --gpu 1 --max_guide_codes 0
+I 07.05/03:31:03 logger.py:75  ]    python: 3.11.14 (main, Oct 21 2025, 18:31:21) [GCC 11.2.0]
+I 07.05/03:31:03 logger.py:76  ]    pytorch: 2.5.1
+I 07.05/03:31:07 logger.py:77  ]    cuda_available: True
+I 07.05/03:31:07 logger.py:79  ]    cuda_version: 12.1
+I 07.05/03:31:07 logger.py:81  ]    CUDA_VISIBLE_DEVICES: None
+I 07.05/03:31:07 logger.py:91  ]    current_device: not initialized yet
+I 07.05/03:31:07 logger.py:63  ] => Arguments:
+{
+  "base_seed": 2026,
+  "cond_dim": 512,
+  "condition_extract": "random",
+  "condition_inject": "hyper_lora",
+  "condition_tokens": 512,
+  "cpu": false,
+  "decoder_args_json": "exps/COST2100/in/seed42/transnet_transnet/args.json",
+  "dropout": 0.0,
+  "epochs": 400,
+  "eta_min": 1e-06,
+  "exp_dir": "decoder_param_fm/exps/random_hyper_lora_zscore_tok512_h2048_lr2e-4_ep400_seed42",
+  "gpu": 1,
+  "grad_clip": 1.0,
+  "guide_code_path": "exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt",
+  "hidden_dim": 2048,
+  "hyper_lora_rank": 16,
+  "lambda_endpoint": 0.0,
+  "lr": 0.0002,
+  "max_guide_codes": 0,
+  "num_blocks": 4,
+  "num_heads": 8,
+  "param_norm": "zscore",
+  "save_every": 0,
+  "seed": 42,
+  "set_layers": 2,
+  "steps_per_epoch": 100,
+  "target_checkpoint": "exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth",
+  "time_dim": 128,
+  "token_size": 512,
+  "warmup_ratio": 0.1,
+  "warmup_steps": 0,
+  "weight_decay": 0.0
+}
+I 07.05/03:31:07 train_param_fm.py:253 ] => TensorBoard directory: decoder_param_fm/exps/random_hyper_lora_zscore_tok512_h2048_lr2e-4_ep400_seed42/tensorboard
+I 07.05/03:31:09 train_param_fm.py:153 ] 
+=> Target decoder tensors:
+   tensors=40 total_params=1,646,592
+   largest tensors:
+     fc_decoder.weight                                       shape=(2048, 512) numel=1,048,576
+     decoder.layers.0.linear1.weight                         shape=(2048, 64) numel=131,072
+     decoder.layers.0.linear2.weight                         shape=(64, 2048) numel=131,072
+     decoder.layers.1.linear1.weight                         shape=(2048, 64) numel=131,072
+     decoder.layers.1.linear2.weight                         shape=(64, 2048) numel=131,072
+     decoder.layers.0.self_attn.in_proj_weight               shape=(192, 64) numel=12,288
+     decoder.layers.0.multihead_attn.in_proj_weight          shape=(192, 64) numel=12,288
+     decoder.layers.1.self_attn.in_proj_weight               shape=(192, 64) numel=12,288
+I 07.05/03:31:11 train_param_fm.py:172 ] 
+=> Parameter normalization:
+   method=zscore tensors=40
+   fc_decoder.weight                                       mean=-7.203897e-05 std=4.112401e-02
+   fc_decoder.bias                                         mean=8.564996e-04 std=3.915015e-02
+   decoder.layers.0.self_attn.in_proj_weight               mean=-1.715433e-03 std=1.173178e-01
+   decoder.layers.0.self_attn.in_proj_bias                 mean=3.988165e-03 std=3.429867e-02
+   decoder.layers.0.self_attn.out_proj.weight              mean=-1.926031e-03 std=1.769522e-01
+   decoder.layers.0.self_attn.out_proj.bias                mean=1.331626e-04 std=3.740509e-02
+   decoder.layers.0.multihead_attn.in_proj_weight          mean=2.884256e-04 std=1.192297e-01
+   decoder.layers.0.multihead_attn.in_proj_bias            mean=-4.016574e-04 std=9.705125e-03
+   ... 32 more tensors
+I 07.05/03:31:11 train_param_fm.py:271 ] Prepared 40 tensors, 3236 parameter tokens, token_size=512
+I 07.05/03:31:20 train_param_fm.py:178 ] => Device: cuda:1
+I 07.05/03:31:20 train_param_fm.py:179 ] => Target checkpoint: exps/COST2100/in/seed42/transnet_transnet/checkpoints/best_nmse.pth
+I 07.05/03:31:20 train_param_fm.py:180 ] => Decoder args json: exps/COST2100/in/seed42/transnet_transnet/args.json
+I 07.05/03:31:20 train_param_fm.py:181 ] => Guide code path: exps/COST2100/in/seed42/transnet_transnet/codewords/train_code.pt
+I 07.05/03:31:20 train_param_fm.py:182 ] => Decoder: type=transnet cr=4 channel=2 nt=32 nc=32 d_model=64 dim_feedforward=2048
+I 07.05/03:31:20 train_param_fm.py:192 ] => Condition: extract=random tokens=512 inject=hyper_lora cond_dim=512 heads=8 set_layers=2 hyper_lora_rank=16
+I 07.05/03:31:20 train_param_fm.py:202 ] => Parameter tokens: tensors=40 tokens=3236 token_size=512 valid_elements=1646592 padded_elements=10240
+I 07.05/03:31:20 train_param_fm.py:211 ] => Guide codes: shape=(100000, 512) max_guide_codes=0
+I 07.05/03:31:20 train_param_fm.py:215 ] => Optimizer: AdamW lr=0.0002 eta_min=1e-06 weight_decay=0 grad_clip=1
+I 07.05/03:31:20 train_param_fm.py:222 ] => Scheduler: warmup_cosine epochs=400 steps_per_epoch=100 total_steps=40000 warmup_steps=4000 warmup_ratio=0.1
+I 07.05/03:31:20 train_param_fm.py:230 ] => Loss: velocity_mse=1.0 endpoint_param_mse=0
+I 07.05/03:31:20 train_param_fm.py:233 ] => Parameters: total=172,382,721 trainable=172,382,721 frozen=0
+I 07.05/03:31:20 logger.py:146 ] 
+name                                                              grad            shape      numel
+----                                                              ----            -----      -----
+condition_encoder.token_mlp.0.weight                              True           (512,)        512
+condition_encoder.token_mlp.0.bias                                True           (512,)        512
+condition_encoder.token_mlp.1.weight                              True      (2048, 512)  1,048,576
+condition_encoder.token_mlp.1.bias                                True          (2048,)      2,048
+condition_encoder.token_mlp.3.weight                              True      (512, 2048)  1,048,576
+condition_encoder.token_mlp.3.bias                                True           (512,)        512
+condition_encoder.pool.0.weight                                   True          (1536,)      1,536
+condition_encoder.pool.0.bias                                     True          (1536,)      1,536
+condition_encoder.pool.1.weight                                   True      (512, 1536)    786,432
+condition_encoder.pool.1.bias                                     True           (512,)        512
+condition_encoder.pool.3.weight                                   True       (512, 512)    262,144
+condition_encoder.pool.3.bias                                     True           (512,)        512
+param_fm.param_proj.weight                                        True      (2048, 512)  1,048,576
+param_fm.param_proj.bias                                          True          (2048,)      2,048
+param_fm.time_proj.0.weight                                       True      (2048, 128)    262,144
+param_fm.time_proj.0.bias                                         True          (2048,)      2,048
+param_fm.time_proj.2.weight                                       True     (2048, 2048)  4,194,304
+param_fm.time_proj.2.bias                                         True          (2048,)      2,048
+param_fm.tensor_embed.weight                                      True       (40, 2048)     81,920
+param_fm.layer_embed.weight                                       True     (1001, 2048)  2,050,048
+param_fm.offset_embed.weight                                      True     (2048, 2048)  4,194,304
+param_fm.cond_proj.weight                                         True      (2048, 512)  1,048,576
+param_fm.cond_proj.bias                                           True          (2048,)      2,048
+param_fm.blocks.0.norm.weight                                     True          (2048,)      2,048
+param_fm.blocks.0.norm.bias                                       True          (2048,)      2,048
+param_fm.blocks.0.net.0.weight                                    True     (8192, 2048) 16,777,216
+param_fm.blocks.0.net.0.bias                                      True          (8192,)      8,192
+param_fm.blocks.0.net.3.weight                                    True     (2048, 8192) 16,777,216
+param_fm.blocks.0.net.3.bias                                      True          (2048,)      2,048
+param_fm.blocks.1.norm.weight                                     True          (2048,)      2,048
+param_fm.blocks.1.norm.bias                                       True          (2048,)      2,048
+param_fm.blocks.1.net.0.weight                                    True     (8192, 2048) 16,777,216
+param_fm.blocks.1.net.0.bias                                      True          (8192,)      8,192
+param_fm.blocks.1.net.3.weight                                    True     (2048, 8192) 16,777,216
+param_fm.blocks.1.net.3.bias                                      True          (2048,)      2,048
+param_fm.blocks.2.norm.weight                                     True          (2048,)      2,048
+param_fm.blocks.2.norm.bias                                       True          (2048,)      2,048
+param_fm.blocks.2.net.0.weight                                    True     (8192, 2048) 16,777,216
+param_fm.blocks.2.net.0.bias                                      True          (8192,)      8,192
+param_fm.blocks.2.net.3.weight                                    True     (2048, 8192) 16,777,216
+param_fm.blocks.2.net.3.bias                                      True          (2048,)      2,048
+param_fm.blocks.3.norm.weight                                     True          (2048,)      2,048
+param_fm.blocks.3.norm.bias                                       True          (2048,)      2,048
+param_fm.blocks.3.net.0.weight                                    True     (8192, 2048) 16,777,216
+param_fm.blocks.3.net.0.bias                                      True          (8192,)      8,192
+param_fm.blocks.3.net.3.weight                                    True     (2048, 8192) 16,777,216
+param_fm.blocks.3.net.3.bias                                      True          (2048,)      2,048
+param_fm.hyper_a.weight                                           True     (32768, 512) 16,777,216
+param_fm.hyper_a.bias                                             True         (32768,)     32,768
+param_fm.hyper_b.weight                                           True      (8192, 512)  4,194,304
+param_fm.hyper_b.bias                                             True          (8192,)      8,192
+param_fm.hyper_alpha.weight                                       True         (1, 512)        512
+param_fm.hyper_alpha.bias                                         True             (1,)          1
+param_fm.norm.weight                                              True          (2048,)      2,048
+param_fm.norm.bias                                                True          (2048,)      2,048
+param_fm.out.weight                                               True      (512, 2048)  1,048,576
+param_fm.out.bias                                                 True           (512,)        512
+**********
+total=172,382,721, trainable=172,382,721, frozen=0
+I 07.05/03:31:53 train_param_fm.py:370 ] Epoch [1/400] loss=1.01741702 velocity=1.01741702 endpoint=0.31791647 lr=5e-06
+I 07.05/03:32:54 train_param_fm.py:370 ] Epoch [2/400] loss=0.96413141 velocity=0.96413141 endpoint=0.35042819 lr=1e-05
+I 07.05/03:33:44 train_param_fm.py:370 ] Epoch [3/400] loss=0.85517956 velocity=0.85517956 endpoint=0.27239687 lr=1.5e-05
+I 07.05/03:34:44 train_param_fm.py:370 ] Epoch [4/400] loss=0.74456199 velocity=0.74456199 endpoint=0.25135949 lr=2e-05
+I 07.05/03:35:39 train_param_fm.py:370 ] Epoch [5/400] loss=0.63114595 velocity=0.63114595 endpoint=0.23676367 lr=2.5e-05
+I 07.05/03:36:45 train_param_fm.py:370 ] Epoch [6/400] loss=0.50915210 velocity=0.50915210 endpoint=0.20636820 lr=3e-05
+I 07.05/03:37:46 train_param_fm.py:370 ] Epoch [7/400] loss=0.36988404 velocity=0.36988404 endpoint=0.12988488 lr=3.5e-05
+I 07.05/03:38:37 train_param_fm.py:370 ] Epoch [8/400] loss=0.26942267 velocity=0.26942267 endpoint=0.11011762 lr=4e-05
+I 07.05/03:39:47 train_param_fm.py:370 ] Epoch [9/400] loss=0.18028442 velocity=0.18028442 endpoint=0.07550158 lr=4.5e-05
+I 07.05/03:40:55 train_param_fm.py:370 ] Epoch [10/400] loss=0.11729548 velocity=0.11729548 endpoint=0.04918584 lr=5e-05
+I 07.05/03:41:54 train_param_fm.py:370 ] Epoch [11/400] loss=0.07390951 velocity=0.07390951 endpoint=0.02980498 lr=5.5e-05
+I 07.05/03:42:52 train_param_fm.py:370 ] Epoch [12/400] loss=0.06332956 velocity=0.06332956 endpoint=0.03290320 lr=6e-05
+I 07.05/03:43:54 train_param_fm.py:370 ] Epoch [13/400] loss=0.04120915 velocity=0.04120915 endpoint=0.02103204 lr=6.5e-05
+I 07.05/03:45:03 train_param_fm.py:370 ] Epoch [14/400] loss=0.02571458 velocity=0.02571458 endpoint=0.01346816 lr=7e-05
+I 07.05/03:46:12 train_param_fm.py:370 ] Epoch [15/400] loss=0.02592746 velocity=0.02592746 endpoint=0.01237875 lr=7.5e-05
+I 07.05/03:47:02 train_param_fm.py:370 ] Epoch [16/400] loss=0.01430024 velocity=0.01430024 endpoint=0.00691209 lr=8e-05
+I 07.05/03:47:55 train_param_fm.py:370 ] Epoch [17/400] loss=0.01007836 velocity=0.01007836 endpoint=0.00499223 lr=8.5e-05
+I 07.05/03:48:45 train_param_fm.py:370 ] Epoch [18/400] loss=0.01273500 velocity=0.01273500 endpoint=0.00666935 lr=9e-05
+I 07.05/03:49:29 train_param_fm.py:370 ] Epoch [19/400] loss=0.00475167 velocity=0.00475167 endpoint=0.00204838 lr=9.5e-05
+I 07.05/03:50:16 train_param_fm.py:370 ] Epoch [20/400] loss=0.00792938 velocity=0.00792938 endpoint=0.00362061 lr=0.0001
+I 07.05/03:51:06 train_param_fm.py:370 ] Epoch [21/400] loss=0.00311513 velocity=0.00311513 endpoint=0.00153092 lr=0.000105
+I 07.05/03:51:52 train_param_fm.py:370 ] Epoch [22/400] loss=0.00200421 velocity=0.00200421 endpoint=0.00090496 lr=0.00011
+I 07.05/03:52:52 train_param_fm.py:370 ] Epoch [23/400] loss=0.00690943 velocity=0.00690943 endpoint=0.00361395 lr=0.000115
+I 07.05/03:53:28 train_param_fm.py:370 ] Epoch [24/400] loss=0.00528027 velocity=0.00528027 endpoint=0.00255804 lr=0.00012
+I 07.05/03:54:21 train_param_fm.py:370 ] Epoch [25/400] loss=0.00175059 velocity=0.00175059 endpoint=0.00092798 lr=0.000125
+I 07.05/03:55:08 train_param_fm.py:370 ] Epoch [26/400] loss=0.00204041 velocity=0.00204041 endpoint=0.00099534 lr=0.00013
+I 07.05/03:55:47 train_param_fm.py:370 ] Epoch [27/400] loss=0.00697492 velocity=0.00697492 endpoint=0.00296155 lr=0.000135
+I 07.05/03:56:30 train_param_fm.py:370 ] Epoch [28/400] loss=0.00517020 velocity=0.00517020 endpoint=0.00263833 lr=0.00014
+I 07.05/03:57:18 train_param_fm.py:370 ] Epoch [29/400] loss=0.00268835 velocity=0.00268835 endpoint=0.00148189 lr=0.000145
+I 07.05/03:57:58 train_param_fm.py:370 ] Epoch [30/400] loss=0.00177451 velocity=0.00177451 endpoint=0.00089614 lr=0.00015
+I 07.05/03:58:44 train_param_fm.py:370 ] Epoch [31/400] loss=0.00093617 velocity=0.00093617 endpoint=0.00040252 lr=0.000155
+I 07.05/03:59:31 train_param_fm.py:370 ] Epoch [32/400] loss=0.00167133 velocity=0.00167133 endpoint=0.00079219 lr=0.00016
+I 07.05/04:00:22 train_param_fm.py:370 ] Epoch [33/400] loss=0.00082712 velocity=0.00082712 endpoint=0.00039271 lr=0.000165
+I 07.05/04:01:16 train_param_fm.py:370 ] Epoch [34/400] loss=0.00102988 velocity=0.00102988 endpoint=0.00046537 lr=0.00017
+I 07.05/04:01:52 train_param_fm.py:370 ] Epoch [35/400] loss=0.00096609 velocity=0.00096609 endpoint=0.00043029 lr=0.000175
+I 07.05/04:02:33 train_param_fm.py:370 ] Epoch [36/400] loss=0.00098187 velocity=0.00098187 endpoint=0.00045787 lr=0.00018
+I 07.05/04:03:07 train_param_fm.py:370 ] Epoch [37/400] loss=0.00090817 velocity=0.00090817 endpoint=0.00054442 lr=0.000185
+I 07.05/04:03:59 train_param_fm.py:370 ] Epoch [38/400] loss=0.00065656 velocity=0.00065656 endpoint=0.00024719 lr=0.00019
+I 07.05/04:04:49 train_param_fm.py:370 ] Epoch [39/400] loss=0.00262169 velocity=0.00262169 endpoint=0.00159208 lr=0.000195
+I 07.05/04:05:31 train_param_fm.py:370 ] Epoch [40/400] loss=0.00943425 velocity=0.00943425 endpoint=0.00456666 lr=0.0002
+I 07.05/04:06:07 train_param_fm.py:370 ] Epoch [41/400] loss=0.00195858 velocity=0.00195858 endpoint=0.00088704 lr=0.000199996
+I 07.05/04:06:42 train_param_fm.py:370 ] Epoch [42/400] loss=0.00124773 velocity=0.00124773 endpoint=0.00061315 lr=0.000199985
+I 07.05/04:07:20 train_param_fm.py:370 ] Epoch [43/400] loss=0.00085118 velocity=0.00085118 endpoint=0.00043658 lr=0.000199966
+I 07.05/04:07:58 train_param_fm.py:370 ] Epoch [44/400] loss=0.00025821 velocity=0.00025821 endpoint=0.00010480 lr=0.000199939
+I 07.05/04:08:52 train_param_fm.py:370 ] Epoch [45/400] loss=0.00032692 velocity=0.00032692 endpoint=0.00016597 lr=0.000199905
+I 07.05/04:09:33 train_param_fm.py:370 ] Epoch [46/400] loss=0.00087324 velocity=0.00087324 endpoint=0.00040411 lr=0.000199864
+I 07.05/04:10:15 train_param_fm.py:370 ] Epoch [47/400] loss=0.00037188 velocity=0.00037188 endpoint=0.00016373 lr=0.000199814
+I 07.05/04:10:50 train_param_fm.py:370 ] Epoch [48/400] loss=0.00052854 velocity=0.00052854 endpoint=0.00028120 lr=0.000199758
+I 07.05/04:11:28 train_param_fm.py:370 ] Epoch [49/400] loss=0.00022866 velocity=0.00022866 endpoint=0.00009138 lr=0.000199693
+I 07.05/04:12:17 train_param_fm.py:370 ] Epoch [50/400] loss=0.00016417 velocity=0.00016417 endpoint=0.00006995 lr=0.000199621
+I 07.05/04:13:06 train_param_fm.py:370 ] Epoch [51/400] loss=0.00036924 velocity=0.00036924 endpoint=0.00015468 lr=0.000199542
+I 07.05/04:13:46 train_param_fm.py:370 ] Epoch [52/400] loss=0.00062431 velocity=0.00062431 endpoint=0.00026363 lr=0.000199455
+I 07.05/04:14:30 train_param_fm.py:370 ] Epoch [53/400] loss=0.00049887 velocity=0.00049887 endpoint=0.00025505 lr=0.00019936
+I 07.05/04:15:09 train_param_fm.py:370 ] Epoch [54/400] loss=0.00028377 velocity=0.00028377 endpoint=0.00013056 lr=0.000199258
+I 07.05/04:15:54 train_param_fm.py:370 ] Epoch [55/400] loss=0.00046933 velocity=0.00046933 endpoint=0.00022611 lr=0.000199149
+I 07.05/04:16:30 train_param_fm.py:370 ] Epoch [56/400] loss=0.00033752 velocity=0.00033752 endpoint=0.00014195 lr=0.000199032
+I 07.05/04:17:16 train_param_fm.py:370 ] Epoch [57/400] loss=0.00048609 velocity=0.00048609 endpoint=0.00023505 lr=0.000198907
+I 07.05/04:17:53 train_param_fm.py:370 ] Epoch [58/400] loss=0.00051494 velocity=0.00051494 endpoint=0.00022176 lr=0.000198775
+I 07.05/04:18:34 train_param_fm.py:370 ] Epoch [59/400] loss=0.00048610 velocity=0.00048610 endpoint=0.00020906 lr=0.000198635
+I 07.05/04:19:14 train_param_fm.py:370 ] Epoch [60/400] loss=0.00048171 velocity=0.00048171 endpoint=0.00019963 lr=0.000198488
+I 07.05/04:19:59 train_param_fm.py:370 ] Epoch [61/400] loss=0.00037379 velocity=0.00037379 endpoint=0.00017517 lr=0.000198334
+I 07.05/04:20:43 train_param_fm.py:370 ] Epoch [62/400] loss=0.00203217 velocity=0.00203217 endpoint=0.00086015 lr=0.000198172
+I 07.05/04:21:17 train_param_fm.py:370 ] Epoch [63/400] loss=1.61366216 velocity=1.61366216 endpoint=0.47806449 lr=0.000198003
+I 07.05/04:21:53 train_param_fm.py:370 ] Epoch [64/400] loss=0.11352227 velocity=0.11352227 endpoint=0.07701655 lr=0.000197826
+I 07.05/04:22:31 train_param_fm.py:370 ] Epoch [65/400] loss=0.03676327 velocity=0.03676327 endpoint=0.02201549 lr=0.000197641
+I 07.05/04:23:09 train_param_fm.py:370 ] Epoch [66/400] loss=0.01322227 velocity=0.01322227 endpoint=0.00776692 lr=0.00019745
+I 07.05/04:23:52 train_param_fm.py:370 ] Epoch [67/400] loss=0.00623841 velocity=0.00623841 endpoint=0.00378834 lr=0.000197251
+I 07.05/04:24:26 train_param_fm.py:370 ] Epoch [68/400] loss=0.00609738 velocity=0.00609738 endpoint=0.00296931 lr=0.000197044
+I 07.05/04:25:07 train_param_fm.py:370 ] Epoch [69/400] loss=0.00133382 velocity=0.00133382 endpoint=0.00057161 lr=0.000196831
+I 07.05/04:25:51 train_param_fm.py:370 ] Epoch [70/400] loss=0.00192302 velocity=0.00192302 endpoint=0.00093364 lr=0.00019661
+I 07.05/04:26:26 train_param_fm.py:370 ] Epoch [71/400] loss=0.00082098 velocity=0.00082098 endpoint=0.00043512 lr=0.000196381
+I 07.05/04:27:09 train_param_fm.py:370 ] Epoch [72/400] loss=0.00085110 velocity=0.00085110 endpoint=0.00044568 lr=0.000196146
+I 07.05/04:27:52 train_param_fm.py:370 ] Epoch [73/400] loss=0.00030218 velocity=0.00030218 endpoint=0.00009716 lr=0.000195903
+I 07.05/04:28:29 train_param_fm.py:370 ] Epoch [74/400] loss=0.00040334 velocity=0.00040334 endpoint=0.00021759 lr=0.000195652
+I 07.05/04:29:03 train_param_fm.py:370 ] Epoch [75/400] loss=0.00037442 velocity=0.00037442 endpoint=0.00017017 lr=0.000195395
+I 07.05/04:29:44 train_param_fm.py:370 ] Epoch [76/400] loss=0.00071522 velocity=0.00071522 endpoint=0.00038936 lr=0.00019513
+I 07.05/04:30:24 train_param_fm.py:370 ] Epoch [77/400] loss=0.00224081 velocity=0.00224081 endpoint=0.00117087 lr=0.000194858
+I 07.05/04:31:06 train_param_fm.py:370 ] Epoch [78/400] loss=0.00195806 velocity=0.00195806 endpoint=0.00086740 lr=0.000194579
+I 07.05/04:31:45 train_param_fm.py:370 ] Epoch [79/400] loss=0.00047365 velocity=0.00047365 endpoint=0.00021842 lr=0.000194293
+I 07.05/04:32:29 train_param_fm.py:370 ] Epoch [80/400] loss=0.00025237 velocity=0.00025237 endpoint=0.00013000 lr=0.000193999
+I 07.05/04:33:08 train_param_fm.py:370 ] Epoch [81/400] loss=0.00019059 velocity=0.00019059 endpoint=0.00007319 lr=0.000193699
+I 07.05/04:33:50 train_param_fm.py:370 ] Epoch [82/400] loss=0.00016199 velocity=0.00016199 endpoint=0.00007830 lr=0.000193391
+I 07.05/04:34:38 train_param_fm.py:370 ] Epoch [83/400] loss=0.00083617 velocity=0.00083617 endpoint=0.00029366 lr=0.000193077
+I 07.05/04:35:14 train_param_fm.py:370 ] Epoch [84/400] loss=0.00073296 velocity=0.00073296 endpoint=0.00035012 lr=0.000192755
+I 07.05/04:35:56 train_param_fm.py:370 ] Epoch [85/400] loss=0.00021832 velocity=0.00021832 endpoint=0.00010679 lr=0.000192426
+I 07.05/04:36:42 train_param_fm.py:370 ] Epoch [86/400] loss=0.00017563 velocity=0.00017563 endpoint=0.00010350 lr=0.00019209
+I 07.05/04:37:20 train_param_fm.py:370 ] Epoch [87/400] loss=0.00014669 velocity=0.00014669 endpoint=0.00007722 lr=0.000191747
+I 07.05/04:38:09 train_param_fm.py:370 ] Epoch [88/400] loss=0.00021095 velocity=0.00021095 endpoint=0.00009798 lr=0.000191398
+I 07.05/04:38:51 train_param_fm.py:370 ] Epoch [89/400] loss=0.00219067 velocity=0.00219067 endpoint=0.00124408 lr=0.000191041
+I 07.05/04:39:29 train_param_fm.py:370 ] Epoch [90/400] loss=0.00103935 velocity=0.00103935 endpoint=0.00044814 lr=0.000190678
+I 07.05/04:40:10 train_param_fm.py:370 ] Epoch [91/400] loss=0.00012392 velocity=0.00012392 endpoint=0.00005342 lr=0.000190307
+I 07.05/04:41:02 train_param_fm.py:370 ] Epoch [92/400] loss=0.00013585 velocity=0.00013585 endpoint=0.00007146 lr=0.00018993
+I 07.05/04:41:47 train_param_fm.py:370 ] Epoch [93/400] loss=0.00014028 velocity=0.00014028 endpoint=0.00007452 lr=0.000189546
+I 07.05/04:42:25 train_param_fm.py:370 ] Epoch [94/400] loss=0.00008798 velocity=0.00008798 endpoint=0.00003934 lr=0.000189155
+I 07.05/04:43:14 train_param_fm.py:370 ] Epoch [95/400] loss=0.00025880 velocity=0.00025880 endpoint=0.00011928 lr=0.000188758
+I 07.05/04:43:52 train_param_fm.py:370 ] Epoch [96/400] loss=0.00090185 velocity=0.00090185 endpoint=0.00040586 lr=0.000188353
+I 07.05/04:44:37 train_param_fm.py:370 ] Epoch [97/400] loss=0.00037764 velocity=0.00037764 endpoint=0.00020643 lr=0.000187942
+I 07.05/04:45:16 train_param_fm.py:370 ] Epoch [98/400] loss=0.00089495 velocity=0.00089495 endpoint=0.00042851 lr=0.000187525
+I 07.05/04:45:59 train_param_fm.py:370 ] Epoch [99/400] loss=0.00024885 velocity=0.00024885 endpoint=0.00011827 lr=0.0001871
+I 07.05/04:46:38 train_param_fm.py:370 ] Epoch [100/400] loss=0.00009905 velocity=0.00009905 endpoint=0.00004784 lr=0.00018667
+I 07.05/04:47:15 train_param_fm.py:370 ] Epoch [101/400] loss=0.00010988 velocity=0.00010988 endpoint=0.00005861 lr=0.000186232
+I 07.05/04:47:52 train_param_fm.py:370 ] Epoch [102/400] loss=0.00013113 velocity=0.00013113 endpoint=0.00005993 lr=0.000185788
+I 07.05/04:48:37 train_param_fm.py:370 ] Epoch [103/400] loss=0.00046194 velocity=0.00046194 endpoint=0.00015697 lr=0.000185338
+I 07.05/04:49:16 train_param_fm.py:370 ] Epoch [104/400] loss=0.00058263 velocity=0.00058263 endpoint=0.00030205 lr=0.000184881
+I 07.05/04:49:56 train_param_fm.py:370 ] Epoch [105/400] loss=0.00110129 velocity=0.00110129 endpoint=0.00069136 lr=0.000184417
+I 07.05/04:50:33 train_param_fm.py:370 ] Epoch [106/400] loss=0.02592314 velocity=0.02592314 endpoint=0.01651290 lr=0.000183948
+I 07.05/04:51:12 train_param_fm.py:370 ] Epoch [107/400] loss=0.02498269 velocity=0.02498269 endpoint=0.01143638 lr=0.000183472
+I 07.05/04:51:46 train_param_fm.py:370 ] Epoch [108/400] loss=0.00225802 velocity=0.00225802 endpoint=0.00109239 lr=0.000182989
+I 07.05/04:52:21 train_param_fm.py:370 ] Epoch [109/400] loss=0.00089556 velocity=0.00089556 endpoint=0.00052311 lr=0.000182501
+I 07.05/04:53:01 train_param_fm.py:370 ] Epoch [110/400] loss=0.00100558 velocity=0.00100558 endpoint=0.00054145 lr=0.000182006
+I 07.05/04:53:38 train_param_fm.py:370 ] Epoch [111/400] loss=0.00033458 velocity=0.00033458 endpoint=0.00016197 lr=0.000181504
+I 07.05/04:54:18 train_param_fm.py:370 ] Epoch [112/400] loss=0.00019601 velocity=0.00019601 endpoint=0.00007537 lr=0.000180997
+I 07.05/04:54:59 train_param_fm.py:370 ] Epoch [113/400] loss=0.00024130 velocity=0.00024130 endpoint=0.00013725 lr=0.000180484
+I 07.05/04:55:45 train_param_fm.py:370 ] Epoch [114/400] loss=0.00014044 velocity=0.00014044 endpoint=0.00005628 lr=0.000179964
+I 07.05/04:56:25 train_param_fm.py:370 ] Epoch [115/400] loss=0.00019236 velocity=0.00019236 endpoint=0.00010738 lr=0.000179439
+I 07.05/04:57:09 train_param_fm.py:370 ] Epoch [116/400] loss=0.00016428 velocity=0.00016428 endpoint=0.00008512 lr=0.000178907
+I 07.05/04:57:49 train_param_fm.py:370 ] Epoch [117/400] loss=0.00013259 velocity=0.00013259 endpoint=0.00006693 lr=0.00017837
+I 07.05/04:58:24 train_param_fm.py:370 ] Epoch [118/400] loss=0.00008379 velocity=0.00008379 endpoint=0.00003662 lr=0.000177826
+I 07.05/04:59:10 train_param_fm.py:370 ] Epoch [119/400] loss=0.00007362 velocity=0.00007362 endpoint=0.00003431 lr=0.000177277
+I 07.05/05:00:08 train_param_fm.py:370 ] Epoch [120/400] loss=0.00007484 velocity=0.00007484 endpoint=0.00003225 lr=0.000176721
+I 07.05/05:00:53 train_param_fm.py:370 ] Epoch [121/400] loss=0.00009539 velocity=0.00009539 endpoint=0.00005128 lr=0.00017616
+I 07.05/05:01:34 train_param_fm.py:370 ] Epoch [122/400] loss=0.00009972 velocity=0.00009972 endpoint=0.00005303 lr=0.000175594
+I 07.05/05:02:19 train_param_fm.py:370 ] Epoch [123/400] loss=0.00011616 velocity=0.00011616 endpoint=0.00006298 lr=0.000175021
+I 07.05/05:02:59 train_param_fm.py:370 ] Epoch [124/400] loss=0.00008393 velocity=0.00008393 endpoint=0.00004205 lr=0.000174443
+I 07.05/05:03:38 train_param_fm.py:370 ] Epoch [125/400] loss=0.00008718 velocity=0.00008718 endpoint=0.00004201 lr=0.000173859
+I 07.05/05:04:19 train_param_fm.py:370 ] Epoch [126/400] loss=0.00042740 velocity=0.00042740 endpoint=0.00016615 lr=0.00017327
+I 07.05/05:05:01 train_param_fm.py:370 ] Epoch [127/400] loss=0.00010120 velocity=0.00010120 endpoint=0.00005350 lr=0.000172675
+I 07.05/05:05:39 train_param_fm.py:370 ] Epoch [128/400] loss=0.00013877 velocity=0.00013877 endpoint=0.00006684 lr=0.000172074
+I 07.05/05:06:19 train_param_fm.py:370 ] Epoch [129/400] loss=0.00006414 velocity=0.00006414 endpoint=0.00003084 lr=0.000171468
+I 07.05/05:07:05 train_param_fm.py:370 ] Epoch [130/400] loss=0.00005590 velocity=0.00005590 endpoint=0.00002494 lr=0.000170857
+I 07.05/05:07:47 train_param_fm.py:370 ] Epoch [131/400] loss=0.00013198 velocity=0.00013198 endpoint=0.00004884 lr=0.00017024
+I 07.05/05:08:22 train_param_fm.py:370 ] Epoch [132/400] loss=0.00034111 velocity=0.00034111 endpoint=0.00012709 lr=0.000169619
+I 07.05/05:09:04 train_param_fm.py:370 ] Epoch [133/400] loss=0.00010436 velocity=0.00010436 endpoint=0.00005187 lr=0.000168991
+I 07.05/05:09:43 train_param_fm.py:370 ] Epoch [134/400] loss=0.00012765 velocity=0.00012765 endpoint=0.00005488 lr=0.000168359
+I 07.05/05:10:26 train_param_fm.py:370 ] Epoch [135/400] loss=0.00005748 velocity=0.00005748 endpoint=0.00002947 lr=0.000167721
+I 07.05/05:11:04 train_param_fm.py:370 ] Epoch [136/400] loss=0.00005813 velocity=0.00005813 endpoint=0.00003164 lr=0.000167078
+I 07.05/05:11:41 train_param_fm.py:370 ] Epoch [137/400] loss=0.00013810 velocity=0.00013810 endpoint=0.00006724 lr=0.000166431
