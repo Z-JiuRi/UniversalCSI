@@ -46,6 +46,6 @@
   "residual_scale": 0.4,
   "lambda_recon": 700.0,
   "lambda_encoder_consistency": 1.5,
-  "gpu": 0,
+  "gpu": 1,
   "exp_dir": "adapter/exps/exp7/22_enc_target_l1p5_rs0p4_rec700"
 }

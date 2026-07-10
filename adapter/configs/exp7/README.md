@@ -38,9 +38,11 @@ Total:
 Directory split:
 
 ```text
-adapter/configs/exp7/1 -> gpu 0
-adapter/configs/exp7/2 -> gpu 1
-adapter/configs/exp7/3 -> gpu 2
+adapter/configs/exp7/0 -> gpu 0
+adapter/configs/exp7/1 -> gpu 1
+adapter/configs/exp7/4 -> gpu 4
+adapter/configs/exp7/6 -> gpu 6
+adapter/configs/exp7/7 -> gpu 7
 ```
 
 Each `(residual_scale, lambda_recon)` pair includes a `lambda_encoder_consistency=0`
