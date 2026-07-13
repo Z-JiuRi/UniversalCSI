@@ -28,6 +28,26 @@ DEFAULTS = {
     "mapper_type": "affine_residual_mlp",
     "hidden_dim": 512,
     "lowrank_rank": 64,
+    "bottleneck_dim": 128,
+    "num_groups": 16,
+    "group_hidden": 64,
+    "gate_hidden": 64,
+    "gate_init": 0.5,
+    "num_tokens": 16,
+    "token_hidden": 64,
+    "channel_hidden": 64,
+    "num_heads": 2,
+    "transformer_ffn_dim": 128,
+    "attention_dim": 32,
+    "attention_heads": 4,
+    "attention_dropout": 0.0,
+    "attention_scale": 0.1,
+    "attention_input": "value_delta",
+    "attention_use_position": True,
+    "num_experts": 4,
+    "flow_hidden_dim": 128,
+    "whole_mlp_dims": None,
+    "whole_mlp_activation": "gelu",
     "num_blocks": 4,
     "dropout": 0.0,
     "residual_scale": 0.1,
@@ -41,13 +61,46 @@ DEFAULTS = {
     "no_block_norm": False,
     "use_final_norm": False,
     "train_affine": False,
+    "no_affine_alignment": False,
     "align_ridge": 1.0,
+    "affine_fit_splits": "train",
     "lambda_code": 1.0,
     "lambda_recon": 0.0,
     "lambda_feature": 0.0,
     "lambda_encoder_consistency": 0.0,
     "encoder_consistency_target": "mapped",
+    "lambda_delta_norm": 0.0,
+    "lambda_teacher_code": 0.0,
+    "teacher_train_code": None,
+    "lambda_fisher": 0.0,
+    "fisher_basis_path": None,
+    "fisher_rank": 0,
+    "fisher_weight_power": 0.5,
+    "fisher_weight_max": 4.0,
+    "gradient_diagnostics_every": 0,
+    "train_last_blocks": 0,
+    "init_mapper_checkpoint": None,
+    "init_mapper_use_ema": False,
+    "code_noise_std": 0.0,
+    "stage1_epochs": 0,
+    "stage1_code_noise_std": 0.0,
+    "stage1_lambda_recon": 0.0,
+    "stage1_lambda_encoder_consistency": 0.0,
+    "stage2_lr": None,
+    "stage2_affine_lr_multiplier": 1.0,
+    "stage2_affine_freeze_epochs": 0,
+    "stage2_recon_warmup_epochs": 0,
+    "stage2_encoder_delay_epochs": 0,
+    "stage2_encoder_warmup_epochs": 0,
+    "stage2_noise_decay_epochs": 0,
+    "ema_decay": 0.0,
+    "ema_start_epoch": 1,
+    "ema_update_every": 1,
     "code_loss_type": "mse",
+    "sensitivity_source": "jacobian",
+    "sensitivity_power": 1.0,
+    "sensitivity_hutchinson": 8,
+    "sensitivity_probe_samples": 2048,
     "std_weight_min": 0.25,
     "std_weight_max": 4.0,
     "std_weight_eps": 1e-6,
@@ -93,6 +146,42 @@ def derive_exp_name(cfg):
     suffix = f"_h{cfg['hidden_dim']}" if cfg.get("hidden_dim") is not None else ""
     if cfg.get("mapper_type") == "affine_lowrank_residual":
         suffix += f"_rank{cfg['lowrank_rank']}"
+    if cfg.get("mapper_type") == "affine_film_residual_mlp":
+        suffix += "_film"
+    if cfg.get("mapper_type") == "affine_multiscale_residual_mlp":
+        suffix += f"_multiscale_bn{cfg['bottleneck_dim']}"
+    if cfg.get("mapper_type") == "affine_bottleneck_residual":
+        suffix += f"_bn{cfg['bottleneck_dim']}"
+    if cfg.get("mapper_type") == "affine_group_gated":
+        suffix += (
+            f"_groups{cfg['num_groups']}_gh{cfg['group_hidden']}"
+            f"_gateh{cfg['gate_hidden']}_ginit{cfg['gate_init']}")
+    if cfg.get("mapper_type") == "affine_token_mixer":
+        suffix += (
+            f"_tokens{cfg['num_tokens']}_th{cfg['token_hidden']}"
+            f"_ch{cfg['channel_hidden']}")
+    if cfg.get("mapper_type") == "affine_tiny_transformer":
+        suffix += (
+            f"_tokens{cfg['num_tokens']}_heads{cfg['num_heads']}"
+            f"_ffn{cfg['transformer_ffn_dim']}")
+    if cfg.get("mapper_type") == "affine_residual_mlp_attention":
+        suffix += "_attnd{}_h{}_as{}_{}".format(
+            cfg["attention_dim"], cfg["attention_heads"],
+            cfg["attention_scale"], cfg["attention_input"])
+        if not cfg["attention_use_position"]:
+            suffix += "_nopos"
+    if cfg.get("mapper_type") == "affine_moe_bottleneck":
+        suffix += (
+            f"_experts{cfg['num_experts']}_bn{cfg['bottleneck_dim']}"
+            f"_gateh{cfg['gate_hidden']}")
+    if cfg.get("mapper_type") == "affine_coupling_flow":
+        suffix += f"_flowh{cfg['flow_hidden_dim']}"
+    if cfg.get("mapper_type") in (
+            "affine_whole_residual_mlp",
+            "affine_whole_direct_mlp"):
+        dims = cfg.get("whole_mlp_dims") or []
+        suffix += "_whole" + "x".join(str(dim) for dim in dims)
+        suffix += f"_act{cfg.get('whole_mlp_activation', 'gelu')}"
     if cfg.get("learnable_residual_gate"):
         suffix += f"_gate{cfg['gate_max']}"
     if cfg.get("gate_mode", "block") != "block":
@@ -111,6 +200,39 @@ def derive_exp_name(cfg):
         suffix += (
             f"_enc{cfg['lambda_encoder_consistency']}"
             f"_{cfg['encoder_consistency_target']}")
+    if cfg.get("lambda_delta_norm", 0.0):
+        suffix += f"_dn{cfg['lambda_delta_norm']}"
+    if cfg.get("lambda_teacher_code", 0.0):
+        suffix += f"_ltc{cfg['lambda_teacher_code']}"
+        teacher = cfg.get("teacher_train_code") or ""
+        if "reencode0" in teacher:
+            suffix += "_tre0"
+        elif "reencode_1014to1024_s20" in teacher or "refined_codes_reencode" in teacher:
+            suffix += "_tres20"
+        elif "s20" in teacher or "gen_s20" in teacher:
+            suffix += "_ts20"
+    if cfg.get("lambda_fisher", 0.0):
+        suffix += (
+            f"_fishr{cfg.get('fisher_rank', 0)}"
+            f"b{cfg['lambda_fisher']}p{cfg.get('fisher_weight_power', 0.5)}")
+    if cfg.get("train_last_blocks", 0):
+        suffix += f"_lastb{cfg['train_last_blocks']}"
+    if cfg.get("init_mapper_checkpoint"):
+        suffix += "_initckpt"
+        if cfg.get("init_mapper_use_ema"):
+            suffix += "ema"
+    if cfg.get("code_noise_std", 0.0):
+        suffix += f"_noise{cfg['code_noise_std']}"
+    if cfg.get("stage1_epochs", 0):
+        suffix += (
+            f"_stage1ep{cfg['stage1_epochs']}"
+            f"_s1noise{cfg.get('stage1_code_noise_std', 0.0)}"
+            f"_s2lr{cfg.get('stage2_lr')}"
+            f"_s2afflr{cfg.get('stage2_affine_lr_multiplier', 1.0)}")
+    if cfg.get("ema_decay", 0.0):
+        suffix += (
+            f"_ema{cfg['ema_decay']}"
+            f"_emastart{cfg.get('ema_start_epoch', 1)}")
     return (
         f"code{cfg['lambda_code']}_rec{cfg['lambda_recon']}_lr{cfg['lr']}"
         f"_ep{cfg['epochs']}_{norm_name}_ridge{cfg['align_ridge']}"

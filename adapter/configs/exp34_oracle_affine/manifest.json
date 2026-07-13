@@ -1,0 +1,8 @@
+[
+  {
+    "name": "01_s20_ltc1_lc0_affine_train_val_test",
+    "gpu": 0,
+    "config": "/nfs5/zxd/Huawei/UniversalCSI/adapter/configs/exp34_oracle_affine/branches/01_s20_ltc1_lc0_affine_train_val_test.json",
+    "exp_dir": "adapter/exps/exp34_oracle_affine/01_s20_ltc1_lc0_affine_train_val_test"
+  }
+]
