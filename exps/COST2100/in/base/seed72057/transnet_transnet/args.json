@@ -54,9 +54,9 @@
   "seed_list": "4435,72057,70789,57619,48548,13666,90334,83900,95167,68774,40064,23013,66390,19119,93503,18758,91260,93968,86886,93456,11517,93418,3013,71222,44920,5742,72081,46264,22552,34064,13325,45027,55593,94250,54739,77950,95412,57543,28104,77863",
   "teacher_code": null,
   "teacher_pca_dim": 0,
-  "test_path": "/storage/hujiacong/zxd/datasets/cost2100/in_test.pt",
-  "train_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
-  "val_path": "/storage/hujiacong/zxd/datasets/cost2100/in_val.pt",
+  "test_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_test.pt",
+  "train_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_train.pt",
+  "val_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_val.pt",
   "weight_decay": 0.001,
   "workers": 0
 }

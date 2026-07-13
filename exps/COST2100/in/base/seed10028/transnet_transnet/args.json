@@ -49,9 +49,9 @@
   "seed": 10028,
   "teacher_code": null,
   "teacher_pca_dim": 0,
-  "test_path": "/storage/hujiacong/zxd/datasets/cost2100/in_test.pt",
-  "train_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
-  "val_path": "/storage/hujiacong/zxd/datasets/cost2100/in_val.pt",
+  "test_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_test.pt",
+  "train_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_train.pt",
+  "val_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_val.pt",
   "weight_decay": 0.001,
   "workers": 0
 }

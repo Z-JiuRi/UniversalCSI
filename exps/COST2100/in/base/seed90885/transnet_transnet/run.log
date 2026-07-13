@@ -1,0 +1,79 @@
+I 07.06/17:12:47 main.py:61  ] [Worker seed=90885 enc=transnet] started
+I 07.06/17:12:47 init.py:13  ] Random seed set to 90885
+I 07.06/17:13:08 init.py:81  ] Running on GPU 0
+I 07.06/17:13:08 logger.py:152 ] => Experiment directory: /nfs5/zxd/Huawei/UniversalCSI/exps/COST2100/in/base/seed90885/transnet_transnet
+I 07.06/17:13:08 logger.py:71  ] => Runtime Context:
+I 07.06/17:13:08 logger.py:72  ]    cwd: /nfs5/zxd/Huawei/UniversalCSI
+I 07.06/17:13:08 logger.py:73  ]    pid: 7607
+I 07.06/17:13:08 logger.py:74  ]    command: main.py --train_path /nfs5/zxd/Huawei/datasets/COST2100/in_train.pt --val_path /nfs5/zxd/Huawei/datasets/COST2100/in_val.pt --test_path /nfs5/zxd/Huawei/datasets/COST2100/in_test.pt --batch_size 256 --workers 0 --epochs 400 --cr 4 --d_model 64 --nt 32 --nc 32 --dim_feedforward 2048 --hidden 16 --num_blocks 2 --scheduler cosine --lr_init 2e-4 --weight_decay 1e-3 --seed_list 61044,98000,61800,50884,95122,67658,6752,58308,71452,25231,69990,94921,29044,61445,14510,32396,24499,53817,9535,18684,30007,29670,86574,1207,54536,90885,27177,64405,67638,15542,38639,73032,39703,81120,38053,71431,51865,32168,46401,66002,85855,16830,53882,26219,88563,17002,23666,8426,6812,90134 --encoder_list transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet --decoder_list transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet --gpu_list 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+I 07.06/17:13:08 logger.py:75  ]    python: 3.11.14 | packaged by conda-forge | (main, Oct 22 2025, 22:46:25) [GCC 14.3.0]
+I 07.06/17:13:08 logger.py:76  ]    pytorch: 2.6.0+cu124
+I 07.06/17:13:08 logger.py:77  ]    cuda_available: True
+I 07.06/17:13:08 logger.py:79  ]    cuda_version: 12.4
+I 07.06/17:13:08 logger.py:81  ]    CUDA_VISIBLE_DEVICES: 0
+I 07.06/17:13:08 logger.py:91  ]    current_device: not initialized yet
+I 07.06/17:13:08 logger.py:63  ] => Arguments:
+{
+  "adapter": null,
+  "adapter_gate_init": 0.1,
+  "adapter_hidden_dim": 2048,
+  "adapter_rank": 32,
+  "anchor_loss": "mse",
+  "anchor_target": "none",
+  "batch_size": 256,
+  "canonical_anchor_seed": 0,
+  "canonical_codebook_size": 1024,
+  "canonical_codebook_temperature": 1.0,
+  "canonical_head": "none",
+  "canonical_lowrank_rank": 0,
+  "canonical_lowrank_scale": 0.0,
+  "channel": 2,
+  "code_var_tau": 256.0,
+  "cpu": false,
+  "cpu_affinity": null,
+  "cr": 4,
+  "d_model": 64,
+  "decoder": "transnet",
+  "decoder_list": "transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet",
+  "dim_feedforward": 2048,
+  "encoder": "transnet",
+  "encoder_list": "transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet,transnet",
+  "epochs": 400,
+  "evaluate": false,
+  "exp_name": "COST2100/in/base/seed90885/transnet_transnet",
+  "experiments": null,
+  "gpu": 0,
+  "gpu_list": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+  "hidden": 16,
+  "lambda_anchor": 0.0,
+  "lambda_code": 0.0,
+  "lambda_code_cov": 0.0,
+  "lambda_code_l1": 0.0,
+  "lambda_code_mean": 0.0,
+  "lambda_code_var": 0.0,
+  "lambda_fc": 0.0,
+  "lambda_recT": 0.0,
+  "lambda_recon": 1.0,
+  "lambda_teacher_pca": 0.0,
+  "lambda_teacher_whiten": 0.0,
+  "lr_init": 0.0002,
+  "nc": 32,
+  "nt": 32,
+  "num_blocks": 2,
+  "pretrained": null,
+  "pretrained_decoder": null,
+  "pretrained_encoder": null,
+  "resume": null,
+  "scheduler": "cosine",
+  "seed": 90885,
+  "seed_list": "61044,98000,61800,50884,95122,67658,6752,58308,71452,25231,69990,94921,29044,61445,14510,32396,24499,53817,9535,18684,30007,29670,86574,1207,54536,90885,27177,64405,67638,15542,38639,73032,39703,81120,38053,71431,51865,32168,46401,66002,85855,16830,53882,26219,88563,17002,23666,8426,6812,90134",
+  "teacher_code": null,
+  "teacher_pca_dim": 0,
+  "test_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_test.pt",
+  "train_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_train.pt",
+  "val_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_val.pt",
+  "weight_decay": 0.001,
+  "workers": 0
+}
+I 07.06/17:13:08 main.py:70  ] => Checkpoint directory: /nfs5/zxd/Huawei/UniversalCSI/exps/COST2100/in/base/seed90885/transnet_transnet/checkpoints
+I 07.06/17:13:08 main.py:71  ] => TensorBoard directory: /nfs5/zxd/Huawei/UniversalCSI/exps/COST2100/in/base/seed90885/transnet_transnet/tensorboard

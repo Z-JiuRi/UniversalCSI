@@ -54,9 +54,9 @@
   "seed_list": "80805,45392,37070,45278,17723,93747,56212,90860,44987,42115,90695,14261,42175,98210,45272,59060,60116,30109,91183,52706,65457,78462,44077,56176,55685,5070,89901,81490,94152,57633,49749,93013,24217,77424,6471,57300,780,52105,79760,58128,45392,25102,15435,91361,50291,12043,62834,54373,9641,28464,4768,27852,12012,59135,51238,14339,32272,42293,83753,83456,31946,66408,50846,29653,55999,39533,80657,76142,98947,68680,62843,4744,42528,82164,4352,59416,25923,21791,56363,44159",
   "teacher_code": null,
   "teacher_pca_dim": 0,
-  "test_path": "/storage/hujiacong/zxd/datasets/cost2100/in_test.pt",
-  "train_path": "/storage/hujiacong/zxd/datasets/cost2100/in_train.pt",
-  "val_path": "/storage/hujiacong/zxd/datasets/cost2100/in_val.pt",
+  "test_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_test.pt",
+  "train_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_train.pt",
+  "val_path": "/nfs5/zxd/Huawei/datasets/COST2100/in_val.pt",
   "weight_decay": 0.001,
   "workers": 0
 }
